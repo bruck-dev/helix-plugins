@@ -1,0 +1,21 @@
+
+RESNODE.name = "Example Node"
+RESNODE.fullName = RESNODE.name
+RESNODE.emptyName = RESNODE.name .. " (Depleted)"
+RESNODE.description = "An example for how you should construct resource node entities."
+RESNODE.harvestText = "Harvesting..."
+
+RESNODE.model = "models/props_junk/wood_crate001a.mdl"
+
+RESNODE.harvestFinishedSound = "physics/wood/wood_box_break2.wav"
+RESNODE.harvestProgressSound = {"physics/wood/wood_plank_impact_hard3.wav", "physics/wood/wood_plank_impact_hard4.wav", "physics/wood/wood_plank_impact_hard5.wav"}
+
+RESNODE.requiredTool = "tool_uniqueid_here"             -- optional argument, the tool item ID needed to harvest the node
+RESNODE.output = {
+    ["id1"] = 1                                         -- these are all valid syntax for the [item] = quantity structure
+    ["id2"] = {["min"] = 1, ["max"] = 2},               -- only 1 will be randomly selected per harvest
+    ["id3"] = {1, 2, 3},
+}
+
+RESNODE.harvestTime = 5                                  -- how long it takes to harvest the item, in seconds
+RESNODE.replenishTime = {["min"] = 2700, ["max"] = 3600} -- min: 45 minutes, max: 60 minutes
