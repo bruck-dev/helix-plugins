@@ -1,0 +1,7 @@
+
+ITEM.name = "Example"
+ITEM.description = "This is an example item, and won't load in game. Use it as a reference to build your own containers!"
+ITEM.model = "models/props_junk/garbage_coffeemug001a.mdl"
+ITEM.width	= 1
+ITEM.height	= 1
+ITEM.capacity = 150
