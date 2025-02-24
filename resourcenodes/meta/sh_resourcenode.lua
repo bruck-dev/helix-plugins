@@ -49,7 +49,7 @@ function RESNODE:GetOutput()
 			if quantity["min"] then
 				return outputItem, math.random(quantity["min"], quantity["max"])
 			else
-				return outputItem, math.random(1, #quantity)
+				return outputItem, quantity[math.random(1, #quantity)]
 			end
 		else
 			return outputItem, tonumber(quantity)
