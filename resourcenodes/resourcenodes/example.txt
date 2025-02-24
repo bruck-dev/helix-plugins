@@ -19,3 +19,6 @@ RESNODE.output = {
 
 RESNODE.harvestTime = 5                                  -- how long it takes to harvest the item, in seconds
 RESNODE.replenishTime = {["min"] = 2700, ["max"] = 3600} -- min: 45 minutes, max: 60 minutes
+
+
+-- see meta/sh_resourcenode.lua for a full list of customizable functions for your nodes.

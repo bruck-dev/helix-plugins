@@ -74,6 +74,10 @@ end
 function RESNODE:OnEmptied()
 end
 
+-- called every second
+function RESNODE:Think()
+end
+
 -- allows custom tool conditions, i.e. ANY axe instead of just 1 type
 function RESNODE:HasTool(inv)
 	if self.requiredTool then

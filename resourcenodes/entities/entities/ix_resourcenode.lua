@@ -55,6 +55,7 @@ if (SERVER) then
 
 	-- think every second
 	function ENT:Think()
+		self:GetResNode():Think()
 		if !self:GetCanHarvest() then
 			if self.secondsPassed >= self.minSeconds then
 				self:Fill()
@@ -64,7 +65,7 @@ if (SERVER) then
 		else
 			self.secondsPassed = 0
 		end
-		self:NextThink( CurTime() + 1 )
+		self:NextThink(CurTime() + 1)
 		return true
 	end
 	
@@ -146,7 +147,8 @@ function ENT:Harvest(rNode, activator, inv)
 		end
 
 		-- actually run the harvest and related end effects
-		activator:SetAction(rNode.harvestText, rNode.harvestTime, function()
+		activator:SetAction(rNode.harvestText, rNode.harvestTime)
+		activator:DoStaredAction(self, function()
 			local harvestedItem, harvestedAmount = rNode:GetOutput()
 
 			-- determines the amount to give and it adds it if the harvest was successful
@@ -185,6 +187,14 @@ function ENT:Harvest(rNode, activator, inv)
 				self:SetCanHarvest(false)
 				activator:EmitSound(rNode:GetHarvestFinishedSound())
 				rNode:OnEmptied()
+			end
+		end, rNode.harvestTime, function()
+			if IsValid(activator) then
+				activator:SetAction()
+
+				if IsValid(self) and timer.Exists("ixResourceNodeTimer") then
+					timer.Remove("ixResourceNodeTimer")
+				end
 			end
 		end)
 	elseif !char:HasNodeProfession(rNode.profession) then
