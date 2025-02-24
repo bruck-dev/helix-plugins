@@ -12,6 +12,7 @@ To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-
 
 
 ix.util.Include("meta/sh_resourcenode.lua")
+ix.util.Include("meta/sh_character.lua")
 ix.util.Include("cl_hooks.lua", "client")
 
 
