@@ -12,8 +12,8 @@ RESNODE.harvestText = "Harvesting..."	-- text that appears above the action bar 
 RESNODE.description = "undefined"		-- description text shown on tooltip
 RESNODE.uniqueID = "undefined"			-- automatically set when read from directory
 
-RESNODE.profession = nil				-- optional required profession to harvest the node. see CHAR:HasNodeProfession() to update the call as needed for whatever profession/trait system you use
-RESNODE.requiredTool = nil 				-- the item uniqueID a player needs to have in their inventory to harvest from the node
+RESNODE.profession = nil				-- (OPTIONAL) required profession to harvest the node. see CHAR:HasNodeProfession() to update the call as needed for whatever profession/trait system you use
+RESNODE.requiredTool = nil 				-- (OPTIONAL) the item uniqueID a player needs to have in their inventory to harvest from the node
 
 RESNODE.output = {}						-- should be a table of the form: {[uniqueID] = quantity, [uniqueID2] = quantity}, etc.
 										-- note that quantity can also be a table; {["min"] = x, ["max"] = y}, and {x, y, z} are all valid entries for the amount.
@@ -21,8 +21,8 @@ RESNODE.output = {}						-- should be a table of the form: {[uniqueID] = quantit
 RESNODE.harvestTime = 1 				-- how long it takes to harvest the node, in seconds
 RESNODE.replenishTime = 60 				-- how many seconds it takes for a node to replenish after being harvested. can be a constant or a table of the form {["min"] = x, ["max"] = y}
 
-RESNODE.harvestFinishedSound = nil 		-- sound played after harvest has completed. can be a string path or an array of paths
-RESNODE.harvestProgressSound = nil		-- sound played as the node is harvested, once per second. can be a string path or an array of paths.
+RESNODE.harvestFinishedSound = nil 		-- (OPTIONAL) sound played after harvest has completed. can be a string path or an array of paths
+RESNODE.harvestProgressSound = nil		-- (OPTIONAL) sound played as the node is harvested, once per second. can be a string path or an array of paths.
 
 
 function RESNODE:GetName()
