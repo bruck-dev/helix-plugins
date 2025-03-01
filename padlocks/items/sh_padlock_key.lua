@@ -14,6 +14,14 @@ function ITEM:GetName()
 	end
 end
 
+function ITEM:GetDescription()
+	if !self:GetData("padlockName", nil) then
+		return "A blank, uncut key - can have a pattern copied from another key to make a duplicate."
+	else
+		return self.description
+	end
+end
+
 ITEM.functions.combine = {
 	OnRun = function(cloned, data)
 		local clonedTo = ix.item.instances[data[1]]
