@@ -1,0 +1,11 @@
+
+ITEM.name = "Item Name Here"
+ITEM.description = "Item description here, obviously."
+ITEM.model = "models/weapons/w_rif_m4a1.mdl"            -- you will want to set this manually, since most ARC9 guns do NOT have a proper world model to load from
+ITEM.class = "arc9_eft_adar15"                          -- gun class to give
+ITEM.weaponCategory = "Primary"                         -- the autogenerator will create weaponCategory entries with a capitalized first letter and everything else lowercase, as a reference
+ITEM.width = 3
+ITEM.height = 2
+
+-- heres the thing about preset codes: when you generate them, they put the name of your preset in front, like: [name]verylongcodestring. REMOVE THE [name] PART!
+ITEM.defaultPreset = "XQAAAQBbAgAAAAAAAAA9iIIiM7tuo1AtT00OeFD8dxCU/zddtiQFgZwht/LXGgRYz5r7/BZeR/rBe4ukf7G60OfWDZNnnTv5WNsSVQoOUnwJvrlH7WxJ8kEU/oyfij14Pf9hNKFwnDO4zFjXiVKt7CTx0ePzTYD90jWP1W1520rAAoc3AZqlcJ0l/3E/eqGe70rvD/P54renUMt2bqS97Ah5KbAY3yRRidf0dHR5fsHPiZFGzxecuYLXW4wU/TRikTFlpqvpqFQ0CsnzTFKjqLsud6X8SaegX+Fvm4x52i80an9yjuhtZscJAqCjZxSrSUrSLTFAWnYvKzNI7RP5z/ASXcYA"
