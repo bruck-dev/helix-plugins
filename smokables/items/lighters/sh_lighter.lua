@@ -1,0 +1,7 @@
+
+ITEM.name = "Lighter"
+ITEM.model = "models/se_ex/dev_lighter.mdl"
+ITEM.width = 1
+ITEM.height = 1
+ITEM.description = "Handheld device designed to spark a flame to light things on fire."
+ITEM.price = 4;
