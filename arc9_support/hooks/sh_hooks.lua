@@ -420,7 +420,17 @@ function ARC9:PlayerTakeAtt(client, att, amt, noItem)
             client.ARC9_AttInv[att] = nil
         end
     else
-        attItems[1]:Remove()
+        local removed = 0
+        while removed < amt do
+            if client.ARC9_AttInv[att] > 0 then
+                client.ARC9_AttInv[att] = client.ARC9_AttInv[att] - 1
+                removed = removed + 1
+            else
+              local head = table.remove(attItems)
+              head:Remove()
+              removed = removed + 1
+            end  
+        end
     end
 
     return true

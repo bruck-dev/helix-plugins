@@ -46,11 +46,6 @@ function ix.arc9.GiveAttsFromList(client, tbl)
     local take = false
 
     for i, k in pairs(tbl) do
-        -- if GetConVar("arc9_atts_lock"):GetBool() then
-            if ARC9:PlayerGetAtts(client, k) > 0 then continue end
-        -- end
-
-        if hook.Run("ARC9_PickupAttEnt", client, k, 1) then continue end
         ARC9:PlayerGiveAtt(client, k, 1, true)
         take = true
     end
