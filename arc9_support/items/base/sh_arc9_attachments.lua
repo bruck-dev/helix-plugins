@@ -10,12 +10,12 @@ ITEM.tool = nil                     -- item unique id of the tool needed to use 
 ITEM.ARC9 = true
 
 if (CLIENT) then
-	function ITEM:PopulateTooltip(tooltip)
-		if self.tool then
-			local font = "ixSmallFont"
-			local tool = tooltip:AddRowAfter("description", "tool")
+    function ITEM:PopulateTooltip(tooltip)
+        if self.tool then
+            local font = "ixSmallFont"
+            local tool = tooltip:AddRowAfter("description", "tool")
 
-			local text = "Required Tool: "
+            local text = "Required Tool: "
             local tool = ix.item.Get(self.tool)
             if tool then
                 text = text .. item:GetName()
@@ -23,10 +23,10 @@ if (CLIENT) then
                 text = text .. self.tool
             end
 
-			tool:SetText(text)
-			tool:SetFont(font)
-			tool:SizeToContents()
-		end
+            tool:SetText(text)
+            tool:SetFont(font)
+            tool:SizeToContents()
+        end
     end
 end
 

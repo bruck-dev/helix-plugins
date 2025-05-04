@@ -16,7 +16,7 @@ RESNODE.profession = nil				-- (OPTIONAL) required profession to harvest the nod
 RESNODE.requiredTool = nil 				-- (OPTIONAL) the item uniqueID a player needs to have in their inventory to harvest from the node
 
 RESNODE.output = {}						-- should be a table of the form: {[uniqueID] = quantity, [uniqueID2] = quantity}, etc.
-										-- note that quantity can also be a table; {["min"] = x, ["max"] = y}, and {x, y, z} are all valid entries for the amount.
+                                        -- note that quantity can also be a table; {["min"] = x, ["max"] = y}, and {x, y, z} are all valid entries for the amount.
 
 RESNODE.harvestTime = 1 				-- how long it takes to harvest the node, in seconds
 RESNODE.replenishTime = 60 				-- how many seconds it takes for a node to replenish after being harvested. can be a constant or a table of the form {["min"] = x, ["max"] = y}
@@ -26,37 +26,37 @@ RESNODE.harvestProgressSound = nil		-- (OPTIONAL) sound played as the node is ha
 
 
 function RESNODE:GetName()
-	return self.name
+    return self.name
 end
 
 function RESNODE:GetModel()
-	return self.model
+    return self.model
 end
 
 -- picks a random item from the output table and then picks the needed quantity based on the item selected
 function RESNODE:GetOutput()
-	if table.IsEmpty(self.output) then return nil, 0 end
+    if table.IsEmpty(self.output) then return nil, 0 end
 
-	local ids = {}
-	for item, quantity in pairs(self.output) do
-		table.insert(ids, item)
-	end
-	local outputItem = ids[math.random(1, #ids)]
+    local ids = {}
+    for item, quantity in pairs(self.output) do
+        table.insert(ids, item)
+    end
+    local outputItem = ids[math.random(1, #ids)]
 
-	local quantity = self.output[outputItem]
-	if quantity then
-		if istable(quantity) then
-			if quantity["min"] then
-				return outputItem, math.random(quantity["min"], quantity["max"])
-			else
-				return outputItem, quantity[math.random(1, #quantity)]
-			end
-		else
-			return outputItem, tonumber(quantity)
-		end
-	else
-		return nil, 0
-	end
+    local quantity = self.output[outputItem]
+    if quantity then
+        if istable(quantity) then
+            if quantity["min"] then
+                return outputItem, math.random(quantity["min"], quantity["max"])
+            else
+                return outputItem, quantity[math.random(1, #quantity)]
+            end
+        else
+            return outputItem, tonumber(quantity)
+        end
+    else
+        return nil, 0
+    end
 end
 
 -- called when the node is harvested, customizable
@@ -65,7 +65,7 @@ end
 
 -- allows the yield amount to be customized based on different parameters
 function RESNODE:ModifyHarvestAmount(client, amount)
-	return amount
+    return amount
 end
 
 -- do stuff like change the model when full or empty, etc
@@ -80,33 +80,33 @@ end
 
 -- allows custom tool conditions, i.e. ANY axe instead of just 1 type
 function RESNODE:HasTool(inv)
-	if self.requiredTool then
-		return inv:HasItem(self.requiredTool)
-	else
-		return true
-	end
+    if self.requiredTool then
+        return inv:HasItem(self.requiredTool)
+    else
+        return true
+    end
 end
 
 function RESNODE:GetHarvestFinishedSound()
-	if self.harvestFinishedSound then
-		if istable(self.harvestFinishedSound) then
-			return self.harvestFinishedSound[math.random(1, #self.harvestFinishedSound)]
-		else
-			return self.harvestFinishedSound
-		end
-	end
-	return nil
+    if self.harvestFinishedSound then
+        if istable(self.harvestFinishedSound) then
+            return self.harvestFinishedSound[math.random(1, #self.harvestFinishedSound)]
+        else
+            return self.harvestFinishedSound
+        end
+    end
+    return nil
 end
 
 function RESNODE:GetHarvestProgressSound()
-	if self.harvestProgressSound then
-		if istable(self.harvestProgressSound) then
-			return self.harvestProgressSound[math.random(1, #self.harvestProgressSound)]
-		else
-			return self.harvestProgressSound
-		end
-	end
-	return nil
+    if self.harvestProgressSound then
+        if istable(self.harvestProgressSound) then
+            return self.harvestProgressSound[math.random(1, #self.harvestProgressSound)]
+        else
+            return self.harvestProgressSound
+        end
+    end
+    return nil
 end
 
 ix.meta.resnode = RESNODE

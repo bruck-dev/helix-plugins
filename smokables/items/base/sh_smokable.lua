@@ -16,55 +16,55 @@ ITEM.lightSound = "ambient/fire/mtov_flame2.wav"        -- Sound played when the
 ITEM.equipSound = "foley/eli_hand_pat.wav"              -- Sound played when the cigarette is put in the player's mouth. can be a string or a numbered index table.
 
 if (CLIENT) then
-	function ITEM:PaintOver(item, w, h)
-		if (item:GetData("equip")) then
-			surface.SetDrawColor(110, 255, 110, 100)
-			surface.DrawRect(w - 14, h - 20, 8, 8)
-		end
+    function ITEM:PaintOver(item, w, h)
+        if (item:GetData("equip")) then
+            surface.SetDrawColor(110, 255, 110, 100)
+            surface.DrawRect(w - 14, h - 20, 8, 8)
+        end
 
-		local time = item:GetTime()
-		if (time) then
-			surface.SetDrawColor(35, 35, 35, 225)
-			surface.DrawRect(2, h-9, w-4, 7)
+        local time = item:GetTime()
+        if (time) then
+            surface.SetDrawColor(35, 35, 35, 225)
+            surface.DrawRect(2, h-9, w-4, 7)
 
-			local filledWidth = (w-5) * (time / item.time)
-			local barColor = Color(255, 255, 255, 160)
+            local filledWidth = (w-5) * (time / item.time)
+            local barColor = Color(255, 255, 255, 160)
 
-			if item:IsLit() then
-				barColor = Color(235, 85, 52, 255)
-			end
+            if item:IsLit() then
+                barColor = Color(235, 85, 52, 255)
+            end
 
-			surface.SetDrawColor(barColor)
-			surface.DrawRect(3, h-8, filledWidth, 5)
-		end
-	end
+            surface.SetDrawColor(barColor)
+            surface.DrawRect(3, h-8, filledWidth, 5)
+        end
+    end
 end
 
 -- Sets the Lit data and adjusts the PAC parts.
 function ITEM:Light()
-	if(!self:GetData("equip", false)) then
-		return "You must equip this item first before lighting it."
-	end
+    if(!self:GetData("equip", false)) then
+        return "You must equip this item first before lighting it."
+    end
 
-	if !self:IsLit() then
+    if !self:IsLit() then
         local client = self:GetOwner()
         self:SetData("lit", true)
 
-		client:RemovePart(self.uniqueID)
+        client:RemovePart(self.uniqueID)
         client:AddPart(self.uniqueID, self)
 
-		PLUGIN:StartSmoking(client:GetCharacter(), self)
+        PLUGIN:StartSmoking(client:GetCharacter(), self)
 
         self:SetData("startTime", self:GetTime())
         self:OnStartSmoke(client)
-	else
-		return "This item is already lit!"
-	end
+    else
+        return "This item is already lit!"
+    end
 end
 
 -- Returns if the cigarette is lit.
 function ITEM:IsLit()
-	return self:GetData("lit", false)
+    return self:GetData("lit", false)
 end
 
 -- Runs whenever the cigarette is lit. Customize effects here per item.
@@ -81,7 +81,7 @@ end
 
 -- Returns if a cigarette has time left.
 function ITEM:GetTime()
-	return self:GetData("time", self.time)
+    return self:GetData("time", self.time)
 end
 
 -- Returns the sound to be played on light, whether the set path or a random pick from the list.
@@ -132,10 +132,10 @@ function ITEM:pacAdjust(pacData, client)
 end
 
 function ITEM:OnRemoved()
-	local client = self:GetOwner() or self.player
-	
+    local client = self:GetOwner() or self.player
+    
     if IsValid(client) and self:GetData("equip", false) then
-	    client:RemovePart(self.uniqueID)
+        client:RemovePart(self.uniqueID)
 
         if self:IsLit() then
             self:OnStopSmoke(client, self:GetData("startTime", self.time))
@@ -168,24 +168,24 @@ hook.Add("PlayerDeath", "ixSmokables", function(client)
 end)
 
 ITEM.functions.AEquip = {
-	icon = "icon16/tick.png",
+    icon = "icon16/tick.png",
     name = "Use",
-	OnRun = function(item)
+    OnRun = function(item)
         local client = item.player
-		local character = client:GetCharacter()
+        local character = client:GetCharacter()
 
-		if character:HasSmokableEquipped() then
+        if character:HasSmokableEquipped() then
             client:Notify("You already have a smokable equipped.")
             return false
-		end 
+        end 
 
-		if(hook.Run("CanSmoke", client) == false) then
+        if(hook.Run("CanSmoke", client) == false) then
             client:Notify("You can't use a " .. item:GetName() .. " right now.")
-			return false
-		end
+            return false
+        end
 
-		item:SetData("equip", true)
-		client:AddPart(item.uniqueID, item)
+        item:SetData("equip", true)
+        client:AddPart(item.uniqueID, item)
 
         local snd = item:GetEquipSound()
         if character.PlaySound then -- play clientside
@@ -194,36 +194,36 @@ ITEM.functions.AEquip = {
             character:EmitSound(snd, 60, 105, 1)
         end
 
-		return false
-	end,
+        return false
+    end,
     OnCanRun = function(item)
-		return IsValid(item.player) and !item:GetData("equip", false)
-	end
+        return IsValid(item.player) and !item:GetData("equip", false)
+    end
 }
 
 ITEM.functions.BUnequip = {
-	icon = "icon16/cross.png",
-	name = "Remove",
-	OnRun = function(item)
+    icon = "icon16/cross.png",
+    name = "Remove",
+    OnRun = function(item)
         item:RemoveSmokable()
-		return false
-	end,
+        return false
+    end,
     OnCanRun = function(item)
-		return IsValid(item.player) and item:GetData("equip", false)
-	end
+        return IsValid(item.player) and item:GetData("equip", false)
+    end
 }
 
 ITEM.functions.ALight = {
-	icon = "icon16/asterisk_orange.png",
-	name = "Light",
-	OnRun = function(item)
+    icon = "icon16/asterisk_orange.png",
+    name = "Light",
+    OnRun = function(item)
 
         local client = item:GetOwner() or item.player
 
         if(hook.Run("CanSmoke", client) == false) then
             client:Notify("You can't light a " .. item:GetName() .. " right now.")
-			return false
-		end
+            return false
+        end
 
         local _, lighter = client:GetCharacter():HasLighter()
         local error = item:Light()
@@ -237,11 +237,11 @@ ITEM.functions.ALight = {
             client:EmitSound(item:GetLightSound(), 60, 105, 1)
         end
 
-		return false
-	end,
+        return false
+    end,
     OnCanRun = function(item)
-		return IsValid(item.player) and item:GetData("equip", false) and !item:IsLit() and item.player:GetCharacter():HasLighter()
-	end
+        return IsValid(item.player) and item:GetData("equip", false) and !item:IsLit() and item.player:GetCharacter():HasLighter()
+    end
 }
 
 ITEM.functions.combine = {
@@ -250,29 +250,29 @@ ITEM.functions.combine = {
 
         if(hook.Run("CanSmoke", client) == false) then
             client:Notify("You can't light a " .. cigarette:GetName() .. " right now.")
-			return false
-		end
+            return false
+        end
 
-		local lighter = ix.item.instances[data[1]]
+        local lighter = ix.item.instances[data[1]]
 
-		if lighter.base == "base_lighters" or lighter.canLightSmokable then
-			local error = cigarette:Light()
-	
-			if(error) then
-				client:Notify(error)
-			else
+        if lighter.base == "base_lighters" or lighter.canLightSmokable then
+            local error = cigarette:Light()
+    
+            if(error) then
+                client:Notify(error)
+            else
                 if lighter.OnSmokableLit then
                     lighter:OnSmokableLit(cigarette)
                 end
-				client:EmitSound("ambient/fire/mtov_flame2.wav", 60, 105, 1)
-			end
-		end
+                client:EmitSound("ambient/fire/mtov_flame2.wav", 60, 105, 1)
+            end
+        end
 
-		return false
-	end,
-	OnCanRun = function(item, data)
-		return true
-	end
+        return false
+    end,
+    OnCanRun = function(item, data)
+        return true
+    end
 }
 
 

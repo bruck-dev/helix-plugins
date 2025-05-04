@@ -42,7 +42,7 @@ do
                 entity:Remove()
             end
         end
-	end
+    end
 
     function PLUGIN:SaveData()
         local data = {}

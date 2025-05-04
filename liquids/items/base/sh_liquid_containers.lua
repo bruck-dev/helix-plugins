@@ -18,8 +18,8 @@ if (CLIENT) then
             surface.SetDrawColor(35, 35, 35, 225)
             surface.DrawRect(2, h-9, w-4, 7)
 
-			local filledWidth = (w-5) * (amount / item.capacity)
-			
+            local filledWidth = (w-5) * (amount / item.capacity)
+            
             local color = ix.config.Get("color")
             if liquid and ix.option.Get("useLiquidColor", true) then
                 color = liquid:GetColor()
@@ -27,8 +27,8 @@ if (CLIENT) then
 
             surface.SetDrawColor(color)
             surface.DrawRect(3, h-8, filledWidth, 5)
-		end
-	end
+        end
+    end
 end
 
 function ITEM:PopulateTooltip(tooltip)
@@ -44,7 +44,7 @@ function ITEM:PopulateTooltip(tooltip)
     end
 
     data:SetFont("ixGenericFont")
-	data:SizeToContents()
+    data:SizeToContents()
 end
 
 -- Called when a new instance of this item has been made.
@@ -130,7 +130,7 @@ end
 ITEM.functions.ADrink = { -- consumes everything if below the max drinking volume, or the max drinking volume if greater
     name = "Drink",
     icon = "icon16/drink.png",
-	OnRun = function(item)
+    OnRun = function(item)
         local client = item.player
         local vol = item:GetVolume()
 
@@ -151,7 +151,7 @@ ITEM.functions.ADrink = { -- consumes everything if below the max drinking volum
         end
         
         return false
-	end,
+    end,
     OnCanRun = function(item)
         if item:GetVolume() <= 0 then
             return false
@@ -164,7 +164,7 @@ ITEM.functions.ADrink = { -- consumes everything if below the max drinking volum
 ITEM.functions.BSip = { -- quarter of drinking volume, basically
     name = "Sip",
     icon = "icon16/cup.png",
-	OnRun = function(item)
+    OnRun = function(item)
         local client = item.player
         local curVol = item:GetVolume()
 
@@ -185,7 +185,7 @@ ITEM.functions.BSip = { -- quarter of drinking volume, basically
         end
 
         return false
-	end,
+    end,
     OnCanRun = function(item)
         if item:GetVolume() <= 0 then
             return false
@@ -198,14 +198,14 @@ ITEM.functions.BSip = { -- quarter of drinking volume, basically
 ITEM.functions.CPour = {
     name = "Pour Out",
     icon = "icon16/paintcan.png",
-	OnRun = function(item)
+    OnRun = function(item)
         local client = item.player
 
         client:EmitSound(ix.liquids.Get(item:GetLiquid()):GetTransferSound())
         item:SetVolume(0)
 
         return false
-	end,
+    end,
     OnCanRun = function(item)
         return item.player and item:GetVolume() > 0
     end
@@ -213,7 +213,7 @@ ITEM.functions.CPour = {
 ITEM.functions.DFillFromSource = {
     name = "Fill from Container",
     icon = "icon16/basket_put.png",
-	OnRun = function(item)
+    OnRun = function(item)
         local client = item.player
 
         local data = {}
@@ -247,7 +247,7 @@ ITEM.functions.DFillFromSource = {
         client:EmitSound(ix.liquids.Get(source:GetLiquid()):GetTransferSound())
 
         return false
-	end,
+    end,
     OnCanRun = function(item)
         if item:GetVolume() == item.capacity then
             return false
@@ -270,14 +270,14 @@ ITEM.functions.DFillFromSource = {
 ITEM.functions.EFillWater = {
     name = "Fill With Water",
     icon = "icon16/basket_put.png",
-	OnRun = function(item)
+    OnRun = function(item)
         item.player:EmitSound(ix.liquids.Get("water"):GetTransferSound())
 
         item:SetVolume(item.capacity)
         item:SetLiquid("water")
 
         return false
-	end,
+    end,
     OnCanRun = function(item)
         if !ix.config.Get("allowMapRefills", true) then return false end
         if !ix.liquids.Get("water") then return false end
@@ -288,7 +288,7 @@ ITEM.functions.EFillWater = {
 ITEM.functions.DRefillSource = {
     name = "Refill Container",
     icon = "icon16/basket_remove.png",
-	OnRun = function(item)
+    OnRun = function(item)
         local client = item.player
 
         local data = {}
@@ -317,7 +317,7 @@ ITEM.functions.DRefillSource = {
 
             return false
         end
-	end,
+    end,
     OnCanRun = function(item)
         if item:GetVolume() == 0 then
             return false
@@ -371,10 +371,10 @@ ITEM.functions.combine = {
             end
         end
         return false
-	end,
-	OnCanRun = function(item, data)
-		return true
-	end
+    end,
+    OnCanRun = function(item, data)
+        return true
+    end
 }
 
 ITEM.suppressed = function(item, name)
@@ -382,9 +382,9 @@ ITEM.suppressed = function(item, name)
         return
     end
     
-	if(item:GetVolume() <= 0) then
-		return true, name, "This drink is empty."
-	end
+    if(item:GetVolume() <= 0) then
+        return true, name, "This drink is empty."
+    end
 
-	return false
+    return false
 end
