@@ -1,0 +1,10 @@
+ITEM.name = "Fishing Rod"
+ITEM.description = "A long, tapering rod to which a fishing line is attached, typically on a reel."
+ITEM.model = "models/sterling/spook_w_fishingrod.mdl"
+ITEM.class = "weapon_fishingrod"
+ITEM.weaponCategory = "tools"
+ITEM.category = "Fishing"
+ITEM.flag = "v"
+ITEM.width = 3
+ITEM.height = 2
+ITEM.maxDurability = 100
