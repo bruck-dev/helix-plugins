@@ -1,6 +1,6 @@
 local PLUGIN = PLUGIN
 
-PLUGIN.name = "Enhanced Fishing"
+PLUGIN.name = "Fishing: Redux"
 PLUGIN.author = "JohnyReaper/Spook, modified by bruck"
 PLUGIN.description = "Adds a complete fishing system, with support for biomes, non-fish catches, and more."
 PLUGIN.important = "NOTE: PLEASE MOVE THE CONTENTS OF THE REQUIRED ASSETS FOLDER IN A CONTENT PACK, SUCH THAT YOUR PLAYERS CAN DOWNLOAD IT!"
