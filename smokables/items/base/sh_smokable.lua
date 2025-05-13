@@ -191,7 +191,7 @@ ITEM.functions.AEquip = {
         if character.PlaySound then -- play clientside
             character:PlaySound(snd)
         else -- if not possible, play serverside
-            character:EmitSound(snd, 60, 105, 1)
+            client:EmitSound(snd, 60, 105, 1)
         end
 
         return false
