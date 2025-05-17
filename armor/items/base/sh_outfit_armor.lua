@@ -319,7 +319,7 @@ end
 
 -- self.armorGiven check only exists such that OnLoadout won't constantly reapply it, because it runs like 8 times for some reason
 function ITEM:OnLoadout()
-    if (self:GetData("equip", false) and !self.armorGiven) then
+    if self:GetData("equip", false) and self.armor > 0 and !self.armorGiven then
         armorPlayer(self.player, self.player, self.player:Armor() + self:GetArmor())
         self.armorGiven = true
     end
