@@ -1,0 +1,35 @@
+
+ITEM.name = "Bucket Helmet (Example)"
+ITEM.model = "models/props_junk/MetalBucket01a.mdl"
+ITEM.description = "This an armor example. It reduces damage to your noggin, except for blunt and armor penetrating damage, since you've just put a bucket on your head."
+
+ITEM.outfitCategory = "hat"
+
+ITEM.armor = 0                  -- like i said: i like to keep this at 0 so all damage reduction is solely done through resistances
+ITEM.hitgroups = {              -- this item will only protect you if you're shot in the head
+    [HITGROUP_HEAD] = true
+}
+ITEM.resistances = {            -- interpret the percentage reduction as (1 - multiplier); ie, 1 - 0.75 = 25% damage reduction. (1 - 1.5) is a -50% reduction, so you actually take MORE damage
+    [DMG_BULLET] = 0.75,
+    [DMG_SLASH] = 0.5,
+    [DMG_CLUB] = 1.5,
+    [DMG_BUCKSHOT] = 0.5,
+    [DMG_SNIPER] = 1.5,
+}
+
+
+-- if you glue, you can repair it for 50% of the max durability per item
+function ITEM:Repair(client)
+    local glue = client:GetCharacter():GetInventory():HasItem("glue")
+    if glue then
+        self:RestoreDurability(100)
+        glue:Remove()
+    else
+        client:Notify("You do not have any glue to fix the helmet with!")
+    end
+end
+
+-- if you dont have any glue, the option will never show up to repair it
+function ITEM:CanRepair(client)
+    return client:GetCharacter():GetInventory():HasItem("glue")
+end
