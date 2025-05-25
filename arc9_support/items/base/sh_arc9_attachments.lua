@@ -5,9 +5,9 @@ ITEM.model = "models/items/arc9/att_cardboard_box.mdl"
 ITEM.width = 1
 ITEM.height = 1
 
+ITEM.isARC9Attachment = true
 ITEM.att = "undefined"              -- id of the attachment this item is linked to
 ITEM.tool = nil                     -- item unique id of the tool needed to use the attachment on a weapon
-ITEM.ARC9 = true
 
 if (CLIENT) then
     function ITEM:PopulateTooltip(tooltip)

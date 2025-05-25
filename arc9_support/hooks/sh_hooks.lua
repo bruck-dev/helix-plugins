@@ -308,11 +308,11 @@ function PLUGIN:InitializedConfig()
     self.attachments = {}
     self.grenades = {}
     for k, v in pairs(ix.item.list) do
-        if v.base == "base_arc9_attachments" then
+        if v.isARC9Attachment then
             if !self.attachments[k] then
                 self.attachments[k] = v
             end
-        elseif v.base == "base_arc9_weapons" and v.isGrenade then
+        elseif v.isARC9Weapon and v.isGrenade then
             if !self.grenades[k] then
                 self.grenades[k] = v
             end

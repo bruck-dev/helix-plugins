@@ -4,7 +4,7 @@ ITEM.name = "ARC9 Weapon"
 ITEM.category = "ARC9 Weapons"
 ITEM.weaponCategory = "primary"
 
-ITEM.ARC9 = true
+ITEM.isARC9Weapon = true
 ITEM.defaultPreset = nil 		-- the preset code for the default attachments this item should have.
                                 -- this is overwritten by item data when customized, and will do nothing if left as nil
                                 -- you can generate one by saving a weapon configuration as a preset and 'exporting' it; paste the code here WITHOUT the leading [PRESET NAME] part
