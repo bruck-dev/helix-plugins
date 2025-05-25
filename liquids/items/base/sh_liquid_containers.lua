@@ -111,10 +111,11 @@ end
 
 -- returns the weight of the container + weight of the held liquid (if any) in kilograms
 function ITEM:GetWeight()
+    local weight = self.weight or self.capacity
     if self:GetLiquid() then
-        return self.capacity + (self:GetVolume() * ix.liquids.Get(self:GetLiquid()):GetWeight())
+        return weight + (self:GetVolume() * ix.liquids.Get(self:GetLiquid()):GetWeight())
     else
-        return self.capacity
+        return weight
     end
 end
 

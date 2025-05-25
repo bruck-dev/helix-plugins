@@ -1,0 +1,13 @@
+
+-- due to how helix loads, you have to put this somewhere that loads AFTER the base_liquid_containers does.
+
+ITEM.base = "base_liquid_containers"
+ITEM.name = "Consumable Base - Drink"
+ITEM.model = "models/props_junk/garbage_glassbottle001a.mdl"
+ITEM.width = 1
+ITEM.height	= 1
+ITEM.description = "Drink Consumable base"
+ITEM.category = "Drinks"
+ITEM.capacity = 500
+
+ITEM.liquid = "Water"

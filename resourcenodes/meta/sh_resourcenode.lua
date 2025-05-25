@@ -87,6 +87,20 @@ function RESNODE:HasTool(inv)
     end
 end
 
+-- check if the player has the necessary profession, overwrite per node as desired
+function RESNODE:HasProfession(client)
+    if !self.profession then
+        return true
+    else
+        local char = client:GetCharacter()
+        if char.HasProfession and char:HasProfession(self.profession) then
+            return true
+        else
+            return false
+        end
+    end
+end
+
 function RESNODE:GetHarvestFinishedSound()
     if self.harvestFinishedSound then
         if istable(self.harvestFinishedSound) then

@@ -134,7 +134,7 @@ end
 
 function ENT:Harvest(rNode, activator, inv)
     local char = activator:GetCharacter()
-    if !rNode.profession or char:HasNodeProfession(rNode.profession) then
+    if rNode:HasProfession(activator) then
 
         -- play the progress sound once per second if needed
         if rNode.harvestProgressSound and rNode.harvestTime > 1 then
@@ -205,7 +205,7 @@ function ENT:Harvest(rNode, activator, inv)
                 end
             end
         end)
-    elseif !char:HasNodeProfession(rNode.profession) then
+    else
         activator:Notify("You do not have the " .. rNode.profession .. " profession needed to harvest resources from this " .. rNode.name .. ".")
     end
 end
