@@ -2,6 +2,8 @@
 local PLUGIN = PLUGIN
 
 ix.arc9 = {}
+ix.arc9.attachments = {}
+ix.arc9.grenades = {}
 
 -- set up a weapon's attachments on equip, based on it's default value or data
 function ix.arc9.InitWeapon(client, weapon, item)
@@ -55,16 +57,15 @@ end
 
 -- generates attachment items automatically
 function ix.arc9.GenerateAttachments()
-    if PLUGIN.attachmentsGenerated then return end
-
-    PLUGIN.attachments = PLUGIN.attachments or {}
+    if ix.arc9.attachmentsGenerated then return end
 
     for attID, attTable in pairs(ARC9.Attachments) do
         if !attTable.Free and !attTable.AdminOnly and !ARC9.Blacklist[attID] then
-            if !PLUGIN.attachments[attID] and !(attTable.InvAtt and PLUGIN.attachments[attTable.InvAtt]) then
+            if !ix.arc9.attachments[attID] and !(attTable.InvAtt and ix.arc9.attachments[attTable.InvAtt]) then
                 local ITEM = ix.item.Register(attID, "base_arc9_attachments", false, nil, true)
                 ITEM.name = attTable.PrintName
                 ITEM.description = attTable.Description or "An attachment, used to modify weapons."
+                ITEM.isGenerated = true
 
                 if attTable.DropMagazineModel then
                     ITEM.model = attTable.DropMagazineModel
@@ -78,19 +79,17 @@ function ix.arc9.GenerateAttachments()
                     ITEM.att = attID
                 end
 
-                PLUGIN.attachments[ITEM.att] = ITEM
+                ix.arc9.attachments[ITEM.att] = attID
             end
         end
     end
 
-    PLUGIN.attachmentsGenerated = true
+    ix.arc9.attachmentsGenerated = true
 end
 
 -- generates weapon items automatically
 function ix.arc9.GenerateWeapons()
-    if PLUGIN.weaponsGenerated then return end
-
-    PLUGIN.grenades = PLUGIN.grenades or {}
+    if ix.arc9.weaponsGenerated then return end
 
     for _, v in ipairs(weapons.GetList()) do
         if weapons.IsBasedOn(v.ClassName, "arc9_base") then
@@ -98,6 +97,7 @@ function ix.arc9.GenerateWeapons()
             ITEM.name = v.PrintName
             ITEM.description = v.Description or nil
             ITEM.class = v.ClassName
+            ITEM.isGenerated = true
 
             local class
             if v.Class then
@@ -112,7 +112,7 @@ function ix.arc9.GenerateWeapons()
                 ITEM.isGrenade = true
                 ITEM.model = v.WorldModel or "models/weapons/w_eq_fraggrenade.mdl"
 
-                PLUGIN.grenades[v.ClassName] = true
+                ix.arc9.grenades[v.ClassName] = true
             elseif (v.NotAWeapon) then
                 ITEM.width = 1
                 ITEM.height = 1
@@ -161,11 +161,10 @@ function ix.arc9.GenerateWeapons()
         end
     end
 
-    PLUGIN.weaponsGenerated = true
+    ix.arc9.weaponsGenerated = true
 end
 
 -- returns the item id for the passed attachment id
 function ix.arc9.GetItemForAttachment(att)
-    if ix.item.Get(att) then return att end -- if the att id is a valid item, its probably that
-    if PLUGIN.attachments[att] then return PLUGIN.attachments[att]:GetAttachment() end -- otherwise grab it from the saved list
+    return ix.arc9.attachments[att]
 end

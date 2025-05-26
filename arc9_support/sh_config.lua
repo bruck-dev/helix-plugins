@@ -3,7 +3,7 @@ local PLUGIN = PLUGIN
 
 -- personally i think autogeneration is inefficient and can create spotty results under the best of conditions
 ix.config.Add("generateAttachmentItems", false, "Whether or not ARC9 attachments will have items created automatically. This can take a while with a lot of packs.", function(oldValue, newValue)
-    if newValue and !PLUGIN.attachmentsGenerated then
+    if newValue and !ix.arc9.attachmentsGenerated then
         ix.arc9.GenerateAttachments()
         RunConsoleCommand("spawnmenu_reload") -- in case any item spawnmenu tabs are installed
     end
@@ -11,7 +11,7 @@ end,{category = "ARC9"}
 )
 
 ix.config.Add("generateWeaponItems", false, "Whether or not ARC9 weapons will have items created automatically. This can take a while with a lot of packs.", function(oldValue, newValue)
-    if newValue and !PLUGIN.weaponsGenerated then
+    if newValue and !ix.arc9.weaponsGenerated then
         ix.arc9.GenerateWeapons()
         RunConsoleCommand("spawnmenu_reload")
     end

@@ -61,7 +61,7 @@ if CLIENT then
     end
 end
 
-function ITEM:OnLoadout()
+function ITEM:OnPostLoadout()
     if (self:GetData("equip")) then
         local client = self.player
         if !IsValid(client) or !client:GetCharacter() then return end
@@ -86,9 +86,14 @@ function ITEM:OnLoadout()
                 ix.arc9.InitWeapon(client, weapon, self)
             end
         else
-            print(Format("[Helix] Cannot give weapon - %s does not exist!", self.class))
+            --print(Format("[Helix] Cannot give weapon - %s does not exist!", self.class))  -- this does not work right, something to do with the timing of PostPlayerLoadout()?
         end
     end
+end
+
+-- this does nothing by intention, as OnLoadout is called *twice* which can lead to duplicate attachments. OnPostLoadout takes care of normal init, so this is just for you to customize
+function ITEM:OnLoadout()
+    return
 end
 
 function ITEM:Equip(client, bNoSelect, bNoSound)

@@ -298,24 +298,18 @@ function PLUGIN:InitializedConfig()
 
     -- generation kinda sucks because of arc9's largely arbitrary nature, dont really recommend it
     if ix.config.Get("generateWeaponItems", false) then
-        ix.arc9.GenerateWeapons(true)
+        ix.arc9.GenerateWeapons()
     end
     if ix.config.Get("generateAttachmentItems", false) then
-        ix.arc9.GenerateAttachments(true)
+        ix.arc9.GenerateAttachments()
     end
 
     -- go through the list again to cover manually created items. sorta inefficient, but necessary
-    self.attachments = {}
-    self.grenades = {}
     for k, v in pairs(ix.item.list) do
-        if v.isARC9Attachment then
-            if !self.attachments[k] then
-                self.attachments[k] = v
-            end
-        elseif v.isARC9Weapon and v.isGrenade then
-            if !self.grenades[k] then
-                self.grenades[k] = v
-            end
+        if v.isARC9Attachment and !v.isGenerated then
+            ix.arc9.attachments[v:GetAttachment()] = k
+        elseif v.isARC9Weapon and v.isGrenade and !v.isGenerated then
+            ix.arc9.grenades[v.class] = true
         end
     end
 
@@ -438,7 +432,7 @@ end
 
 -- credit to FoxxoTrystan for this one, i just updated it to work with some generation options
 hook.Add("EntityRemoved", "ARC9RemoveGrenade", function(entity)
-    if (PLUGIN.grenades[entity:GetClass()]) then
+    if (ix.arc9.grenades[entity:GetClass()]) then
         local client = entity:GetOwner()
         if (IsValid(client) and client:IsPlayer() and client:GetCharacter()) then
             local ammoName = game.GetAmmoName(entity:GetPrimaryAmmoType())
