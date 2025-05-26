@@ -57,7 +57,7 @@ function PLUGIN:PostPlayerLoadout(client)
 
 	if (character:GetInventory()) and self.loadoutPredicted[i] then
 		for k, _ in character:GetInventory():Iter() do
-            if k.base == "base_arc9_weapons" then
+            if k.isARC9Weapon then then
 			    k:Call("OnPostLoadout", client)
             end
 		end
