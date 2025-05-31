@@ -7,6 +7,7 @@ ITEM.description = "Liquid Container base.";
 ITEM.category = "Containers";
 ITEM.liquid = nil                               -- default to being empty
 ITEM.capacity = 500                             -- max capacity of the container, in mL
+ITEM.startingVolume = nil                       -- starting volume of the specified liquid. can be an int, or a table of the two forms {["min"] = x, ["max"] = y} or {x, y, z}. ignored if empty, defaults to ITEM.capacity if nil
 ITEM.emptyContainer = nil                       -- item uniqueID that the container should become upon being empty. generally, only use this for bottles of things you want to start filled - say, beer you want to become a beer bottle.
 
 if (CLIENT) then
@@ -58,14 +59,43 @@ function ITEM:OnInstanced(invID, x, y)
         end
 
         if liquid then
-            self:SetVolume(self.capacity)
-            self:SetLiquid(liquid)
+            local cap = self.startingVolume or self.capacity
+            if istable(cap) then
+                if cap["min"] and cap["max"] then
+                    cap = math.random(cap["min"], cap["max"])
+                else
+                    cap = cap[math.random(1, #cap)]
+                end
+            end
+
+            self:SetVolume(cap)
+            if cap > 0 then
+                self:SetLiquid(liquid)
+            end
         else
             self:SetVolume(0)
         end
     else
         self:SetVolume(0)
     end
+
+    self:ConfigureModel()
+end
+
+-- i use this as a hook to set custom models using a random table, figured i'd throw it into the base
+function ITEM:ConfigureModel()
+    -- example implementation
+    -- local models = {
+    --     "models/props_junk/garbage_glassbottle003a.mdl",
+    --     "models/props_junk/garbage_glassbottle001a.mdl",
+    -- }
+
+    -- self:SetData("model", models[math.random(1, #models)])
+    return
+end
+
+function ITEM:GetModel()
+    return self:GetData("model", self.model)
 end
 
 function ITEM:GetVolume()

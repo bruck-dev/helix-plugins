@@ -1,4 +1,6 @@
 
+local PLUGIN = PLUGIN
+
 do
     net.Receive("ixLiqSourceEditor", function()
         local entity = net.ReadEntity()
