@@ -54,7 +54,7 @@ function PLUGIN:PostPlayerLoadout(client)
 
     if character and character:GetInventory() and client.loadoutPredicted then
         for k, _ in character:GetInventory():Iter() do
-            if k.isARC9Weapon then
+            if k:GetData("equip", false) and k.isARC9Weapon then
                 k:Call("OnPostLoadout", client)
             end
         end
