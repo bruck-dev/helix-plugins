@@ -49,20 +49,17 @@ function PLUGIN:LoadData()
 end
 
 -- hacky fix to prevent PostPlayerLoadout from being called an extra time incorrectly, prevents att duping from preset application
-PLUGIN.loadoutPredicted = {}
-
 function PLUGIN:PostPlayerLoadout(client)
-	local character = client:GetCharacter()
-    local i = client:EntIndex()
+    local character = client:GetCharacter()
 
-	if (character:GetInventory()) and self.loadoutPredicted[i] then
-		for k, _ in character:GetInventory():Iter() do
-            if k.isARC9Weapon then then
-			    k:Call("OnPostLoadout", client)
+    if character and character:GetInventory() and client.loadoutPredicted then
+        for k, _ in character:GetInventory():Iter() do
+            if k.isARC9Weapon then
+                k:Call("OnPostLoadout", client)
             end
-		end
-        self.loadoutPredicted[i] = nil
-	end
+        end
+        client.loadoutPredicted = nil
+    end
 
-    self.loadoutPredicted[i] = true
+    client.loadoutPredicted = true
 end
