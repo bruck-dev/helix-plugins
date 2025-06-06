@@ -1,8 +1,6 @@
 
 if !ARC9 then return end
 
-local PLUGIN = PLUGIN
-
 ENT.Type = "anim"
 ENT.PrintName = "Weapon Workbench"
 ENT.Category = "Helix - ARC9"
@@ -11,6 +9,8 @@ ENT.AdminOnly = true
 ENT.bNoPersist = true
 
 if (SERVER) then
+    local PLUGIN = PLUGIN
+
     function ENT:Initialize()
 
         self:SetMoveType(MOVETYPE_VPHYSICS)

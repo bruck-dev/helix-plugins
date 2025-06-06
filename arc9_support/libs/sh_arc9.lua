@@ -5,54 +5,62 @@ ix.arc9 = {}
 ix.arc9.attachments = {}
 ix.arc9.grenades = {}
 
--- set up a weapon's attachments on equip, based on it's default value or data
-function ix.arc9.InitWeapon(client, weapon, item)
-    if !IsValid(client) or !IsValid(weapon) or !item then return end
+if SERVER then
+    -- set up a weapon's attachments on equip, based on it's default value or data
+    function ix.arc9.InitWeapon(client, weapon, item)
+        if !IsValid(client) or !IsValid(weapon) or !item then return end
 
-    item:LoadPreset()
-    weapon:SetClip1(item:GetData("ammo", 0))
-end
-
--- replacement for ARC9.SendPreset()
-function ix.arc9.SendPreset(client, weapon, preset)
-    if !client:IsPlayer() or !isstring(preset) then return end
-
-    if !ix.config.Get("freeAttachments", false) or !GetConVar("arc9_free_atts"):GetBool() then
-        local atts = ARC9.GetAttsFromPreset("[autoload]"..preset) -- expects a preset name to be trimmed, so just give it a fake one
-        if !atts then return end
-
-        ix.arc9.GiveAttsFromList(client, atts)
+        ix.arc9.SendPreset(client, weapon, item:GetPreset(), true)
     end
 
-    if IsValid(weapon) then
-        -- clear all original attachments so they dont get added as items/AttInv entries when we apply the preset
-        weapon.Attachments = baseclass.Get(weapon:GetClass()).Attachments
-        for slot, slottbl in ipairs(weapon.Attachments) do
-            slottbl.Installed = nil
-            slottbl.SubAttachments = nil
+    -- replacement for ARC9.SendPreset()
+    function ix.arc9.SendPreset(client, weapon, preset, setAmmo)
+        if !IsValid(client) or !client:IsPlayer() or !IsValid(weapon) or !isstring(preset) then return end
+
+        if !ix.config.Get("freeAttachments", false) or !GetConVar("arc9_free_atts"):GetBool() then
+            local atts = ARC9.GetAttsFromPreset("[ix]"..preset) -- expects a preset name to be trimmed, so just give it a fake one
+            if !atts then return end
+
+            ix.arc9.GiveAttsFromList(client, atts)
         end
 
-        weapon:SetNoPresets(true)
+        if IsValid(weapon) then
+            -- clear all original attachments so they dont get added as items/AttInv entries when we apply the preset
+            weapon.Attachments = baseclass.Get(weapon:GetClass()).Attachments
+            for slot, slottbl in ipairs(weapon.Attachments) do
+                slottbl.Installed = nil
+                slottbl.SubAttachments = nil
+            end
 
-        net.Start("ixARC9SendPreset")
-            net.WriteEntity(weapon)
-            net.WriteString(preset)
-        net.Send(client)
+            weapon:SetNoPresets(true)
 
-        weapon:PostModify()
+            -- on proper servers, we need to wait until the weapon is valid on the client. this is also how its done in the base, surprisingly. i kinda hate it
+            timer.Simple(0.1, function()
+                net.Start("ixARC9SendPreset")
+                    net.WriteEntity(weapon)
+                    net.WriteString(preset)
+                net.Send(client)
+
+                weapon:PostModify()
+
+                if setAmmo then
+                    weapon:SetClip1(weapon.ixItem:GetData("ammo", 0))
+                end
+            end)
+        end
     end
-end
 
--- replacement for ARC9.GiveAttsFromList() that will never give the player items, only add to their AttInv
-function ix.arc9.GiveAttsFromList(client, tbl)
-    local take = false
+    -- replacement for ARC9.GiveAttsFromList() that will never give the player items, only add to their AttInv
+    function ix.arc9.GiveAttsFromList(client, tbl)
+        local take = false
 
-    for i, k in pairs(tbl) do
-        ARC9:PlayerGiveAtt(client, k, 1, true)
-        take = true
+        for i, k in pairs(tbl) do
+            ARC9:PlayerGiveAtt(client, k, 1, true)
+            take = true
+        end
+
+        if take then ARC9:PlayerSendAttInv(client) end
     end
-
-    if take then ARC9:PlayerSendAttInv(client) end
 end
 
 -- generates attachment items automatically

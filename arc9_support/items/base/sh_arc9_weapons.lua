@@ -38,18 +38,6 @@ function ITEM:GetPreset()
     end
 end
 
--- equip either the passed weapon preset or the saved one
-function ITEM:LoadPreset(preset)
-    local weapon = self:GetWeapon()
-    local preset = preset or self:GetPreset()
-    local client = (self.player or self:GetOwner())
-
-    -- force apply the preset, basically
-    if IsValid(client) and client:GetCharacter() and IsValid(weapon) and preset then
-        ix.arc9.SendPreset(client, weapon, preset)
-    end
-end
-
 if CLIENT then
     -- save the current export code into the item data
     function ITEM:SavePreset()
