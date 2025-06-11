@@ -114,8 +114,8 @@ function ITEM:RemoveSmokable()
         self:SetData("startTime", nil)
     end
 
-    self:SetData("lit", false)
-    self:SetData("equip", false)
+    self:SetData("lit", nil)
+    self:SetData("equip", nil)
 end
 
 -- If the character has an equipped and lit cigarette, set the pacData to be the Lit set.
@@ -146,7 +146,7 @@ ITEM:Hook("drop", function(item)
 
     if IsValid(client) and item:GetData("equip", false) then
         client:RemovePart(item.uniqueID)
-        item:SetData("equip", false)
+        item:SetData("equip", nil)
 
         if item:IsLit() then
             item:OnStopSmoke(client, item:GetData("startTime", item.time))
@@ -158,8 +158,8 @@ hook.Add("PlayerDeath", "ixSmokables", function(client)
     if IsValid(client) then
         local equipped, cig = client:GetCharacter():HasSmokableEquipped()
         if equipped and cig then
-            cig:SetData("equip", false)
-            cig:SetData("lit", false)
+            cig:SetData("equip", nil)
+            cig:SetData("lit", nil)
             client:RemovePart(cig.uniqueID)
             PLUGIN:DestroyTimer(client:GetCharacter())
         end
