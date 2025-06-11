@@ -126,8 +126,6 @@ function ITEM:pacAdjust(pacData, client)
         pacData = self.pacData
     end
 
-    pacData[1]["children"][1]["self"]["Model"] = self.model
-
     return pacData
 end
 
@@ -148,6 +146,7 @@ ITEM:Hook("drop", function(item)
 
     if IsValid(client) and item:GetData("equip", false) then
         client:RemovePart(item.uniqueID)
+        item:SetData("equip", false)
 
         if item:IsLit() then
             item:OnStopSmoke(client, item:GetData("startTime", item.time))
@@ -234,7 +233,12 @@ ITEM.functions.ALight = {
             if lighter.OnSmokableLit then
                 lighter:OnSmokableLit(item)
             end
-            client:EmitSound(item:GetLightSound(), 60, 105, 1)
+
+            if lighter.GetLightSound and lighter:GetLightSound() then
+                client:EmitSound(lighter:GetLightSound(), 60, 105, 1)
+            else
+                client:EmitSound(item:GetLightSound(), 60, 105, 1)
+            end
         end
 
         return false
@@ -264,7 +268,12 @@ ITEM.functions.combine = {
                 if lighter.OnSmokableLit then
                     lighter:OnSmokableLit(cigarette)
                 end
-                client:EmitSound("ambient/fire/mtov_flame2.wav", 60, 105, 1)
+                
+                if lighter.GetLightSound and lighter:GetLightSound() then
+                    client:EmitSound(lighter:GetLightSound(), 60, 105, 1)
+                else
+                    client:EmitSound(cigarette:GetLightSound(), 60, 105, 1)
+                end
             end
         end
 
