@@ -95,8 +95,6 @@ if SERVER then
             lootContainer:SetPos(v.pos)
             lootContainer:SetAngles(v.ang)
             lootContainer:SetContainerClass(v.contClass)
-            lootContainer:SetModel(v.model)
-            lootContainer:SetSkin(v.skin)
 
             if v.lootedBy then
                 lootContainer.lootedBy = v.lootedBy
@@ -107,6 +105,9 @@ if SERVER then
             end
 
             lootContainer:Spawn()
+            
+            lootContainer:SetModel(v.model)
+            lootContainer:SetSkin(v.skin)
         end
     end
 end
