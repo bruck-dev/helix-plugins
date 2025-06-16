@@ -48,6 +48,7 @@ function PLUGIN:InitializedPlugins()
         ITEM.noBusiness = true
         ITEM.canCatch = true
         ITEM.catchChance = v.FChance
+        ITEM.weight = v.FWeight or 0
     end
 
     -- Goes through any items that are not currently in PLUGIN.fish and should be catchable and adds them to the list
