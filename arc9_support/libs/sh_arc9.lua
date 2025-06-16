@@ -15,7 +15,14 @@ if SERVER then
 
     -- replacement for ARC9.SendPreset()
     function ix.arc9.SendPreset(client, weapon, preset, setAmmo)
-        if !IsValid(client) or !client:IsPlayer() or !IsValid(weapon) or !isstring(preset) then return end
+        if !IsValid(client) or !client:IsPlayer() or !IsValid(weapon) then
+            return
+        end
+
+        if !isstring(preset) then -- no preset found, so we just need to set the ammo
+            weapon:SetClip1(weapon.ixItem:GetData("ammo", 0))
+            return
+        end
 
         if !ix.config.Get("freeAttachments", false) or !GetConVar("arc9_free_atts"):GetBool() then
             local atts = ARC9.GetAttsFromPreset("[ix]"..preset) -- expects a preset name to be trimmed, so just give it a fake one
