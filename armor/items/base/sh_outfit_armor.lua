@@ -14,6 +14,7 @@ ITEM.hitgroups = {}                     -- the hitgroups this armor applies to. 
                                         -- this allows armor to only apply to certain areas; if you get shot in the chest, your helmet won't do anything, for instance
 ITEM.resistances = {}                   -- the damage types this armor protects against. format like {[DMG_BULLET] = multiplier}, following the DMG enum
                                         -- a multiplier of 0.8 means damage from that type does 80% of what it normally would do. in theory you can use this to make damage INCREASES too
+ITEM.maxDurability = 100                -- the maximum amount of damage (relative to player HP) the armor piece can take before breaking
 ITEM.noDurabilityDecrease = {           -- these damage types do not decrease armor durability when applied to the player. this should cover most use cases, but can be customized per item
     [DMG_DROWN] = true,
     [DMG_FALL] = true,
@@ -61,7 +62,7 @@ if (CLIENT) then
                 surface.SetDrawColor(35, 35, 35, 225)
                 surface.DrawRect(2, h-9, w-4, 7)
 
-                local filledWidth = (w-5) * (amount / 100)
+                local filledWidth = (w-5) * (amount / item:GetMaxDurability())
                 
                 surface.SetDrawColor(142, 142, 142, 255)
                 surface.DrawRect(3, h-8, filledWidth, 5) 
@@ -73,7 +74,7 @@ if (CLIENT) then
         if !self.unbreakable then
             local data = tooltip:AddRow("data")
             data:SetBackgroundColor(Color(142, 142, 142, 255))
-            data:SetText("Durability: " .. tostring(math.ceil(self:GetDurability())) .. "%")
+            data:SetText("Durability: " .. tostring(math.ceil(100 * (self:GetDurability() / self:GetMaxDurability()))) .. "%")
             data:SetExpensiveShadow(0.5)
             data:SizeToContents()
         end
@@ -93,15 +94,19 @@ function ITEM:GetResistances()
     return self.resistances
 end
 
+function ITEM:GetMaxDurability()
+    return self.maxDurability
+end
+
 function ITEM:GetDurability()
-    return self:GetData("durability", 100)
+    return self:GetData("durability", self:GetMaxDurability())
 end
 
 function ITEM:ReduceDurability(dmg)
     if self.unbreakable then return end
 
     local dur = self:GetDurability()
-    if dur - dmg <= 0 then
+    if (dur - dmg) <= 0 then
         self:SetData("durability", 0)
     else
         self:SetData("durability", dur - dmg)
@@ -110,8 +115,8 @@ end
 
 function ITEM:RestoreDurability(val)
     local dur = self:GetDurability()
-    if dur + val > 100 then
-        self:SetData("durability", 100)
+    if (dur + val) > self:GetMaxDurability() then
+        self:SetData("durability", self:GetMaxDurability())
     else
         self:SetData("durability", dur + val)
     end
@@ -335,7 +340,7 @@ ITEM.functions.Repair = {
     OnCanRun = function(item)
         local client = item.player
 
-        return !IsValid(item.entity) and IsValid(client) and (item:GetDurability() < 100) and
+        return !IsValid(item.entity) and IsValid(client) and (item:GetDurability() < item:GetMaxDurability()) and
             hook.Run("CanPlayerRepairArmor", client, item) != false and item:CanRepair(client)
     end
 }

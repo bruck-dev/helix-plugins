@@ -5,9 +5,10 @@ ITEM.description = "This an armor example. It reduces damage to your noggin, exc
 
 ITEM.outfitCategory = "hat"
 
+ITEM.maxDurability = 10         -- this armor is pretty weak
 ITEM.armor = 0                  -- like i said: i like to keep this at 0 so all damage reduction is solely done through resistances
 ITEM.hitgroups = {              -- this item will only protect you if you're shot in the head
-    [HITGROUP_HEAD] = true
+    [HITGROUP_HEAD] = true,
 }
 ITEM.resistances = {            -- interpret the percentage reduction as (1 - multiplier); ie, 1 - 0.75 = 25% damage reduction. (1 - 1.5) is a -50% reduction, so you actually take MORE damage
     [DMG_BULLET] = 0.75,
@@ -18,11 +19,11 @@ ITEM.resistances = {            -- interpret the percentage reduction as (1 - mu
 }
 
 
--- if you glue, you can repair it for 50% of the max durability per item
+-- if you have glue, you can repair it for 50% of the max durability per item
 function ITEM:Repair(client)
     local glue = client:GetCharacter():GetInventory():HasItem("glue")
     if glue then
-        self:RestoreDurability(100)
+        self:RestoreDurability(self:GetMaxDurability() * 0.5)
         glue:Remove()
     else
         client:Notify("You do not have any glue to fix the helmet with!")
