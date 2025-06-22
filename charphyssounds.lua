@@ -21,9 +21,10 @@ function PLUGIN:PlayerFootstep(client, pos, foot, sound, volume, rf)
                 client:EmitSound(class.walkSounds[foot]);
                 return true
             end
+        end
 
         -- then check faction
-        elseif faction then
+        if faction then
             if client:IsRunning() and faction.runSounds then
                 client:EmitSound(faction.runSounds[foot])
                 return true
