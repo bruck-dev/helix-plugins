@@ -1,0 +1,8 @@
+ITEM.name = "Example Attachment"
+ITEM.description = "An example ARC9 attachment item."
+ITEM.model = "models/items/arc9/att_cardboard_box.mdl"
+ITEM.width = 1
+ITEM.height = 1
+
+ITEM.att = "idk_eft_attachment_id"  -- id of the attachment this item is linked to
+ITEM.tool = "hammer"                -- the player needs a "hammer" uniqueID item to add/remove the attachment. if nil/deleted, no tool is required
