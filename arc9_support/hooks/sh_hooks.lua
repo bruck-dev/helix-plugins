@@ -320,6 +320,7 @@ function ARC9:PlayerGetAtts(client, att)
     if !IsValid(client) or !client:IsPlayer() or !client:GetCharacter() then return 0 end
 
     if ix.config.Get("freeAttachments", false) or att == "" then return 999 end
+    if PLUGIN.freeAttachments and PLUGIN.freeAttachments[att] then return 999 end
 
     local atttbl = ARC9.GetAttTable(att)
     if !atttbl then return 0 end
@@ -348,6 +349,7 @@ function ARC9:PlayerGiveAtt(client, att, amt, noItem)
 
     if !IsValid(client) or !client:IsPlayer() or !client:GetCharacter() then return end
     if ix.config.Get("freeAttachments", false) or att == "" then return true end
+    if PLUGIN.freeAttachments and PLUGIN.freeAttachments[att] then return true end
 
     amt = amt or 1
 
@@ -384,6 +386,7 @@ function ARC9:PlayerTakeAtt(client, att, amt, noItem)
     if GetConVar("arc9_atts_lock"):GetBool() then return end
     if !IsValid(client) or !client:IsPlayer() or !client:GetCharacter() then return end
     if ix.config.Get("freeAttachments", false) or att == "" then return true end
+    if PLUGIN.freeAttachments and PLUGIN.freeAttachments[att] then return true end
 
     amt = amt or 1
 

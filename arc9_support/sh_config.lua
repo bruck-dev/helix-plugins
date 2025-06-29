@@ -1,6 +1,11 @@
 
 local PLUGIN = PLUGIN
 
+-- overrides listed attachment ID to ensure its always free. useful if you don't want a thousand items for inconsequential attachments like spacers or mounts
+PLUGIN.freeAttachments = {
+    --["eft_mount_lrp_spacer"] = true,
+}
+
 -- personally i think autogeneration is inefficient and can create spotty results under the best of conditions
 ix.config.Add("generateAttachmentItems", false, "Whether or not ARC9 attachments will have items created automatically. This can take a while with a lot of packs.", function(oldValue, newValue)
     if newValue and !ix.arc9.attachmentsGenerated then

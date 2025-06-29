@@ -159,7 +159,7 @@ else
                     if(vol <= 0) then
                         data:SetText("Capacity: " .. ix.liquids.ConvertUnit(self:GetMaxVolume()) .. "\nEmpty")
                     else 
-                        data:SetText("Capacity: " .. ix.liquids.ConvertUnit(self:GetMaxVolume()) .."\n" ..
+                        data:SetText("Capacity: " .. ix.liquids.ConvertUnit(self:GetMaxVolume()) .. "\n" ..
                         "Current Amount: " .. ix.liquids.ConvertUnit(self:GetCurVolume()) .. "\n" ..
                         "Contains " .. liquid:GetName())
                     end
