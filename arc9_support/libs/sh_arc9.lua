@@ -76,7 +76,7 @@ function ix.arc9.GenerateAttachments()
 
     for attID, attTable in pairs(ARC9.Attachments) do
         if !attTable.Free and !attTable.AdminOnly and !ARC9.Blacklist[attID] then
-            if !ix.arc9.attachments[attID] and !(attTable.InvAtt and ix.arc9.attachments[attTable.InvAtt]) then
+            if !attTable.Free and !attTable.AdminOnly and !ARC9.Blacklist[attID] and !(PLUGIN.freeAttachments and PLUGIN.freeAttachments[attID]) then
                 local ITEM = ix.item.Register(attID, "base_arc9_attachments", false, nil, true)
                 ITEM.name = attTable.PrintName
                 ITEM.description = attTable.Description or "An attachment, used to modify weapons."
