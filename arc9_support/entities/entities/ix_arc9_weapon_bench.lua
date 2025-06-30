@@ -13,10 +13,10 @@ if (SERVER) then
 
     function ENT:Initialize()
 
+        self:SetModel("models/props_wasteland/controlroom_desk001b.mdl") --self:SetModel("models/brickscrafting/workbench_2.mdl") this is the one from the preview video, no idea where i got it from unfortunately
         self:SetMoveType(MOVETYPE_VPHYSICS)
         self:SetSolid(SOLID_VPHYSICS)
         self:PhysicsInit(SOLID_VPHYSICS)
-        self:SetModel("models/props_wasteland/controlroom_desk001b.mdl") --self:SetModel("models/brickscrafting/workbench_2.mdl") this is the one from the preview video, no idea where i got it from unfortunately
 
         local physObj = self:GetPhysicsObject()
 
