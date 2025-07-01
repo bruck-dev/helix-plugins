@@ -10,7 +10,7 @@ if SERVER then
     -- set up a weapon's attachments on equip, based on it's default value or data
     function ix.arc9.InitWeapon(client, weapon, item)
         if !IsValid(client) or !IsValid(weapon) or !item then return end
-        ix.arc9.SendPreset(client, weapon, item:GetPreset())
+        ix.arc9.SendPreset(client, weapon, item:GetPreset(), true)
     end
 
     -- replacement for ARC9.SendPreset()
