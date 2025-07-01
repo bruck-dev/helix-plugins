@@ -4,13 +4,13 @@ local PLUGIN = PLUGIN
 ix.arc9 = {}
 ix.arc9.attachments = {}
 ix.arc9.grenades = {}
+ix.arc9.freeAttachments = {}
 
 if SERVER then
     -- set up a weapon's attachments on equip, based on it's default value or data
     function ix.arc9.InitWeapon(client, weapon, item)
         if !IsValid(client) or !IsValid(weapon) or !item then return end
-
-        ix.arc9.SendPreset(client, weapon, item:GetPreset(), true)
+        ix.arc9.SendPreset(client, weapon, item:GetPreset())
     end
 
     -- replacement for ARC9.SendPreset()
@@ -84,8 +84,8 @@ function ix.arc9.GenerateAttachments()
     if ix.arc9.attachmentsGenerated then return end
 
     for attID, attTable in pairs(ARC9.Attachments) do
-        if !attTable.Free and !attTable.AdminOnly and !ARC9.Blacklist[attID] then
-            if !attTable.Free and !attTable.AdminOnly and !ARC9.Blacklist[attID] and !(PLUGIN.freeAttachments and PLUGIN.freeAttachments[attID]) then
+        if !ix.arc9.IsFreeAttachment(attID) and !attTable.AdminOnly and !ARC9.Blacklist[attID] then
+            if !ix.arc9.attachments[attID] and !(attTable.InvAtt and ix.arc9.attachments[attTable.InvAtt]) then
                 local ITEM = ix.item.Register(attID, "base_arc9_attachments", false, nil, true)
                 ITEM.name = attTable.PrintName
                 ITEM.description = attTable.Description or "An attachment, used to modify weapons."
@@ -191,4 +191,13 @@ end
 -- returns the item id for the passed attachment id
 function ix.arc9.GetItemForAttachment(att)
     return ix.arc9.attachments[att]
+end
+
+function ix.arc9.IsFreeAttachment(att)
+    local atttbl = ARC9.GetAttTable(att)
+    return ix.config.Get("freeAttachments", false) or ix.arc9.freeAttachments[att] or (atttbl and atttbl.Free)
+end
+
+function ix.arc9.MakeFreeAttachment(att)
+    ix.arc9.freeAttachments[att] = true
 end

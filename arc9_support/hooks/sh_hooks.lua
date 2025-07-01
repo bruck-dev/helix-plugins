@@ -319,12 +319,10 @@ end
 function ARC9:PlayerGetAtts(client, att)
     if !IsValid(client) or !client:IsPlayer() or !client:GetCharacter() then return 0 end
 
-    if ix.config.Get("freeAttachments", false) or att == "" then return 999 end
-    if PLUGIN.freeAttachments and PLUGIN.freeAttachments[att] then return 999 end
+    if ix.arc9.IsFreeAttachment(att) or att == "" then return 999 end
 
     local atttbl = ARC9.GetAttTable(att)
     if !atttbl then return 0 end
-    if atttbl.Free then return 999 end
 
     if !client:IsAdmin() and atttbl.AdminOnly then
         return 0
@@ -348,8 +346,7 @@ end
 function ARC9:PlayerGiveAtt(client, att, amt, noItem)
 
     if !IsValid(client) or !client:IsPlayer() or !client:GetCharacter() then return end
-    if ix.config.Get("freeAttachments", false) or att == "" then return true end
-    if PLUGIN.freeAttachments and PLUGIN.freeAttachments[att] then return true end
+    if ix.arc9.IsFreeAttachment(att) or att == "" then return true end
 
     amt = amt or 1
 
@@ -360,7 +357,6 @@ function ARC9:PlayerGiveAtt(client, att, amt, noItem)
     local atttbl = ARC9.GetAttTable(att)
 
     if !atttbl then return end
-    if atttbl.Free then return end -- You can't give a free attachment, silly
     if atttbl.AdminOnly and !(client:IsPlayer() and client:IsAdmin()) then return false end
 
     if atttbl.InvAtt then att = atttbl.InvAtt end
@@ -385,8 +381,7 @@ end
 function ARC9:PlayerTakeAtt(client, att, amt, noItem)
     if GetConVar("arc9_atts_lock"):GetBool() then return end
     if !IsValid(client) or !client:IsPlayer() or !client:GetCharacter() then return end
-    if ix.config.Get("freeAttachments", false) or att == "" then return true end
-    if PLUGIN.freeAttachments and PLUGIN.freeAttachments[att] then return true end
+    if ix.arc9.IsFreeAttachment(att) or att == "" then return true end
 
     amt = amt or 1
 
@@ -395,8 +390,6 @@ function ARC9:PlayerTakeAtt(client, att, amt, noItem)
     end
 
     local atttbl = ARC9.GetAttTable(att)
-    if !atttbl or atttbl.Free then return end
-
     if atttbl.InvAtt then att = atttbl.InvAtt end
 
     local itemID = ix.arc9.GetItemForAttachment(att)
