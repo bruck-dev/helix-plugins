@@ -70,9 +70,7 @@ function ITEM:OnPostLoadout()
                 self:OnEquipWeapon(client, weapon)
             end
 
-            if !self.isGrenade then
-                ix.arc9.InitWeapon(client, weapon, self)
-            end
+            ix.arc9.InitWeapon(client, weapon, self)
         else
             --print(Format("[Helix] Cannot give weapon - %s does not exist!", self.class))  -- this does not work right, something to do with the timing of PostPlayerLoadout()?
         end
@@ -150,9 +148,7 @@ function ITEM:Equip(client, bNoSelect, bNoSound)
             self:OnEquipWeapon(client, weapon)
         end
 
-        if !self.isGrenade then
-            ix.arc9.InitWeapon(client, weapon, self)
-        end
+        ix.arc9.InitWeapon(client, weapon, self)
     end
 end
 
