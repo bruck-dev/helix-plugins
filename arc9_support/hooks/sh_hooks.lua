@@ -439,8 +439,7 @@ hook.Add("EntityRemoved", "ARC9RemoveGrenade", function(entity)
         local client = entity:GetOwner()
         if (IsValid(client) and client:IsPlayer() and client:GetCharacter()) then
             local ammoName = game.GetAmmoName(entity:GetPrimaryAmmoType())
-            if (isstring(ammoName) and client:GetAmmoCount(ammoName) < 1
-            and entity.ixItem and entity.ixItem.Unequip) then
+            if (isstring(ammoName) and client:GetAmmoCount(ammoName) < 1 and entity:Clip1() < 1 and entity.ixItem and entity.ixItem.Unequip) then
                 entity.ixItem:Unequip(client, false, true)
             end
         end

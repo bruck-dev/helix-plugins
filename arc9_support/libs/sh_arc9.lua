@@ -20,7 +20,12 @@ if SERVER then
         end
 
         if !isstring(preset) then -- no preset found, so we just need to set the ammo
-            weapon:SetClip1(weapon.ixItem:GetData("ammo", 0))
+            if weapon.ixItem.isGrenade then
+                weapon:SetClip1(1)
+            else
+                weapon:SetClip1(weapon.ixItem:GetData("ammo", 0))
+            end
+
             return
         end
 
@@ -51,7 +56,11 @@ if SERVER then
                 weapon:PostModify()
 
                 if setAmmo then
-                    weapon:SetClip1(weapon.ixItem:GetData("ammo", 0))
+                    if weapon.ixItem.isGrenade then
+                        weapon:SetClip1(1)
+                    else
+                        weapon:SetClip1(weapon.ixItem:GetData("ammo", 0))
+                    end
                 end
             end)
         end
