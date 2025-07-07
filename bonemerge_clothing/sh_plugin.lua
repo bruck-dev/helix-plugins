@@ -1,9 +1,9 @@
 
 local PLUGIN = PLUGIN
 
-PLUGIN.name = "Smokable Items"
-PLUGIN.description = "Adds smokable cigarettes. Requires PAC and PAC Integration to work."
-PLUGIN.author = "bruck, based on work by Adolphus"
+PLUGIN.name = "Bonemerged Clothing System"
+PLUGIN.description = "Revised PAC-based clothing system that allows for multiple outfit category entries, automatic removal of conflicting clothing, and more."
+PLUGIN.author = "bruck"
 PLUGIN.license = [[
 Copyright 2025 bruck
 This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.

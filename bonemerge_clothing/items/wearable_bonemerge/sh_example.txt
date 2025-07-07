@@ -1,0 +1,142 @@
+
+ITEM.name = "Gas Mask Example"
+ITEM.model = "models/tnb/halflife2/citizens/items/item_suit_worker_gasmask.mdl"
+ITEM.description = "Example gas mask clothing item."
+
+ITEM.outfitCategory = {"face", "mouth", "eyes"} -- will conflict with anything that has one or more of these categories
+ITEM.equipSound = {"npc/combine_soldier/zipline_clothing1.wav", "npc/combine_soldier/zipline_clothing2.wav"}
+ITEM.unequipSound = {"npc/combine_soldier/zipline_clip1.wav", "npc/combine_soldier/zipline_clip2.wav"}
+
+function ITEM:OnEquipped()  -- automatically removes smokables when equipped (epic self plug)
+    local char = self.player:GetCharacter()
+
+    local has, cig = char:HasSmokableEquipped()
+    if has then
+        cig:RemoveSmokable()
+    end
+end
+
+ITEM.pacData = {
+    [1] = {
+        ["children"] = {
+            [1] = {
+                ["children"] = {
+                },
+                ["self"] = {
+                    ["Skin"] = 0,
+                    ["UniqueID"] = "83344bd0587119f4d89452b226209b4d4bf3fe28638d78af4c2fcea5488a179d",
+                    ["NoLighting"] = false,
+                    ["AimPartName"] = "",
+                    ["IgnoreZ"] = false,
+                    ["AimPartUID"] = "",
+                    ["Materials"] = "",
+                    ["Name"] = "",
+                    ["LevelOfDetail"] = 0,
+                    ["NoTextureFiltering"] = false,
+                    ["PositionOffset"] = Vector(0, 0, 0),
+                    ["IsDisturbing"] = false,
+                    ["EyeAngles"] = false,
+                    ["DrawOrder"] = 0,
+                    ["TargetEntityUID"] = "",
+                    ["Alpha"] = 1,
+                    ["Material"] = "",
+                    ["Invert"] = false,
+                    ["ForceObjUrl"] = false,
+                    ["Bone"] = "head",
+                    ["Angles"] = Angle(90, 16.700000762939, 0),
+                    ["AngleOffset"] = Angle(0, 0, 0),
+                    ["BoneMerge"] = false,
+                    ["Color"] = Vector(1, 1, 1),
+                    ["Position"] = Vector(-4.935302734375, -1.69482421875, 0.001953125),
+                    ["ClassName"] = "model2",
+                    ["Brightness"] = 1,
+                    ["Hide"] = false,
+                    ["NoCulling"] = false,
+                    ["Scale"] = Vector(1, 1, 0.94999998807907),
+                    ["LegacyTransform"] = false,
+                    ["EditorExpand"] = false,
+                    ["Size"] = 1,
+                    ["ModelModifiers"] = "",
+                    ["Translucent"] = false,
+                    ["BlendMode"] = "",
+                    ["EyeTargetUID"] = "",
+                    ["Model"] = "models/tnb/halflife2/citizens/items/item_suit_worker_gasmask.mdl",
+                },
+            },
+        },
+        ["self"] = {
+            ["DrawOrder"] = 0,
+            ["UniqueID"] = "d4c6733f9180a4fa90d245d118d7d37becea166a343a4941fc5511911bf1283d",
+            ["Hide"] = false,
+            ["TargetEntityUID"] = "",
+            ["EditorExpand"] = true,
+            ["OwnerName"] = "self",
+            ["IsDisturbing"] = false,
+            ["Name"] = "gas_mask",
+            ["Duplicate"] = false,
+            ["ClassName"] = "group",
+        },
+    },
+}
+ITEM.pacDataFemale = {
+    [1] = {
+        ["children"] = {
+            [1] = {
+                ["children"] = {
+                },
+                ["self"] = {
+                    ["Skin"] = 0,
+                    ["UniqueID"] = "83344bd0587119f4d89452b226209b4d4bf3fe28638d78af4c2fcea5488a179d",
+                    ["NoLighting"] = false,
+                    ["AimPartName"] = "",
+                    ["IgnoreZ"] = false,
+                    ["AimPartUID"] = "",
+                    ["Materials"] = "",
+                    ["Name"] = "",
+                    ["LevelOfDetail"] = 0,
+                    ["NoTextureFiltering"] = false,
+                    ["PositionOffset"] = Vector(0, 0, 0),
+                    ["IsDisturbing"] = false,
+                    ["EyeAngles"] = false,
+                    ["DrawOrder"] = 0,
+                    ["TargetEntityUID"] = "",
+                    ["Alpha"] = 1,
+                    ["Material"] = "",
+                    ["Invert"] = false,
+                    ["ForceObjUrl"] = false,
+                    ["Bone"] = "head",
+                    ["Angles"] = Angle(90, 9.1000003814697, 0),
+                    ["AngleOffset"] = Angle(0, 0, 0),
+                    ["BoneMerge"] = false,
+                    ["Color"] = Vector(1, 1, 1),
+                    ["Position"] = Vector(-5.618896484375, -1.109375, 0.0028076171875),
+                    ["ClassName"] = "model2",
+                    ["Brightness"] = 1,
+                    ["Hide"] = false,
+                    ["NoCulling"] = false,
+                    ["Scale"] = Vector(1, 0.94999998807907, 0.94999998807907),
+                    ["LegacyTransform"] = false,
+                    ["EditorExpand"] = false,
+                    ["Size"] = 1,
+                    ["ModelModifiers"] = "",
+                    ["Translucent"] = false,
+                    ["BlendMode"] = "",
+                    ["EyeTargetUID"] = "",
+                    ["Model"] = "models/tnb/halflife2/citizens/items/item_suit_worker_gasmask.mdl",
+                },
+            },
+        },
+        ["self"] = {
+            ["DrawOrder"] = 0,
+            ["UniqueID"] = "d4c6733f9180a4fa90d245d118d7d37becea166a343a4941fc5511911bf1283d",
+            ["Hide"] = false,
+            ["TargetEntityUID"] = "",
+            ["EditorExpand"] = true,
+            ["OwnerName"] = "self",
+            ["IsDisturbing"] = false,
+            ["Name"] = "gas_mask",
+            ["Duplicate"] = false,
+            ["ClassName"] = "group",
+        },
+    },
+}
