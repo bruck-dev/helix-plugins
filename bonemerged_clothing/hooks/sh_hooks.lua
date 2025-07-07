@@ -6,8 +6,8 @@ function PLUGIN:CanSmoke(client)
             if isstring(v.outfitCategory) and v.outfitCategory == "mouth" or v.outfitCategory == "face" then
                 return false
             elseif istable(v.outfitCategory) then
-                for _, i in ipairs(v.outfitCategory) do
-                    if i == "mouth" or i == "face" then
+                for _, v in ipairs(v.outfitCategory) do
+                    if v == "mouth" or v == "face" then
                         return false
                     end
                 end
