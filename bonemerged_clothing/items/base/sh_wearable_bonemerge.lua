@@ -86,7 +86,7 @@ ITEM.functions.Equip = {
             if istable(snd) then
                 snd = snd[math.random(1, #snd)]
             end
-            client:GetCharacter():PlaySound(snd)
+            client:EmitSound(snd)
         end
 
         item:SetData("equip", true)
@@ -122,7 +122,7 @@ ITEM.functions.EquipUn = { -- sorry, for name order.
             if istable(snd) then
                 snd = snd[math.random(1, #snd)]
             end
-            client:GetCharacter():PlaySound(snd)
+            client:EmitSound(snd)
         end
 
         return false
