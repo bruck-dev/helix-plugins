@@ -86,7 +86,11 @@ ITEM.functions.Equip = {
             if istable(snd) then
                 snd = snd[math.random(1, #snd)]
             end
-            client:EmitSound(snd)
+            if char.PlaySound then -- play clientside
+                char:PlaySound(snd)
+            else -- if not possible, play serverside
+                client:EmitSound(snd, 60, 105, 1)
+            end
         end
 
         item:SetData("equip", true)
@@ -115,6 +119,8 @@ ITEM.functions.EquipUn = { -- sorry, for name order.
     icon = "icon16/cross.png",
     OnRun = function(item)
         local client = item.player
+        local char = client:GetCharacter()
+        
         item:RemovePart(client)
 
         if item.unequipSound then
@@ -122,7 +128,11 @@ ITEM.functions.EquipUn = { -- sorry, for name order.
             if istable(snd) then
                 snd = snd[math.random(1, #snd)]
             end
-            client:EmitSound(snd)
+            if char.PlaySound then -- play clientside
+                char:PlaySound(snd)
+            else -- if not possible, play serverside
+                client:EmitSound(snd, 60, 105, 1)
+            end
         end
 
         return false
