@@ -195,7 +195,7 @@ end
 
 function ix.arc9.IsFreeAttachment(att)
     local atttbl = ARC9.GetAttTable(att)
-    return ix.config.Get("freeAttachments", false) or ix.arc9.freeAttachments[att] or (atttbl and atttbl.Free)
+    return ix.arc9.freeAttachments[att] or (atttbl and atttbl.Free)
 end
 
 function ix.arc9.MakeFreeAttachment(att)
