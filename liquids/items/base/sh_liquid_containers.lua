@@ -249,7 +249,7 @@ ITEM.functions.DFillFromSource = {
 
         local data = {}
             data.start = client:GetShootPos()
-            data.endpos = data.start + client:GetAimVector() * ix.config.Get("lookRange", 160)
+            data.endpos = data.start + client:GetAimVector() * 160
             data.filter = function(ent) return (ent:GetClass() == "ix_liquidsource") end
         local trace = util.TraceLine(data)
 
@@ -287,7 +287,7 @@ ITEM.functions.DFillFromSource = {
 
         local data = {}
             data.start = client:GetShootPos()
-            data.endpos = data.start + client:GetAimVector() * ix.config.Get("lookRange", 160)
+            data.endpos = data.start + client:GetAimVector() * 160
             data.filter = function(ent) return (ent:GetClass() == "ix_liquidsource") end
         local trace = util.TraceLine(data)
 
@@ -324,7 +324,7 @@ ITEM.functions.DRefillSource = {
 
         local data = {}
             data.start = client:GetShootPos()
-            data.endpos = data.start + client:GetAimVector() * ix.config.Get("lookRange", 160)
+            data.endpos = data.start + client:GetAimVector() * 160
             data.filter = function(ent) return (ent:GetClass() == "ix_liquidsource") end
         local trace = util.TraceLine(data)
 
@@ -357,7 +357,7 @@ ITEM.functions.DRefillSource = {
 
         local data = {}
             data.start = client:GetShootPos()
-            data.endpos = data.start + client:GetAimVector() * ix.config.Get("lookRange", 160)
+            data.endpos = data.start + client:GetAimVector() * 160
             data.filter = function(ent) return (ent:GetClass() == "ix_liquidsource") end
         local trace = util.TraceLine(data)
 
