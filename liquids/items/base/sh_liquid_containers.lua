@@ -116,6 +116,11 @@ function ITEM:SetVolume(vol)
     else
         self:SetData("currentAmount", vol)
     end
+
+    local client = self.player
+    if (ix.weight and client) then
+        client:GetCharacter():UpdateWeight()
+    end
 end
 
 function ITEM:GetFreeVolume()
@@ -141,7 +146,7 @@ end
 
 -- returns the weight of the container + weight of the held liquid (if any) in kilograms
 function ITEM:GetWeight()
-    local weight = self.weight or self.capacity
+    local weight = self.weight or (self.capacity / 1000)
     if self:GetLiquid() then
         return weight + (self:GetVolume() * ix.liquids.Get(self:GetLiquid()):GetWeight())
     else
@@ -371,6 +376,7 @@ ITEM.functions.DRefillSource = {
 ITEM.functions.combine = {
     OnRun = function(container, data)
         local client = container.player
+        local char = client:GetCharacter()
         local liquidSource = ix.item.instances[data[1]]
 
         if(container.GetLiquid and liquidSource.GetLiquid and liquidSource:GetVolume() > 0) then
@@ -389,11 +395,17 @@ ITEM.functions.combine = {
                         amountToGive = spaceLeft
                     end
     
+                    local snd = ix.liquids.Get(liquidSource:GetLiquid()):GetTransferSound()
+                    
                     container:SetVolume(container:GetVolume() + amountToGive)
                     container:SetLiquid(liquidSource:GetLiquid())
                     liquidSource:SetVolume(math.Clamp(liquidVolume - amountToGive, 0, 9999))
                     
-                    client:GetCharacter():PlaySound(ix.liquids.Get(liquidSource:GetLiquid()):GetTransferSound())
+                    if char.PlaySound then
+                        char:PlaySound(snd)
+                    else
+                        client:EmitSound(snd, 60, 105, 1)
+                    end
                 else
                     client:Notify(string.format("This %s currently is holding a different liquid! You cannot mix different liquids.", container:GetName()))
                 end
