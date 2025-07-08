@@ -1,0 +1,7 @@
+
+ITEM.name = "Flashlight Example"
+ITEM.model = "models/raviool/flashlight.mdl"
+ITEM.width = 1
+ITEM.height = 1
+ITEM.description = "An example flashlight item, using the base."
+ITEM.category = "Equipment"
