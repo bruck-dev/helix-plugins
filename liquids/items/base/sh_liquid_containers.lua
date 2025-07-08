@@ -1,10 +1,10 @@
 
-ITEM.name = "Liquid Container";
-ITEM.model = "models/props_junk/garbage_glassbottle001a.mdl";
-ITEM.width	= 1;
-ITEM.height	= 1;
-ITEM.description = "Liquid Container base.";
-ITEM.category = "Containers";
+ITEM.name = "Liquid Container"
+ITEM.model = "models/props_junk/garbage_glassbottle001a.mdl"
+ITEM.width	= 1
+ITEM.height	= 1
+ITEM.description = "Liquid Container base."
+ITEM.category = "Containers"
 ITEM.liquid = nil                               -- default to being empty
 ITEM.capacity = 500                             -- max capacity of the container, in mL
 ITEM.startingVolume = nil                       -- starting volume of the specified liquid. can be an int, or a table of the two forms {["min"] = x, ["max"] = y} or {x, y, z}. ignored if empty, defaults to ITEM.capacity if nil
@@ -237,7 +237,10 @@ ITEM.functions.CPour = {
     OnRun = function(item)
         local client = item.player
 
-        client:EmitSound(ix.liquids.Get(item:GetLiquid()):GetTransferSound())
+        local snd = ix.liquids.Get(item:GetLiquid()):GetTransferSound()
+        if snd then
+            client:EmitSound(snd)
+        end
         item:SetVolume(0)
 
         return false
@@ -280,7 +283,10 @@ ITEM.functions.DFillFromSource = {
             end
         end
 
-        client:EmitSound(ix.liquids.Get(source:GetLiquid()):GetTransferSound())
+        local snd = ix.liquids.Get(source:GetLiquid()):GetTransferSound()
+        if snd then
+            client:EmitSound(snd)
+        end
 
         return false
     end,
@@ -307,7 +313,10 @@ ITEM.functions.EFillWater = {
     name = "Fill With Water",
     icon = "icon16/basket_put.png",
     OnRun = function(item)
-        item.player:EmitSound(ix.liquids.Get("water"):GetTransferSound())
+        local snd = ix.liquids.Get("water") and ix.liquids.Get("water"):GetTransferSound()
+        if snd then
+            item.player:EmitSound(snd)
+        end
 
         item:SetVolume(item.capacity)
         item:SetLiquid("water")
@@ -336,7 +345,10 @@ ITEM.functions.DRefillSource = {
         local source = trace.Entity
         if !IsValid(source) then return false end
 
-        client:EmitSound(ix.liquids.Get(item:GetLiquid()):GetTransferSound())
+        local snd = ix.liquids.Get(item:GetLiquid()):GetTransferSound()
+        if snd then
+            client:EmitSound(snd)
+        end
 
         local toGive = item:GetVolume()
         local sourceCur = source:GetCurVolume()
@@ -401,10 +413,12 @@ ITEM.functions.combine = {
                     container:SetLiquid(liquidSource:GetLiquid())
                     liquidSource:SetVolume(math.Clamp(liquidVolume - amountToGive, 0, 9999))
                     
-                    if char.PlaySound then
-                        char:PlaySound(snd)
-                    else
-                        client:EmitSound(snd, 60, 105, 1)
+                    if snd then
+                        if char.PlaySound then
+                            char:PlaySound(snd)
+                        else
+                            client:EmitSound(snd)
+                        end
                     end
                 else
                     client:Notify(string.format("This %s currently is holding a different liquid! You cannot mix different liquids.", container:GetName()))
