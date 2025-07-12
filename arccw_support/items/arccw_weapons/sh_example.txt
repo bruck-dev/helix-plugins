@@ -1,0 +1,13 @@
+ITEM.name = "ArcCW Weapon Example"
+ITEM.description = "This is an example item weapon with a preset attachment loadout."
+ITEM.model = "models/weapons/arccw/c_ur_ak.mdl"
+ITEM.class = "arccw_ur_ak"
+ITEM.weaponCategory = "Primary"             -- the first letter is capitalized in the generator, so keep that in mind when you declare your slots
+ITEM.width = 3
+ITEM.height = 2
+
+ITEM.attachments = {                        -- the structure should be slot index, string attID for value. recommend setting it up first and then printing the item data to get your preset
+    [3]	= "ur_ak_hg_dong",                  -- don't include this if you don't have a preset you want to use as the default
+    [4]	= "uc_muzzle_supp_pbs1",
+    [9]	= "ur_ak_grip_type3",
+}

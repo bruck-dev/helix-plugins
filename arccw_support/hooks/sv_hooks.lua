@@ -4,7 +4,7 @@ local PLUGIN = PLUGIN
 function PLUGIN:SaveData()
     local data = {}
 
-    for _, entity in ipairs(ents.FindByClass("ix_arc9_weapon_bench")) do
+    for _, entity in ipairs(ents.FindByClass("ix_arccw_weapon_bench")) do
         local bodygroups = {}
 
         for _, v in ipairs(entity:GetBodyGroups() or {}) do
@@ -25,7 +25,7 @@ end
 
 function PLUGIN:LoadData()
     for _, v in ipairs(self:GetData() or {}) do
-        local entity = ents.Create("ix_arc9_weapon_bench")
+        local entity = ents.Create("ix_arccw_weapon_bench")
         entity:SetPos(v.pos)
         entity:SetAngles(v.angles)
         entity:Spawn()
@@ -52,14 +52,14 @@ end
 function PLUGIN:PostPlayerLoadout(client)
     local character = client:GetCharacter()
 
-    if character and character:GetInventory() and client.loadoutPredictedARC9 then
+    if character and character:GetInventory() and client.loadoutPredictedArcCW then
         for k, _ in character:GetInventory():Iter() do
-            if k.isARC9Weapon and k:GetData("equip", false) then
+            if k.isArcCWWeapon and k:GetData("equip", false) then
                 k:Call("OnPostLoadout", client)
             end
         end
-        client.loadoutPredictedARC9 = nil
+        client.loadoutPredictedArcCW = nil
     end
 
-    client.loadoutPredictedARC9 = true
+    client.loadoutPredictedArcCW = true
 end

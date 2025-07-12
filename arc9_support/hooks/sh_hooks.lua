@@ -103,7 +103,7 @@ function PLUGIN:InitializedPlugins()
             if self.NotAWeapon then return end
 
             -- if we should be using weapon benches, the player should only be able to close it
-            if on and ix.config.Get("useWeaponBenches", true) and !benchBypass then return end
+            if on and ix.config.Get("useWeaponBenches(ARC9)", true) and !benchBypass then return end
         
             self:SetCustomize(on)
         
@@ -297,10 +297,10 @@ end
 function PLUGIN:InitializedConfig()
 
     -- generation kinda sucks because of arc9's largely arbitrary nature, dont really recommend it
-    if ix.config.Get("generateWeaponItems", false) then
+    if ix.config.Get("generateWeaponItems(ARC9)", false) then
         ix.arc9.GenerateWeapons()
     end
-    if ix.config.Get("generateAttachmentItems", false) then
+    if ix.config.Get("generateAttachmentItems(ARC9)", false) then
         ix.arc9.GenerateAttachments()
     end
 
@@ -315,12 +315,33 @@ function PLUGIN:InitializedConfig()
 
 end
 
+function PLUGIN:NearWeaponBench(client)
+    for _, bench in ipairs(ents.FindByClass("ix_arc9_weapon_bench")) do
+        if (client:GetPos():DistToSqr(bench:GetPos()) < 100 * 100) then
+            return true
+        end
+    end
+end
+
+function PLUGIN:IsCustomizing(client, weapon)
+    if weapons.IsBasedOn(weapon:GetClass(), "arc9_base") then
+        return weapon:GetCustomize()
+    end
+end
+
+function PLUGIN:StartCustomizing(client, weapon)
+    if weapons.IsBasedOn(weapon:GetClass(), "arc9_base") and !weapon:GetCustomize() then
+        weapon:ToggleCustomize(true, true)
+        return true
+    end
+end
+
 -- in addition to normal inv stuff, iterate through and check if the player has attachment items for the needed type
 function ARC9:PlayerGetAtts(client, att)
     if !IsValid(client) or !client:IsPlayer() or !client:GetCharacter() then return 0 end
 
     if ix.arc9.IsFreeAttachment(att) or att == "" then return 999 end
-    if ix.config.Get("freeAttachments", false) then return 999 end
+    if ix.config.Get("freeAttachments(ARC9)", false) then return 999 end
 
     local atttbl = ARC9.GetAttTable(att)
     if !atttbl then return 0 end
@@ -348,7 +369,7 @@ function ARC9:PlayerGiveAtt(client, att, amt, noItem)
 
     if !IsValid(client) or !client:IsPlayer() or !client:GetCharacter() then return end
     if ix.arc9.IsFreeAttachment(att) or att == "" then return true end
-    if ix.config.Get("freeAttachments", false) then return true end
+    if ix.config.Get("freeAttachments(ARC9)", false) then return true end
 
     amt = amt or 1
 
@@ -373,8 +394,10 @@ function ARC9:PlayerGiveAtt(client, att, amt, noItem)
             client.ARC9_AttInv[att] = (client.ARC9_AttInv[att] or 0) + amt
         end
     else
-        if (!client:GetCharacter():GetInventory():Add(itemID)) then
-            ix.item.Spawn(itemID, client)
+        if SERVER then
+            if (!client:GetCharacter():GetInventory():Add(itemID)) then
+                ix.item.Spawn(itemID, client)
+            end
         end
     end
 end
@@ -384,7 +407,7 @@ function ARC9:PlayerTakeAtt(client, att, amt, noItem)
     if GetConVar("arc9_atts_lock"):GetBool() then return end
     if !IsValid(client) or !client:IsPlayer() or !client:GetCharacter() then return end
     if ix.arc9.IsFreeAttachment(att) or att == "" then return true end
-    if ix.config.Get("freeAttachments", false) then return true end
+    if ix.config.Get("freeAttachments(ARC9)", false) then return true end
 
     amt = amt or 1
 
@@ -420,7 +443,9 @@ function ARC9:PlayerTakeAtt(client, att, amt, noItem)
                 removed = removed + 1
             else
               local head = table.remove(attItems)
-              head:Remove()
+              if SERVER then
+                head:Remove()
+              end
               removed = removed + 1
             end  
         end

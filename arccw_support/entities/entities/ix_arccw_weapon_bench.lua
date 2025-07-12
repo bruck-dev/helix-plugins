@@ -1,9 +1,9 @@
 
-if !ARC9 then return end
+if !ArcCW then return end
 
 ENT.Type = "anim"
 ENT.PrintName = "Weapon Workbench"
-ENT.Category = "Helix - ARC9"
+ENT.Category = "Helix - ArcCW"
 ENT.Spawnable = true
 ENT.AdminOnly = true
 ENT.bNoPersist = true
@@ -42,7 +42,7 @@ else
 
     function ENT:OnPopulateEntityInfo(tooltip)
 
-        if ix.option.Get("showWeaponBenchTooltip(ARC9)", true) then
+        if ix.option.Get("showWeaponBenchTooltip(ArcCW)", true) then
             local name = tooltip:AddRow("name")
             name:SetImportant()
             name:SetText(self.PrintName)

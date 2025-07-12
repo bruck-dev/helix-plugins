@@ -1,11 +1,11 @@
-ITEM.name = "ARC9 Attachment"
-ITEM.description = "ARC9 attachment base."
-ITEM.category = "ARC9 Attachments"
-ITEM.model = "models/items/arc9/att_cardboard_box.mdl"
+ITEM.name = "ArcCW Attachment"
+ITEM.description = "ArcCW attachment base."
+ITEM.category = "ArcCW Attachments"
+ITEM.model = "models/props_junk/cardboard_box004a.mdl"
 ITEM.width = 1
 ITEM.height = 1
 
-ITEM.isARC9Attachment = true
+ITEM.isArcCWAttachment = true
 ITEM.att = "undefined"              -- id of the attachment this item is linked to
 ITEM.tool = nil                     -- item unique id of the tool needed to use the attachment on a weapon
 
@@ -30,9 +30,17 @@ if (CLIENT) then
     end
 end
 
+function ITEM:GetModel()
+    if self.model == "models/error.mdl" then
+        return "models/props_junk/cardboard_box004a.mdl"
+    else
+        return self.model
+    end
+end
+
 function ITEM:GetAttachment()
     if self.att then
-        local atttbl = ARC9.GetAttTable(self.att)
+        local atttbl = ArcCW.AttachmentTable[self.att]
         if atttbl then
             if atttbl.InvAtt then
                 return atttbl.InvAtt, atttbl
@@ -47,7 +55,7 @@ end
 
 function ITEM:HasTool(client)
     if self.tool == nil then return true end
-    if ix.config.Get("freeAttachments(ARC9)", false) then return true end
-
+    if ix.config.Get("freeAttachments(ArcCW)", false) then return true end
+    
     return client:GetCharacter():GetInventory():HasItem(self.tool)  -- just a note: hasitem does NOT check bags
 end

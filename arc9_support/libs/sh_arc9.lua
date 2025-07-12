@@ -29,14 +29,14 @@ if SERVER then
             return
         end
 
-        if !ix.config.Get("freeAttachments", false) or !GetConVar("arc9_free_atts"):GetBool() then
-            local atts = ARC9.GetAttsFromPreset("[ix]"..preset) -- expects a preset name to be trimmed, so just give it a fake one
-            if !atts then return end
-
-            ix.arc9.GiveAttsFromList(client, atts)
-        end
-
         if IsValid(weapon) then
+            if !ix.config.Get("freeAttachments(ARC9)", false) or !GetConVar("arc9_free_atts"):GetBool() then
+                local atts = ARC9.GetAttsFromPreset("[ix]"..preset) -- expects a preset name to be trimmed, so just give it a fake one
+                if !atts then return end
+
+                ix.arc9.GiveAttsFromList(client, atts)
+            end
+
             -- clear all original attachments so they dont get added as items/AttInv entries when we apply the preset
             weapon.Attachments = baseclass.Get(weapon:GetClass()).Attachments
             for slot, slottbl in ipairs(weapon.Attachments) do
@@ -116,7 +116,7 @@ function ix.arc9.GenerateWeapons()
     if ix.arc9.weaponsGenerated then return end
 
     for _, v in ipairs(weapons.GetList()) do
-        if weapons.IsBasedOn(v.ClassName, "arc9_base") then
+        if v.PrintName and weapons.IsBasedOn(v.ClassName, "arc9_base") then
             local ITEM = ix.item.Register(v.ClassName, "base_arc9_weapons", false, nil, true)
             ITEM.name = v.PrintName
             ITEM.description = v.Description or nil

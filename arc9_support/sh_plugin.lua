@@ -19,11 +19,11 @@ ix.util.IncludeDir(PLUGIN.folder .. "/hooks", true)
 function PLUGIN:OnLoaded()
     if SERVER then
         -- config options
-        GetConVar("arc9_hud_force_disable"):SetBool(ix.config.Get("disableWeaponHud", true))
-        GetConVar("arc9_free_atts"):SetBool(ix.config.Get("freeAttachments", false))
-        GetConVar("arc9_mod_penetration"):SetBool(ix.config.Get("enableBulletPenetration", true))
-        GetConVar("arc9_ricochet"):SetBool(ix.config.Get("enableRicochets", true))
-        GetConVar("arc9_bullet_physics"):SetBool(ix.config.Get("enablePhysicalBullets", true))
+        GetConVar("arc9_hud_force_disable"):SetBool(ix.config.Get("disableWeaponHud(ARC9)", true))
+        GetConVar("arc9_free_atts"):SetBool(ix.config.Get("freeAttachments(ARC9)", false))
+        GetConVar("arc9_mod_penetration"):SetBool(ix.config.Get("enableBulletPenetration(ARC9)", true))
+        GetConVar("arc9_ricochet"):SetBool(ix.config.Get("enableRicochets(ARC9)", true))
+        GetConVar("arc9_bullet_physics"):SetBool(ix.config.Get("enablePhysicalBullets(ARC9)", true))
 
         -- this disables ammo duping, do not change
         GetConVar("arc9_mult_defaultammo"):SetInt(0)
