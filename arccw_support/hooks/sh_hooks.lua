@@ -313,7 +313,7 @@ function PLUGIN:StartCustomizing(client, weapon)
 end
 
 function PLUGIN:ArcCW_PlayerCanAttach(client, weapon, att, slot, bDetach)
-    if ix.config.Get("useWeaponBenches(ArcCW)", false) then
+    if ix.config.Get("useWeaponBenches(ArcCW)", true) then
         if !hook.Run("NearWeaponBench", client) then
             client:Notify("You are not near a weapon workbench.")
             return false

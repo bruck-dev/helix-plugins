@@ -46,7 +46,7 @@ local function ArcCW_PlayerBindPress(client, bind, pressed)
 
         local state = wep:GetState() != ArcCW.STATE_CUSTOMIZE
 
-        if ix.config.Get("useWeaponBenches(ArcCW)", false) and state then
+        if ix.config.Get("useWeaponBenches(ArcCW)", true) and state then
             if hook.Run("NearWeaponBench", client) then
                 SendNet("arccw_togglecustomize", state)
                 wep:ToggleCustomizeHUD(state)
