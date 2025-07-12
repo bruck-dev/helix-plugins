@@ -3,13 +3,20 @@ local PLUGIN = PLUGIN
 
 -- Called when smoking is started to reduce the timer.
 function PLUGIN:StartSmoking(character, item)
-    local smokeTick = string.format("%s%s", "SmokeTick", character:GetID())
+    local client = character:GetPlayer()
+    local timerName = string.format("%s%s", "SmokeTick", item.id)
+    self:DestroyTimer(client, timerName)
 
-    self:DestroyTimer(character)
+    client:SetNetVar("smoking", item.id)
+    item:SetData("startTime", item:GetTime())
+    item:OnStartSmoke(client)
 
-    timer.Create(smokeTick, 1, 0, function()
-        if(!item) then
-            self:DestroyTimer(character)
+    client:RemovePart(item.uniqueID)
+    client:AddPart(item.uniqueID, self)
+
+    timer.Create(timerName, 1, 0, function()
+        if !item or !IsValid(client) then
+            self:DestroyTimer(client, timerName)
             return
         end
 
@@ -27,15 +34,26 @@ function PLUGIN:StartSmoking(character, item)
 
         if(newTime <= 0) then
             item:Remove()
-            self:DestroyTimer(character)
+            self:DestroyTimer(client, timerName)
         end
     end)
 end
 
-function PLUGIN:DestroyTimer(character)
-    local smokeTick = string.format("%s%s", "SmokeTick", character:GetID())
+function PLUGIN:DestroyTimer(client, timerName)
+    if(timer.Exists(timerName)) then
+        timer.Destroy(timerName)
+    end
 
-    if(timer.Exists(smokeTick)) then
-        timer.Destroy(smokeTick)
+    if client and IsValid(client) then
+        client:SetNetVar("smoking", nil)
+    end
+end
+
+function PLUGIN:PlayerLoadedCharacter(client, char, prevChar)
+    client:SetNetVar("smoking", nil)
+
+    local is, smokable = char:IsSmoking()
+    if is and smokable then
+        self:StartSmoking(char, smokable)
     end
 end

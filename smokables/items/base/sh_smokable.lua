@@ -50,13 +50,7 @@ function ITEM:Light()
         local client = self:GetOwner()
         self:SetData("lit", true)
 
-        client:RemovePart(self.uniqueID)
-        client:AddPart(self.uniqueID, self)
-
         PLUGIN:StartSmoking(client:GetCharacter(), self)
-
-        self:SetData("startTime", self:GetTime())
-        self:OnStartSmoke(client)
     else
         return "This item is already lit!"
     end
@@ -105,9 +99,11 @@ end
 -- Removes the PAC data, smoke timer, and unlights the cigarette. Can be called via code in other scenarios.
 function ITEM:RemoveSmokable()
     local client = self:GetOwner() or self.player
+    if !client then return end
 
+    client:SetNetVar("smoking", nil)
     client:RemovePart(self.uniqueID)
-    PLUGIN:DestroyTimer(client:GetCharacter())
+    PLUGIN:DestroyTimer(client, string.format("%s%s", "SmokeTick", self.id))
 
     if self:IsLit() then
         self:OnStopSmoke(client, self:GetData("startTime", self.time) - self:GetTime())
@@ -130,38 +126,18 @@ function ITEM:pacAdjust(pacData, client)
 end
 
 function ITEM:OnRemoved()
-    local client = self:GetOwner() or self.player
-    
-    if IsValid(client) and self:GetData("equip", false) then
-        client:RemovePart(self.uniqueID)
-
-        if self:IsLit() then
-            self:OnStopSmoke(client, self:GetData("startTime", self.time))
-        end
-    end
+    self:RemoveSmokable()
 end
 
 ITEM:Hook("drop", function(item)
-    local client = item:GetOwner() or item.player
-
-    if IsValid(client) and item:GetData("equip", false) then
-        client:RemovePart(item.uniqueID)
-        item:SetData("equip", nil)
-
-        if item:IsLit() then
-            item:OnStopSmoke(client, item:GetData("startTime", item.time))
-        end
-    end
+    item:RemoveSmokable()
 end)
 
 hook.Add("PlayerDeath", "ixSmokables", function(client)
     if IsValid(client) then
         local equipped, cig = client:GetCharacter():HasSmokableEquipped()
         if equipped and cig then
-            cig:SetData("equip", nil)
-            cig:SetData("lit", nil)
-            client:RemovePart(cig.uniqueID)
-            PLUGIN:DestroyTimer(client:GetCharacter())
+            cig:RemoveSmokable()
         end
     end
 end)
@@ -283,7 +259,6 @@ ITEM.functions.combine = {
         return true
     end
 }
-
 
 -- Unlit
 ITEM.pacData = {
