@@ -1,0 +1,8 @@
+ITEM.name = "TFA Attachment Example"
+ITEM.description = "An example TFA attachment."
+ITEM.model = "models/props_junk/cardboard_box004a.mdl"
+ITEM.width = 1
+ITEM.height = 1
+
+ITEM.att = "ins2_si_eotech"         -- id of the attachment this item is linked to
+ITEM.tool = "screwdriver"           -- item unique id of the tool needed to use the attachment on a weapon

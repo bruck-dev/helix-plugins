@@ -1,0 +1,15 @@
+ITEM.name = "Example TFA Weapon"
+ITEM.description = "This is an example definition of an item that comes with default attachments."
+ITEM.model = "models/weapons/tfa_ins2/w_cw_ar15.mdl"
+ITEM.width = 3
+ITEM.height = 2
+
+ITEM.class = "tfa_ins2_cw_ar15"
+ITEM.weaponCategory = "Primary"
+
+-- this is just a list of attachment IDs set to true, everything else is done for you
+ITEM.attachments = {
+    ["ar15_ris_barrel"] = true
+    ["ins2_fg_grip"] = true
+    ["ins2_si_eotech"] = true
+}
