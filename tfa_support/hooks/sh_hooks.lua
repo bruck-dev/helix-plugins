@@ -24,18 +24,20 @@ end
 -- all this does is ensure the grenades are removed from invs when thrown; it normally results in a null entity when called normally so i modified it to predict the player instead of mandating the use of getowner
 function PLUGIN:InitializedPlugins()
     local SWEP = weapons.GetStored("tfa_ins2_nade_base")
-    function SWEP:DoAmmoCheck()
-        if self:Clip1() <= 0 then
-            if self:Ammo1() <= 0 then
-                self.removeOwner = self:GetOwner()
-                timer.Simple(0, function()
-                    if IsValid(self) and self:OwnerIsValid() and SERVER then
-                        self.removeOwner:StripWeapon(self:GetClass())
-                    end
-                end)
-            else
-                self:TakePrimaryAmmo(1, true)
-                self:SetClip1(1)
+    if SWEP then
+        function SWEP:DoAmmoCheck()
+            if self:Clip1() <= 0 then
+                if self:Ammo1() <= 0 then
+                    self.removeOwner = self:GetOwner()
+                    timer.Simple(0, function()
+                        if IsValid(self) and self:OwnerIsValid() and SERVER then
+                            self.removeOwner:StripWeapon(self:GetClass())
+                        end
+                    end)
+                else
+                    self:TakePrimaryAmmo(1, true)
+                    self:SetClip1(1)
+                end
             end
         end
     end
