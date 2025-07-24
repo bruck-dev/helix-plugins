@@ -4,6 +4,7 @@ local PLUGIN = PLUGIN
 -- overwrite the base PlayerBindPress function to not allow using 'c' to open the customize menu when benches is enabled
 hook.Remove("PlayerBindPress", "ArcCW_PlayerBindPress")
 
+local lastpressE = 0
 local function SendNet(string, bool)
     net.Start(string)
     if bool != nil then net.WriteBool(bool) end
