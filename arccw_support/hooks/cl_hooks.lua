@@ -4,12 +4,12 @@ local PLUGIN = PLUGIN
 -- overwrite the base PlayerBindPress function to not allow using 'c' to open the customize menu when benches is enabled
 hook.Remove("PlayerBindPress", "ArcCW_PlayerBindPress")
 
-local lastpressE = 0
 local function SendNet(string, bool)
     net.Start(string)
     if bool != nil then net.WriteBool(bool) end
     net.SendToServer()
 end
+
 local function ArcCW_TranslateBindToEffect(bind)
     local alt = ArcCW.ConVars["altbindsonly"]:GetBool()
     if alt then
@@ -18,6 +18,38 @@ local function ArcCW_TranslateBindToEffect(bind)
         return ArcCW.BindToEffect_Unique[bind] or ArcCW.BindToEffect[bind] or bind, ArcCW.BindToEffect_Unique[bind] != nil
     end
 end
+
+local debounce = 0
+local function ToggleAtts(wep)
+    if debounce > CurTime() then return end -- ugly hack for double trigger
+    debounce = CurTime() + 0.15
+    local sounds = {}
+    for k, v in pairs(wep.Attachments) do
+        local atttbl = v.Installed and ArcCW.AttachmentTable[v.Installed]
+        if atttbl and atttbl.ToggleStats and !v.ToggleLock then
+            if atttbl.ToggleSound then sounds[atttbl.ToggleSound] = true
+            else sounds["weapons/arccw/firemode.wav"] = true end
+            wep:ToggleSlot(k, nil, true)
+        end
+    end
+    for snd, _ in pairs(sounds) do
+        surface.PlaySound(snd)
+    end
+end
+
+local function DoUbgl(wep)
+    if wep:GetInUBGL() then
+        SendNet("arccw_ubgl", false)
+
+        wep:DeselectUBGL()
+    else
+        SendNet("arccw_ubgl", true)
+
+        wep:SelectUBGL()
+    end
+end
+
+local lastpressE = 0
 local function ArcCW_PlayerBindPress(client, bind, pressed)
     if !(client:IsValid() and pressed) then return end
 
