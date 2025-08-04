@@ -4,10 +4,10 @@ ITEM.base = "base_pacoutfit"
 ITEM.name = "Wearable Base"
 ITEM.description = "Modified version of the PAC outfit base."
 ITEM.category = "Clothing"
-ITEM.model = "models/fty/items/darkblueshirt.mdl"
+ITEM.model = "models/props_junk/cardboard_box004a.mdl"
 ITEM.width = 1
 ITEM.height = 1
-ITEM.outfitCategory = "torso"            -- arbitrary value that determines what other clothing items this one is incompatible with. can be a list of slots or a single string slot
+ITEM.outfitCategory = "torso"           -- arbitrary value that determines what other clothing items this one is incompatible with. can be a list of slots or a single string slot
 ITEM.pacData = {}
 
 ITEM.attribBoosts = {}                  -- optional attribute boosts. of the form {["attribute_id"] = value}
@@ -19,22 +19,20 @@ ITEM.unequipSound = nil
 function ITEM:CheckForOverlappingSlots(current)
     if !current.outfitCategory then return false end
 
-    local slots1 = {}
+    local slots = {}
     if isstring(self.outfitCategory) then
-        slots1[self.outfitCategory] = true
+        slots[self.outfitCategory] = true
     elseif istable(self.outfitCategory) then
         for _, slot in ipairs(self.outfitCategory) do
-            slots1[slot] = true
+            slots[slot] = true
         end
     end
 
     if isstring(current.outfitCategory) then
-        if slots1[current.outfitCategory] then
-            return true
-        end
+        return slots[current.outfitCategory] != nil
     elseif istable(current.outfitCategory) then
         for _, slot in ipairs(current.outfitCategory) do
-            if slots1[slot] then
+            if slots[slot] then
                 return true
             end
         end
@@ -64,7 +62,7 @@ function ITEM:pacAdjust(pacData, client)
         return self.pacDataModels[client:GetModel()]
     end
     
-    if self.pacDataFemale and string.find(client:GetModel(), "female") then
+    if self.pacDataFemale and client:IsFemale() then
         return self.pacDataFemale
     else
         return self.pacData
