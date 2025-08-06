@@ -101,8 +101,8 @@ function ITEM:RemoveSmokable()
     local client = self:GetOwner() or self.player
     if !client then return end
 
-    client:SetNetVar("smoking", nil)
     client:RemovePart(self.uniqueID)
+    client:SetNetVar("smoking", nil)
     PLUGIN:DestroyTimer(client, string.format("%s%s", "SmokeTick", self.id))
 
     if self:IsLit() then
