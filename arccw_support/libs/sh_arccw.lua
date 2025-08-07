@@ -79,7 +79,7 @@ function ix.arccw.GenerateWeapons()
     if ix.arccw.weaponsGenerated then return end
 
     for _, v in ipairs(weapons.GetList()) do
-        if v.PrintName and weapons.IsBasedOn(v.ClassName, "arccw_base") then
+        if v.PrintName and weapons.IsBasedOn(v.ClassName, "arccw_base") and !string.find(v.ClassName, "base") then
             local ITEM = ix.item.Register(v.ClassName, "base_arccw_weapons", false, nil, true)
             ITEM.name = v.PrintName
             ITEM.description = v.Trivia_Desc or "Undefined description. Recommend creating your own item."
