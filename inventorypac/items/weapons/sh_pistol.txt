@@ -1,0 +1,81 @@
+
+-- this is an example implementation for the base HL2 pistol item
+
+ITEM.name = "9MM Pistol"
+ITEM.description = "A sidearm utilising 9mm Ammunition."
+ITEM.model = "models/weapons/w_pistol.mdl"
+ITEM.class = "weapon_pistol"
+ITEM.weaponCategory = "sidearm"
+ITEM.width = 2
+ITEM.height = 1
+ITEM.iconCam = {
+	ang	= Angle(0.33879372477531, 270.15808105469, 0),
+	fov	= 5.0470897275697,
+	pos	= Vector(0, 200, -1)
+}
+
+ITEM.pacDataInv = {
+    [1] = {
+        ["children"] = {
+            [1] = {
+                ["children"] = {
+                },
+                ["self"] = {
+                    ["Skin"] = 0,
+                    ["UniqueID"] = "0465ccebfe542bde39792594d8cdd5bc5c5375c9881f1b743aabb82e5f15eb04",
+                    ["NoLighting"] = false,
+                    ["AimPartName"] = "",
+                    ["IgnoreZ"] = false,
+                    ["AimPartUID"] = "",
+                    ["Notes"] = "",
+                    ["Materials"] = "",
+                    ["Name"] = "",
+                    ["LevelOfDetail"] = 0,
+                    ["NoTextureFiltering"] = false,
+                    ["PositionOffset"] = Vector(0, 0, 0),
+                    ["IsDisturbing"] = false,
+                    ["EyeAngles"] = false,
+                    ["DrawOrder"] = 0,
+                    ["TargetEntityUID"] = "",
+                    ["Alpha"] = 1,
+                    ["Material"] = "",
+                    ["Invert"] = false,
+                    ["ForceObjUrl"] = false,
+                    ["Bone"] = "right thigh",
+                    ["Color"] = Vector(1, 1, 1),
+                    ["AngleOffset"] = Angle(0, 0, 0),
+                    ["BoneMerge"] = false,
+                    ["Angles"] = Angle(-0.72089475393295, -179.52590942383, -72.206214904785),
+                    ["Position"] = Vector(7.5891342163086, -1.4647216796875, -2.6096801757813),
+                    ["ClassName"] = "model2",
+                    ["NoCulling"] = false,
+                    ["Hide"] = false,
+                    ["Brightness"] = 1,
+                    ["Scale"] = Vector(1, 1, 1),
+                    ["LegacyTransform"] = false,
+                    ["EditorExpand"] = false,
+                    ["Size"] = 1,
+                    ["Translucent"] = false,
+                    ["BlendMode"] = "",
+                    ["ModelModifiers"] = "",
+                    ["EyeTargetUID"] = "",
+                    ["Model"] = "models/weapons/w_pistol.mdl",
+                },
+            },
+        },
+        ["self"] = {
+            ["DrawOrder"] = 0,
+            ["UniqueID"] = "311597bf297c8894a02e361fe16ae9c33c34e8390de6d584723f6ee865368e15",
+            ["Notes"] = "",
+            ["Hide"] = false,
+            ["Name"] = "",
+            ["TargetEntityUID"] = "",
+            ["EditorExpand"] = true,
+            ["OwnerName"] = "self",
+            ["Duplicate"] = false,
+            ["IsDisturbing"] = false,
+            ["ClassTracker"] = "player",
+            ["ClassName"] = "group",
+        },
+    },
+}
