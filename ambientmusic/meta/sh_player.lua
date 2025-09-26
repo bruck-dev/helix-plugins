@@ -15,7 +15,7 @@ if CLIENT then
 
         timer.Create("ixAmbientMusic", math.random(ix.option.Get("ambientMusicIntMin", 120), ix.option.Get("ambientMusicIntMax", 300)), 0, function()
             if timer.Exists("ixAmbientMusic") then
-                if hook.Run("ShouldBlockAmbientMusic", LocalPlayer()) != true then
+                if hook.Run("CanPlayAmbientMusic", LocalPlayer()) != false then
                     index = index + 1
                     if index > #tracks then
                         index = 1

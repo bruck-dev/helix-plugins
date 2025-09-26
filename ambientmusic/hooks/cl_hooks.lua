@@ -18,6 +18,6 @@ function PLUGIN:CharacterLoaded(char)
     client:AmbientMusicStart()
 end
 
--- use this to determine whether or not music should play when the start function is called
-function PLUGIN:ShouldBlockAmbientMusic(client)
+-- if any hook calls return false, the music will not play for that timer roll.
+function PLUGIN:CanPlayAmbientMusic(client)
 end
