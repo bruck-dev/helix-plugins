@@ -116,7 +116,7 @@ function ix.arc9.GenerateWeapons()
     if ix.arc9.weaponsGenerated then return end
 
     for _, v in ipairs(weapons.GetList()) do
-        if v.PrintName and weapons.IsBasedOn(v.ClassName, "arc9_base") then
+        if v.PrintName and weapons.IsBasedOn(v.ClassName, "arc9_base") and !string.find(v.ClassName, "base") then
             local ITEM = ix.item.Register(v.ClassName, "base_arc9_weapons", false, nil, true)
             ITEM.name = v.PrintName
             ITEM.description = v.Description or nil
@@ -186,6 +186,26 @@ function ix.arc9.GenerateWeapons()
     end
 
     ix.arc9.weaponsGenerated = true
+end
+
+function ix.arc9.SetAlwaysRaised()
+    local raised = ix.config.Get("alwaysRaised(ARC9)", false)
+
+    if raised then
+        for _, v in ipairs(weapons.GetList()) do
+            local class = v.ClassName
+            if weapons.IsBasedOn(class, "arc9_base") and !string.find(class, "base") and !ALWAYS_RAISED[class] then
+                ALWAYS_RAISED[class] = true
+            end
+        end
+    else
+        for _, v in ipairs(weapons.GetList()) do
+            local class = v.ClassName
+            if weapons.IsBasedOn(class, "arc9_base") and !string.find(class, "base") and ALWAYS_RAISED[class] then
+                ALWAYS_RAISED[class] = nil
+            end
+        end
+    end
 end
 
 -- returns the item id for the passed attachment id

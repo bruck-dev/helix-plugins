@@ -24,7 +24,7 @@ function PLUGIN:InitializedPlugins()
 
             -- if the attachment item has a needed tool, check if the player has it
             local item = ix.item.Get(ix.arc9.GetItemForAttachment(att))
-            local client = LocalPlayer() or self:GetOwner()
+            local client = LocalPlayer() or (item and item.player)
             if client and item and !item:HasTool(client) then
                 local tool = ix.item.Get(item.tool)
                 if tool then
@@ -67,7 +67,7 @@ function PLUGIN:InitializedPlugins()
 
             -- if the attachment item has a needed tool, check if the player has it
             local item = ix.item.Get(ix.arc9.GetItemForAttachment(slottbl.Installed))
-            local client = LocalPlayer() or self:GetOwner()
+            local client = LocalPlayer() or (item and item.player)
             if client and item and !item:HasTool(client) then
                 local tool = ix.item.Get(item.tool)
                 if tool then
@@ -97,41 +97,6 @@ function PLUGIN:InitializedPlugins()
         
             return true
         end
-
-        -- removes invalid attachments, but still returns the attachment, weirdly. unsure if this will cause issues
-        function SWEP:PruneAttachments()
-            for _, slot in ipairs(self:GetSubSlotList()) do
-                -- if !slot.Installed then continue end
-
-                if !ARC9.Attachments[slot.Installed] then
-                    slot.Installed = nil
-                    continue
-                end
-
-                local atttbl = ARC9.GetAttTable(slot.Installed)
-
-                if !atttbl or self:SlotInvalid(slot) then
-                    --ARC9:PlayerGiveAtt(self:GetOwner(), slot.Installed, 1)
-                    slot.Installed = false
-                    slot.SubAttachments = nil
-                end
-
-                if slot.MergeSlotAddresses then
-                    for _, msa in ipairs(slot.MergeSlotAddresses) do
-                        local mslottbl = self:LocateSlotFromAddress(msa)
-
-                        if !mslottbl then continue end
-
-                        if mslottbl.Installed then
-                            --ARC9:PlayerGiveAtt(self:GetOwner(), slot.Installed, 1)
-                            slot.Installed = false
-                            slot.SubAttachments = nil
-                        end
-                    end
-                end
-            end
-        end
-        
 
         function SWEP:ToggleCustomize(on, benchBypass)
             if on == self:GetCustomize() then return end
@@ -348,6 +313,7 @@ function PLUGIN:InitializedConfig()
         end
     end
 
+    ix.arc9.SetAlwaysRaised()
 end
 
 function PLUGIN:NearWeaponBench(client)

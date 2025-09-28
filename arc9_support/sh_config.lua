@@ -55,6 +55,25 @@ ix.config.Add("enablePhysicalBullets(ARC9)", true, "Whether or not ARC9 bullets 
 end, {category = "ARC9"}
 )
 
+ix.config.Add("alwaysRaised(ARC9)", false, "Whether or not ARC9 weapons can be raised and lowered. ARC9 isn't design to use holstering, so if TPIK is on you may want to have this enabled.", function(oldValue, newValue)
+    ix.arc9.SetAlwaysRaised()
+
+    -- automatically raises any held ARC9 weapons if set to true
+    if SERVER then
+        if newValue then
+            for _, v in ipairs(player.GetAll()) do
+                local wep = v:GetActiveWeapon()
+                
+                if weapons.IsBasedOn(wep:GetClass(), "arc9_base") and !v:IsWepRaised() then
+                    v:SetWepRaised(true, wep)
+                end
+            end
+        end
+    end
+
+end, {category = "ARC9"}
+)
+
 if CLIENT then
     ix.option.Add("arc9ShowWeaponBenchTooltip", ix.type.bool, false, {
         category = "ARC9",
