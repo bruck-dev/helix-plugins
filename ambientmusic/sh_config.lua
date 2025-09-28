@@ -3,9 +3,11 @@ local PLUGIN = PLUGIN
 
 -- whether ambient music is enabled for everyone, 'true' does not force it on the client but false will force it off
 ix.config.Add("allowAmbientMusic", true, "Whether or not ambient music should play for players. If false, ambient music will never play, regardless of player local config settings.", function(oldValue, newValue)
-    net.Start("ixAmbientMusic")
-        net.WriteBool(newValue)
-    net.Broadcast()
+    if SERVER then
+        net.Start("ixAmbientMusic")
+            net.WriteBool(newValue)
+        net.Broadcast()
+    end
 end,
 {
     category = "Ambient Music",
