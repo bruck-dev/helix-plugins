@@ -1,0 +1,12 @@
+
+STATION.name = "Local Example"
+STATION.frequency = 96.2                                -- assigned frequency, obviously
+
+STATION.trackDelay = 1                                  -- since this isn't a live stream, this is the delay in seconds between each track being played from the tracklist. can be a number or a table of {["min"] = x, ["max"] = y} or {x, y, z}
+
+STATION.isStream = false                                -- since this station is NOT a stream, local files will be used in order starting at a random index on server load
+STATION.trackList = {                                   -- these must be sound files stored on both the client and server; do NOT start with the 'sound/' prefix
+    "music/hl2_song6.mp3",
+    "music/hl2_song7.mp3",
+    ,"music/hl2_song8.mp3",
+}
