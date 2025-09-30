@@ -52,19 +52,16 @@ end
 function PLUGIN:PostPlayerLoadout(client)
     local char = client:GetCharacter()
 
-    if char and char:GetInventory() and client.loadoutPredictedArcCW and char.loadoutPredictedArcCW then
+    if char and char:GetInventory() and client.loadoutPredictedArcCW then
         for k, _ in char:GetInventory():Iter() do
             if k.isArcCWWeapon and k:GetData("equip", false) then
                 k:Call("OnPostLoadout", client)
             end
         end
         client.loadoutPredictedArcCW = nil
-        char.loadoutPredictedArcCW = nil
     end
 end
 function PLUGIN:PlayerLoadedCharacter(client, char, prevChar)
     client.loadoutPredictedArcCW = true
-    char.loadoutPredictedArcCW = true
-
     client.ArcCW_AttInv = {}
 end
