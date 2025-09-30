@@ -174,6 +174,7 @@ ITEM.functions.Frequency = {
     OnRun = function(item)
         local client = item.player
         local default = item:GetFrequency() or item.frequencyBand["min"]
+        local en = item:IsEnabled()
         client:RequestString("Frequency (MHz)", "What would you like to set the frequency to?", function(frequency)
             if tonumber(frequency) then
                 client.hearableFrequencies[default] = nil
@@ -181,7 +182,9 @@ ITEM.functions.Frequency = {
                 frequency = string.format("%.2f", tonumber(frequency))
                 client:Notify(item:SetFrequency(frequency))
 
-                client.hearableFrequencies[frequency] = true
+                if en then
+                    client.hearableFrequencies[frequency] = true
+                end
             else
                 client:Notify(string.format("%s is an invalid frequency.", frequency))
             end
