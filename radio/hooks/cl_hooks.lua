@@ -10,7 +10,7 @@ net.Receive("ixRadioStationJoin", function()
 
     if !IsValid(radio) or (radio.clientAudioChannel and radio.clientAudioChannel:IsValid()) then return end
 
-    local dist = ix.config.Get("radioListenRange", 140)
+    local dist = ix.config.Get("radioListenRange", 92)
     local maxDist = dist * 3
 
     if startTime == -1 then -- if -1, this is a live track
@@ -92,6 +92,13 @@ net.Receive("ixRadioStationLeave", function()
     activeRadioChannels[radio:EntIndex()] = nil
     client.activeRadioChannels = activeRadioChannels
 end)
+
+-- wipes all frequency tracking from stationary radio ents when the player loads a new character
+function PLUGIN:CharacterLoaded(character)
+	for _, radio in ipairs(ents.FindByClass("ix_radio_*")) do
+        radio.canCurrentlyHear = nil
+    end
+end
 
 -- integration with my ambient music plugin to block ambient tracks when listening to the radio
 function PLUGIN:CanPlayAmbientMusic(client)

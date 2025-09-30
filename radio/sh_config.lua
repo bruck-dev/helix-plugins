@@ -7,7 +7,7 @@ ix.config.Add("chatRadioColor", Color(110, 185, 85, 255), "The color for IC chat
 ix.config.Add("enableRadio", true, "Whether or not players are able to use radio items to communicate.", nil, {
     category = PLUGIN.name
 })
-ix.config.Add("radioListenRange", 140, "The maximum radius for which a player can hear radio messages and music from a stationary-type radio.", nil, {
+ix.config.Add("radioListenRange", 92, "The maximum radius for which a player can hear radio messages and music from a stationary-type radio.", nil, {
 	data = {min = 10, max = 5000, decimals = 1},
 	category = PLUGIN.name
 })

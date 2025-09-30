@@ -26,7 +26,7 @@ end
 -- checks if the player is near an active radio and, if needed, if the frequency matches the passed value
 function CHAR:NearStationaryRadio(frequency, radius)
     local client = self:GetPlayer()
-    radius = radius or ix.config.Get("radioListenRange", 140)
+    radius = radius or ix.config.Get("radioListenRange", 92)
 
     for _, radio in ipairs(ents.FindByClass("ix_radio_*")) do
         if radio:GetEnabled() and (client:GetPos():DistToSqr(radio:GetPos()) < radius * radius) then
@@ -41,8 +41,8 @@ function CHAR:NearStationaryRadio(frequency, radius)
 end
 
 -- checks whether or not the target can listen on the specific passed frequency
-function CHAR:CanHearFrequency(frequency)
-    if !frequency then return false end
+function CHAR:GetActiveRadio(frequency)
+    if !frequency then return nil end
     if isnumber(frequency) then
         frequency = string.format("%.2f", frequency)
     elseif tonumber(frequency) then
@@ -51,16 +51,35 @@ function CHAR:CanHearFrequency(frequency)
 
     local en, radio = self:HasRadioEnabled(frequency)
     if en then
-        return true, radio
+        return radio
     end
 
     en, radio = self:NearStationaryRadio(frequency)
     if en then
-        return true, radio
+        return radio
     end
 
-    return false
+    return nil
 end
+
+-- checks whether or not the target can listen on the specific passed frequency
+function CHAR:CanHearFrequency(frequency)
+    if !frequency then return false end
+    if isnumber(frequency) then
+        frequency = string.format("%.2f", frequency)
+    elseif tonumber(frequency) then
+        frequency = string.format("%.2f", tonumber(frequency))
+    end
+
+    -- if server, then check the freq cache. otherwise, just check for an active radio nearby/in inventory
+    if SERVER then
+        local client = self:GetPlayer()
+        return (client.hearableFrequencies and client.hearableFrequencies[frequency]) == true
+    else
+        return self:GetActiveRadio(frequency) != nil
+    end
+end
+
 -- checks if the player has or is near an active two way radio and is able to use it
 function CHAR:CanTalkOverRadio()
     if !ix.config.Get("enableRadio", true) then

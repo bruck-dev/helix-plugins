@@ -5,13 +5,13 @@ ITEM.category = "Communication"
 ITEM.width = 1
 ITEM.height = 1
 
-ITEM.isRadio = true         -- required, don't change
-ITEM.twoWay = true          -- whether or not this radio can send AND receive messages, or just receive
-ITEM.canGarble = true       -- whether or not this radio will have messages garbled if the server config setting is enabled and the sender is far away from the receiver
+ITEM.isRadio = true
+ITEM.twoWay = true
+ITEM.canGarble = true
 
-ITEM.enableSound = nil      -- played on enable. can be a string or a list of strings
-ITEM.disableSound = nil     -- ditto, but on disable
-ITEM.receiveSound = nil     -- ditto, but on message receive
+ITEM.enableSound = nil      -- can be a string or a list of strings
+ITEM.disableSound = nil
+ITEM.receiveSound = nil
 
 local function convertUnit(freq)
     if isstring(freq) then
@@ -173,14 +173,19 @@ ITEM.functions.Frequency = {
     icon = "icon16/cog_edit.png",
     OnRun = function(item)
         local client = item.player
+        local default = item:GetFrequency() or item.frequencyBand["min"]
         client:RequestString("Frequency (MHz)", "What would you like to set the frequency to?", function(frequency)
             if tonumber(frequency) then
+                client.hearableFrequencies[default] = nil
+                
                 frequency = string.format("%.2f", tonumber(frequency))
                 client:Notify(item:SetFrequency(frequency))
+
+                client.hearableFrequencies[frequency] = true
             else
                 client:Notify(string.format("%s is an invalid frequency.", frequency))
             end
-        end, item:GetData("frequency", string.format("%.2f", tonumber(item.frequencyBand["min"]))))
+        end, item:GetData("frequency", string.format("%.2f", tonumber(default))))
 
         return false
     end
@@ -205,16 +210,25 @@ ITEM.functions.Toggle = {
         end
 
         if (bCanToggle) then
+            local freq = item:GetFrequency()
             item:SetData("enabled", !item:GetData("enabled", false))
             if bState then
                 local snd = item:GetDisableSound()
                 if snd then
                     client:EmitSound(snd)
                 end
+
+                if freq then
+                    client.hearableFrequencies[freq] = nil
+                end
             else
                 local snd = item:GetEnableSound()
                 if snd then
                     client:EmitSound(snd)
+                end
+
+                if freq then
+                    client.hearableFrequencies[freq] = true
                 end
             end
         else

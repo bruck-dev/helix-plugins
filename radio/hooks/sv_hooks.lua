@@ -3,6 +3,33 @@ local PLUGIN = PLUGIN
 
 util.AddNetworkString("ixRadioStationJoin")
 util.AddNetworkString("ixRadioStationLeave")
+util.AddNetworkString("ixRadioCanHearFrequency")
+
+net.Receive("ixRadioCanHearFrequency", function(length, client)
+    local id = net.ReadUInt(32)
+    local character = client:GetCharacter()
+
+    if (character and character:GetID() == id) then
+        local freq = net.ReadString()
+        local canHear = net.ReadBool()
+
+        if canHear then
+            client.hearableFrequencies[freq] = canHear
+        else
+            client.hearableFrequencies[freq] = nil
+        end
+    end
+end)
+
+-- on load, reset the hearable frequencies and restore any enabled radios on the char
+function PLUGIN:PlayerLoadedCharacter(client, char, prevChar)
+    client.hearableFrequencies = {}
+
+    local en, radio = char:HasRadioEnabled()
+    if radio then
+        client.hearableFrequencies[radio:GetFrequency()] = true
+    end
+end
 
 function PLUGIN:SaveData()
     local data = {}

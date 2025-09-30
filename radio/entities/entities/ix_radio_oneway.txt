@@ -52,15 +52,12 @@ do
         self:NetworkVar("String", 3, "MaxUnit")
         self:NetworkVar("Bool", 0, "Enabled")
 
-        if SERVER then
-            self:NetworkVarNotify("Enabled", self.OnVarChanged)
-            self:NetworkVarNotify("Frequency", self.OnVarChanged)
-        end
+        self:NetworkVarNotify("Enabled", self.OnVarChanged)
+        self:NetworkVarNotify("Frequency", self.OnVarChanged)
     end
 
     function ENT:OnVarChanged(var, old, new)
         if SERVER then
-
             if var == "Enabled" then
                 if !new then
                     if self.EnableStations then
@@ -96,7 +93,18 @@ do
                     self:EmitSound(snd)
                 end
             end
-
+        else
+            if var == "Enabled" then
+                if !new then
+                    if self.canCurrentlyHear and self:GetFrequency() then
+                        self:UpdateCanHearFrequency(false)
+                    end
+                end
+            elseif var == "Frequency" then
+                if self.canCurrentlyHear and self:GetEnabled() and old then
+                    self:UpdateCanHearFrequency(false, old)
+                end
+            end
         end
     end
 
@@ -164,7 +172,7 @@ do
                     end
 
                     local listeners = {}
-                    local radius = ix.config.Get("radioListenRange", 140) * 4
+                    local radius = ix.config.Get("radioListenRange", 92) * 4
 
                     for _, v in ipairs(ents.FindInSphere(self:GetPos(), radius)) do
                         if v:IsPlayer() and v:Alive() then
@@ -256,14 +264,45 @@ do
         end
 
         function ENT:Think()
+            local client = LocalPlayer()
+            if !IsValid(client) or !client:Alive() or !client:GetCharacter() then return end
+
+            if self:GetEnabled() then
+                local radius = ix.config.Get("radioListenRange", 92)
+                local inRadius = (LocalPlayer():GetPos():DistToSqr(self:GetPos()) < radius * radius)
+
+                if !self.canCurrentlyHear and inRadius then
+                    self:UpdateCanHearFrequency(true)
+                elseif self.canCurrentlyHear and !inRadius then
+                    self:UpdateCanHearFrequency(false)
+                end
+            end
+
             if !self.clientAudioChannel or !self.clientAudioChannel:IsValid() then return end
             self.clientAudioChannel:SetPos(self:GetPos())
         end
 
         function ENT:OnRemove()
+            if self:GetEnabled() and self.canCurrentlyHear then
+                self:UpdateCanHearFrequency(false)
+            end
+
             if self.clientAudioChannel and self.clientAudioChannel:IsValid() then
                 self.clientAudioChannel:Stop()
             end
+        end
+
+        function ENT:UpdateCanHearFrequency(canHear, frequency)
+            local client = LocalPlayer()
+            if !IsValid(client) or !client:Alive() or !client:GetCharacter() then return end
+
+            net.Start("ixRadioCanHearFrequency")
+                net.WriteUInt(client:GetCharacter():GetID(), 32)
+                net.WriteString(frequency or self:GetFrequency())
+                net.WriteBool(canHear)
+            net.SendToServer()
+
+            self.canCurrentlyHear = canHear
         end
     end
 

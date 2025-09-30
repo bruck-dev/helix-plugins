@@ -17,25 +17,27 @@ function PLUGIN:InitializedChatClasses()
             GetColor = function(self, speaker, text)
                 return ix.config.Get("chatRadioColor")
             end,
+            CanHear = function(self, speaker, listener, data)
+                return listener:GetCharacter():CanHearFrequency(data.frequency)
+            end,
             OnChatAdd = function(self, speaker, text, anonymous, data)
                 local char = LocalPlayer():GetCharacter()
-                local can, radio = char:CanHearFrequency(data.frequency)
-                if can then
-                    if ix.config.Get("garbleRadio", true) and data.garble and speaker then 
-                        text = garbleMessage(speaker, text)
-                    end
+                local radio = char:GetActiveRadio(data.frequency)
 
-                    local name = anonymous and
-                    L"someone" or hook.Run("GetCharacterName", speaker, "radio") or
-                    (IsValid(speaker) and speaker:Name() or "Console")
+                if ix.config.Get("garbleRadio", true) and data.garble and speaker then 
+                    text = garbleMessage(speaker, text)
+                end
 
-                    text = string.format("<:: %s ::>", text)
-                    chat.AddText(self:GetColor(speaker, text), string.format(self.format, name, text))
+                local name = anonymous and
+                L"someone" or hook.Run("GetCharacterName", speaker, "radio") or
+                (IsValid(speaker) and speaker:Name() or "Console")
 
-                    local snd = radio:GetReceiveSound()
-                    if snd then
-                        surface.PlaySound(snd)
-                    end
+                text = string.format("<:: %s ::>", text)
+                chat.AddText(self:GetColor(speaker, text), string.format(self.format, name, text))
+
+                local snd = radio:GetReceiveSound()
+                if snd then
+                    surface.PlaySound(snd)
                 end
             end,
         })
@@ -47,25 +49,27 @@ function PLUGIN:InitializedChatClasses()
                 local color = ix.config.Get("chatRadioColor")
                 return Color(color.r - 35, color.g - 35, color.b - 35)
             end,
+            CanHear = function(self, speaker, listener, data)
+                return listener:GetCharacter():CanHearFrequency(data.frequency)
+            end,
             OnChatAdd = function(self, speaker, text, anonymous, data)
                 local char = LocalPlayer():GetCharacter()
-                local can, radio = char:CanHearFrequency(data.frequency)
-                if can then
-                    if ix.config.Get("garbleRadio", true) and data.garble and speaker then 
-                        text = garbleMessage(speaker, text)
-                    end
+                local radio = char:GetActiveRadio(data.frequency)
 
-                    local name = anonymous and
-                    L"someone" or hook.Run("GetCharacterName", speaker, "radio_w") or
-                    (IsValid(speaker) and speaker:Name() or "Console")
+                if ix.config.Get("garbleRadio", true) and data.garble and speaker then 
+                    text = garbleMessage(speaker, text)
+                end
 
-                    text = string.format("<:: %s ::>", text)
-                    chat.AddText(self:GetColor(speaker, text), string.format(self.format, name, text))
+                local name = anonymous and
+                L"someone" or hook.Run("GetCharacterName", speaker, "radio_w") or
+                (IsValid(speaker) and speaker:Name() or "Console")
 
-                    local snd = radio:GetReceiveSound()
-                    if snd then
-                        surface.PlaySound(snd)
-                    end
+                text = string.format("<:: %s ::>", text)
+                chat.AddText(self:GetColor(speaker, text), string.format(self.format, name, text))
+
+                local snd = radio:GetReceiveSound()
+                if snd then
+                    surface.PlaySound(snd)
                 end
             end,
         })
@@ -77,25 +81,27 @@ function PLUGIN:InitializedChatClasses()
                 local color = ix.config.Get("chatRadioColor")
                 return Color(color.r + 35, color.g + 35, color.b + 35)
             end,
+            CanHear = function(self, speaker, listener, data)
+                return listener:GetCharacter():CanHearFrequency(data.frequency)
+            end,
             OnChatAdd = function(self, speaker, text, anonymous, data)
                 local char = LocalPlayer():GetCharacter()
-                local can, radio = char:CanHearFrequency(data.frequency)
-                if can then
-                    if ix.config.Get("garbleRadio", true) and data.garble and speaker then 
-                        text = garbleMessage(speaker, text)
-                    end
+                local radio = char:GetActiveRadio(data.frequency)
 
-                    local name = anonymous and
-                    L"someone" or hook.Run("GetCharacterName", speaker, "radio_y") or
-                    (IsValid(speaker) and speaker:Name() or "Console")
+                if ix.config.Get("garbleRadio", true) and data.garble and speaker then 
+                    text = garbleMessage(speaker, text)
+                end
 
-                    text = string.format("<:: %s ::>", text)
-                    chat.AddText(self:GetColor(speaker, text), string.format(self.format, name, text))
+                local name = anonymous and
+                L"someone" or hook.Run("GetCharacterName", speaker, "radio_y") or
+                (IsValid(speaker) and speaker:Name() or "Console")
 
-                    local snd = radio:GetReceiveSound()
-                    if snd then
-                        surface.PlaySound(snd)
-                    end
+                text = string.format("<:: %s ::>", text)
+                chat.AddText(self:GetColor(speaker, text), string.format(self.format, name, text))
+
+                local snd = radio:GetReceiveSound()
+                if snd then
+                    surface.PlaySound(snd)
                 end
             end,
         })
@@ -109,8 +115,12 @@ function PLUGIN:InitializedChatClasses()
             GetColor = function(self, speaker, text)
                 return ix.chat.classes.ic:GetColor(speaker, text)
             end,
-            CanHear = function(self, speaker, listener)
+            CanHear = function(self, speaker, listener, data)
                 if speaker == listener then
+                    return false
+                end
+
+                if listener:GetCharacter():CanHearFrequency(data.frequency) then
                     return false
                 end
 
@@ -118,14 +128,11 @@ function PLUGIN:InitializedChatClasses()
                 return (speaker:GetPos() - listener:GetPos()):LengthSqr() <= (chatRange * chatRange)
             end,
             OnChatAdd = function(self, speaker, text, anonymous, data)
-                local char = LocalPlayer():GetCharacter()
-                if !char:CanHearFrequency(data.frequency) then
-                    local name = anonymous and
-                    L"someone" or hook.Run("GetCharacterName", speaker, "radio_eavesdrop") or
-                    (IsValid(speaker) and speaker:Name() or "Console")
+                local name = anonymous and
+                L"someone" or hook.Run("GetCharacterName", speaker, "radio_eavesdrop") or
+                (IsValid(speaker) and speaker:Name() or "Console")
 
-                    chat.AddText(self:GetColor(speaker, text), string.format(self.format, name, text))
-                end
+                chat.AddText(self:GetColor(speaker, text), string.format(self.format, name, text))
             end,
         })
 
@@ -135,23 +142,24 @@ function PLUGIN:InitializedChatClasses()
             GetColor = function(self, speaker, text)
                 return ix.chat.classes.w:GetColor(speaker, text)
             end,
-            CanHear = function(self, speaker, listener)
+            CanHear = function(self, speaker, listener, data)
                 if speaker == listener then
                     return false
                 end
 
-                local chatRange = ix.config.Get("chatRange", 280) * 0.25
+                if listener:GetCharacter():CanHearFrequency(data.frequency) then
+                    return false
+                end
+
+                local chatRange = ix.config.Get("chatRange", 280)
                 return (speaker:GetPos() - listener:GetPos()):LengthSqr() <= (chatRange * chatRange)
             end,
             OnChatAdd = function(self, speaker, text, anonymous, data)
-                local char = LocalPlayer():GetCharacter()
-                if !char:CanHearFrequency(data.frequency) then
-                    local name = anonymous and
-                    L"someone" or hook.Run("GetCharacterName", speaker, "radio_eavesdrop_w") or
-                    (IsValid(speaker) and speaker:Name() or "Console")
+                local name = anonymous and
+                L"someone" or hook.Run("GetCharacterName", speaker, "radio_eavesdrop_w") or
+                (IsValid(speaker) and speaker:Name() or "Console")
 
-                    chat.AddText(self:GetColor(speaker, text), string.format(self.format, name, text))
-                end
+                chat.AddText(self:GetColor(speaker, text), string.format(self.format, name, text))
             end,
         })
 
@@ -161,23 +169,24 @@ function PLUGIN:InitializedChatClasses()
             GetColor = function(self, speaker, text)
                 return ix.chat.classes.y:GetColor(speaker, text)
             end,
-            CanHear = function(self, speaker, listener)
+            CanHear = function(self, speaker, listener, data)
                 if speaker == listener then
                     return false
                 end
-                
-                local chatRange = ix.config.Get("chatRange", 280) * 2
+
+                if listener:GetCharacter():CanHearFrequency(data.frequency) then
+                    return false
+                end
+
+                local chatRange = ix.config.Get("chatRange", 280)
                 return (speaker:GetPos() - listener:GetPos()):LengthSqr() <= (chatRange * chatRange)
             end,
             OnChatAdd = function(self, speaker, text, anonymous, data)
-                local char = LocalPlayer():GetCharacter()
-                if !char:CanHearFrequency(data.frequency) then
-                    local name = anonymous and
-                    L"someone" or hook.Run("GetCharacterName", speaker, "radio_eavesdrop_y") or
-                    (IsValid(speaker) and speaker:Name() or "Console")
+                local name = anonymous and
+                L"someone" or hook.Run("GetCharacterName", speaker, "radio_eavesdrop_y") or
+                (IsValid(speaker) and speaker:Name() or "Console")
 
-                    chat.AddText(self:GetColor(speaker, text), string.format(self.format, name, text))
-                end
+                chat.AddText(self:GetColor(speaker, text), string.format(self.format, name, text))
             end,
         })
     end
@@ -206,36 +215,37 @@ function PLUGIN:InitializedLanguageClasses()
             GetColor = function(self, speaker, text)
                 return ix.config.Get("chatRadioColor")
             end,
+            CanHear = function(self, speaker, listener, data)
+                return listener:GetCharacter():CanHearFrequency(data.frequency)
+            end,
             OnChatAdd = function(self, speaker, text, anonymous, data)
                 local char = LocalPlayer():GetCharacter()
-                local can, radio = char:CanHearFrequency(data.frequency)
-                if can then
-                    local language = data.language
+                local radio = char:GetActiveRadio(data.frequency)
+                local language = data.language
 
-                    local name = anonymous and
-                    L"someone" or hook.Run("GetCharacterName", speaker, "radio") or
-                    (IsValid(speaker) and speaker:Name() or "Console")
+                local name = anonymous and
+                L"someone" or hook.Run("GetCharacterName", speaker, "radio") or
+                (IsValid(speaker) and speaker:Name() or "Console")
 
-                    if (char:HasLanguage(language)) then
-                        if ix.config.Get("garbleRadio", true) and data.garble and speaker then 
-                            text = garbleMessage(speaker, text)
-                        end
+                if (char:HasLanguage(language)) then
+                    if ix.config.Get("garbleRadio", true) and data.garble and speaker then 
+                        text = garbleMessage(speaker, text)
+                    end
 
-                        text = string.format("<:: %s ::>", text)
-                        chat.AddText(self:GetColor(speaker, text), string.format(self.format, name, language, text))
+                    text = string.format("<:: %s ::>", text)
+                    chat.AddText(self:GetColor(speaker, text), string.format(self.format, name, language, text))
 
-                        local snd = radio:GetReceiveSound()
-                        if snd then
-                            surface.PlaySound(snd)
-                        end
-                    else
-                        text = string.format("%s says something unintelligible over the radio in %s.", name, language)
-                        chat.AddText(self:GetColor(speaker, text), text)
+                    local snd = radio:GetReceiveSound()
+                    if snd then
+                        surface.PlaySound(snd)
+                    end
+                else
+                    text = string.format("%s says something unintelligible over the radio in %s.", name, language)
+                    chat.AddText(self:GetColor(speaker, text), text)
 
-                        local snd = radio:GetReceiveSound()
-                        if snd then
-                            surface.PlaySound(snd)
-                        end
+                    local snd = radio:GetReceiveSound()
+                    if snd then
+                        surface.PlaySound(snd)
                     end
                 end
             end,
@@ -248,36 +258,37 @@ function PLUGIN:InitializedLanguageClasses()
                 local color = ix.config.Get("chatRadioColor")
                 return Color(color.r - 35, color.g - 35, color.b - 35)
             end,
+            CanHear = function(self, speaker, listener, data)
+                return listener:GetCharacter():CanHearFrequency(data.frequency)
+            end,
             OnChatAdd = function(self, speaker, text, anonymous, data)
                 local char = LocalPlayer():GetCharacter()
-                local can, radio = char:CanHearFrequency(data.frequency)
-                if can then
-                    local language = data.language
+                local radio = char:GetActiveRadio(data.frequency)
+                local language = data.language
 
-                    local name = anonymous and
-                    L"someone" or hook.Run("GetCharacterName", speaker, "radio_w") or
-                    (IsValid(speaker) and speaker:Name() or "Console")
+                local name = anonymous and
+                L"someone" or hook.Run("GetCharacterName", speaker, "radio_w") or
+                (IsValid(speaker) and speaker:Name() or "Console")
 
-                    if (char:HasLanguage(language)) then
-                        if ix.config.Get("garbleRadio", true) and data.garble and speaker then 
-                            text = garbleMessage(speaker, text)
-                        end
+                if (char:HasLanguage(language)) then
+                    if ix.config.Get("garbleRadio", true) and data.garble and speaker then 
+                        text = garbleMessage(speaker, text)
+                    end
 
-                        text = string.format("<:: %s ::>", text)
-                        chat.AddText(self:GetColor(speaker, text), string.format(self.format, name, language, text))
+                    text = string.format("<:: %s ::>", text)
+                    chat.AddText(self:GetColor(speaker, text), string.format(self.format, name, language, text))
 
-                        local snd = radio:GetReceiveSound()
-                        if snd then
-                            surface.PlaySound(snd)
-                        end
-                    else
-                        text = string.format("%s whispers something unintelligible over the radio in %s.", name, language)
-                        chat.AddText(self:GetColor(speaker, text), text)
+                    local snd = radio:GetReceiveSound()
+                    if snd then
+                        surface.PlaySound(snd)
+                    end
+                else
+                    text = string.format("%s whispers something unintelligible over the radio in %s.", name, language)
+                    chat.AddText(self:GetColor(speaker, text), text)
 
-                        local snd = radio:GetReceiveSound()
-                        if snd then
-                            surface.PlaySound(snd)
-                        end
+                    local snd = radio:GetReceiveSound()
+                    if snd then
+                        surface.PlaySound(snd)
                     end
                 end
             end,
@@ -290,36 +301,37 @@ function PLUGIN:InitializedLanguageClasses()
                 local color = ix.config.Get("chatRadioColor")
                 return Color(color.r + 35, color.g + 35, color.b + 35)
             end,
+            CanHear = function(self, speaker, listener, data)
+                return listener:GetCharacter():CanHearFrequency(data.frequency)
+            end,
             OnChatAdd = function(self, speaker, text, anonymous, data)
                 local char = LocalPlayer():GetCharacter()
-                local can, radio = char:CanHearFrequency(data.frequency)
-                if can then
-                    local language = data.language
+                local radio = char:GetActiveRadio(data.frequency)
+                local language = data.language
 
-                    local name = anonymous and
-                    L"someone" or hook.Run("GetCharacterName", speaker, "radio_y") or
-                    (IsValid(speaker) and speaker:Name() or "Console")
+                local name = anonymous and
+                L"someone" or hook.Run("GetCharacterName", speaker, "radio_y") or
+                (IsValid(speaker) and speaker:Name() or "Console")
 
-                    if (char:HasLanguage(language)) then
-                        if ix.config.Get("garbleRadio", true) and data.garble and speaker then 
-                            text = garbleMessage(speaker, text)
-                        end
+                if (char:HasLanguage(language)) then
+                    if ix.config.Get("garbleRadio", true) and data.garble and speaker then 
+                        text = garbleMessage(speaker, text)
+                    end
 
-                        text = string.format("<:: %s ::>", text)
-                        chat.AddText(self:GetColor(speaker, text), string.format(self.format, name, language, text))
+                    text = string.format("<:: %s ::>", text)
+                    chat.AddText(self:GetColor(speaker, text), string.format(self.format, name, language, text))
 
-                        local snd = radio:GetReceiveSound()
-                        if snd then
-                            surface.PlaySound(snd)
-                        end
-                    else
-                        text = string.format("%s yells something unintelligible over the radio in %s.", name, language)
-                        chat.AddText(self:GetColor(speaker, text), text)
+                    local snd = radio:GetReceiveSound()
+                    if snd then
+                        surface.PlaySound(snd)
+                    end
+                else
+                    text = string.format("%s yells something unintelligible over the radio in %s.", name, language)
+                    chat.AddText(self:GetColor(speaker, text), text)
 
-                        local snd = radio:GetReceiveSound()
-                        if snd then
-                            surface.PlaySound(snd)
-                        end
+                    local snd = radio:GetReceiveSound()
+                    if snd then
+                        surface.PlaySound(snd)
                     end
                 end
             end,
@@ -334,8 +346,12 @@ function PLUGIN:InitializedLanguageClasses()
             GetColor = function(self, speaker, text)
                 return ix.chat.classes.ic:GetColor(speaker, text)
             end,
-            CanHear = function(self, speaker, listener)
+            CanHear = function(self, speaker, listener, data)
                 if speaker == listener then
+                    return false
+                end
+
+                if listener:GetCharacter():CanHearFrequency(data.frequency) then
                     return false
                 end
 
@@ -344,19 +360,17 @@ function PLUGIN:InitializedLanguageClasses()
             end,
             OnChatAdd = function(self, speaker, text, anonymous, data)
                 local char = LocalPlayer():GetCharacter()
-                if !char:CanHearFrequency(data.frequency) then
-                    local language = data.language
+                local language = data.language
 
-                    local name = anonymous and
-                    L"someone" or hook.Run("GetCharacterName", speaker, "radio_eavesdrop") or
-                    (IsValid(speaker) and speaker:Name() or "Console")
+                local name = anonymous and
+                L"someone" or hook.Run("GetCharacterName", speaker, "radio_eavesdrop") or
+                (IsValid(speaker) and speaker:Name() or "Console")
 
-                    if (char:HasLanguage(language)) then
-                        chat.AddText(self:GetColor(speaker, text), string.format(self.format, name, language, text))
-                    else
-                        text = string.format("%s says something unintelligible over the radio in %s.", name, language)
-                        chat.AddText(self:GetColor(speaker, text), text)
-                    end
+                if (char:HasLanguage(language)) then
+                    chat.AddText(self:GetColor(speaker, text), string.format(self.format, name, language, text))
+                else
+                    text = string.format("%s says something unintelligible over the radio in %s.", name, language)
+                    chat.AddText(self:GetColor(speaker, text), text)
                 end
             end,
         })
@@ -367,29 +381,31 @@ function PLUGIN:InitializedLanguageClasses()
             GetColor = function(self, speaker, text)
                 return ix.chat.classes.w:GetColor(speaker, text)
             end,
-            CanHear = function(self, speaker, listener)
+            CanHear = function(self, speaker, listener, data)
                 if speaker == listener then
                     return false
                 end
 
-                local chatRange = ix.config.Get("chatRange", 280) * 0.25
+                if listener:GetCharacter():CanHearFrequency(data.frequency) then
+                    return false
+                end
+
+                local chatRange = ix.config.Get("chatRange", 280)
                 return (speaker:GetPos() - listener:GetPos()):LengthSqr() <= (chatRange * chatRange)
             end,
             OnChatAdd = function(self, speaker, text, anonymous, data)
                 local char = LocalPlayer():GetCharacter()
-                if !char:CanHearFrequency(data.frequency) then
-                    local language = data.language
+                local language = data.language
 
-                    local name = anonymous and
-                    L"someone" or hook.Run("GetCharacterName", speaker, "radio_eavesdrop_w") or
-                    (IsValid(speaker) and speaker:Name() or "Console")
+                local name = anonymous and
+                L"someone" or hook.Run("GetCharacterName", speaker, "radio_eavesdrop_w") or
+                (IsValid(speaker) and speaker:Name() or "Console")
 
-                    if (char:HasLanguage(language)) then
-                        chat.AddText(self:GetColor(speaker, text), string.format(self.format, name, language, text))
-                    else
-                        text = string.format("%s whispers something unintelligible over the radio in %s.", name, language)
-                        chat.AddText(self:GetColor(speaker, text), text)
-                    end
+                if (char:HasLanguage(language)) then
+                    chat.AddText(self:GetColor(speaker, text), string.format(self.format, name, language, text))
+                else
+                    text = string.format("%s whispers something unintelligible over the radio in %s.", name, language)
+                    chat.AddText(self:GetColor(speaker, text), text)
                 end
             end,
         })
@@ -400,29 +416,31 @@ function PLUGIN:InitializedLanguageClasses()
             GetColor = function(self, speaker, text)
                 return ix.chat.classes.y:GetColor(speaker, text)
             end,
-            CanHear = function(self, speaker, listener)
+            CanHear = function(self, speaker, listener, data)
                 if speaker == listener then
                     return false
                 end
 
-                local chatRange = ix.config.Get("chatRange", 280) * 2
+                if listener:GetCharacter():CanHearFrequency(data.frequency) then
+                    return false
+                end
+
+                local chatRange = ix.config.Get("chatRange", 280)
                 return (speaker:GetPos() - listener:GetPos()):LengthSqr() <= (chatRange * chatRange)
             end,
             OnChatAdd = function(self, speaker, text, anonymous, data)
                 local char = LocalPlayer():GetCharacter()
-                if !char:CanHearFrequency(data.frequency) then
-                    local language = data.language
+                local language = data.language
 
-                    local name = anonymous and
-                    L"someone" or hook.Run("GetCharacterName", speaker, "radio_eavesdrop_y") or
-                    (IsValid(speaker) and speaker:Name() or "Console")
+                local name = anonymous and
+                L"someone" or hook.Run("GetCharacterName", speaker, "radio_eavesdrop_y") or
+                (IsValid(speaker) and speaker:Name() or "Console")
 
-                    if (char:HasLanguage(language)) then
-                        chat.AddText(self:GetColor(speaker, text), string.format(self.format, name, language, text))
-                    else
-                        text = string.format("%s yells something unintelligible over the radio in %s.", name, language)
-                        chat.AddText(self:GetColor(speaker, text), text)
-                    end
+                if (char:HasLanguage(language)) then
+                    chat.AddText(self:GetColor(speaker, text), string.format(self.format, name, language, text))
+                else
+                    text = string.format("%s yells something unintelligible over the radio in %s.", name, language)
+                    chat.AddText(self:GetColor(speaker, text), text)
                 end
             end,
         })
