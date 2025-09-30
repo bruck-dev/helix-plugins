@@ -161,7 +161,7 @@ ix.command.Add("SetFrequency", {
 
         if radio then
             if tonumber(frequency) then
-                frequency = string.format("%.2f", tonumber(frequency))
+                frequency = string.format("%.1f", tonumber(frequency))
                 client:Notify(radio:SetFrequency(frequency))
             else
                 client:Notify(string.format("%s is an invalid frequency.", frequency))

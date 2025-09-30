@@ -17,11 +17,11 @@ local function convertUnit(freq)
     if isstring(freq) then
         freq = tonumber(freq)
     end
-    freq = tonumber(string.format("%.2f", freq))
+    freq = tonumber(string.format("%.1f", freq))
 
     -- no need to convert if we're already in the MHz range
     if freq >= 1 and freq < 1000 then
-        return string.format("%.2f", freq), "MHz"
+        return string.format("%.1f", freq), "MHz"
     end
 
     freq = freq * 1000000000 -- normalize to GHz; we ALWAYS divide once, so this makes room for the first division
@@ -39,7 +39,7 @@ local function convertUnit(freq)
 		i = i + 1
 	end
 
-    return string.format("%.2f", freq), (units[i] or "undefined")
+    return string.format("%.1f", freq), (units[i] or "undefined")
 end
 
 -- in MHz; unit conversions are done only on display, it's all calculated in MHz internally
@@ -83,7 +83,7 @@ if (CLIENT) then
         local freq, unit = self:GetFrequency()
         if freq then
             panel = tooltip:AddRowAfter("description", "freq")
-            panel:SetText("Frequency Tuning: " .. string.format("%.2f", freq) .. " " .. unit)
+            panel:SetText("Frequency Tuning: " .. string.format("%.1f", freq) .. " " .. unit)
             panel:SetFont(font)
             panel:SizeToContents()
         end
@@ -95,8 +95,8 @@ function ITEM:OnInstanced(invID, x, y)
     local min, minUnit = convertUnit(self.frequencyBand["min"])
     local max, maxUnit = convertUnit(self.frequencyBand["max"])
 
-    self:SetData("min", string.format("%.2f", min))
-    self:SetData("max", string.format("%.2f", max))
+    self:SetData("min", string.format("%.1f", min))
+    self:SetData("max", string.format("%.1f", max))
     self:SetData("minUnit", minUnit)
     self:SetData("maxUnit", maxUnit)
 end
@@ -110,7 +110,7 @@ function ITEM:IsEnabled()
 end
 
 function ITEM:GetValidFrequencyBand()
-    return self:GetData("min", string.format("%.2f", self.frequencyBand["min"])), self:GetData("max", string.format("%.2f", self.frequencyBand["max"])), self:GetData("minUnit", "MHz"), self:GetData("maxUnit", "MHz")
+    return self:GetData("min", string.format("%.1f", self.frequencyBand["min"])), self:GetData("max", string.format("%.1f", self.frequencyBand["max"])), self:GetData("minUnit", "MHz"), self:GetData("maxUnit", "MHz")
 end
 
 -- update frequency + frequency unit on change
@@ -175,11 +175,12 @@ ITEM.functions.Frequency = {
         local client = item.player
         local default = item:GetFrequency() or item.frequencyBand["min"]
         local en = item:IsEnabled()
+        
         client:RequestString("Frequency (MHz)", "What would you like to set the frequency to?", function(frequency)
             if tonumber(frequency) then
                 client.hearableFrequencies[default] = nil
                 
-                frequency = string.format("%.2f", tonumber(frequency))
+                frequency = string.format("%.1f", tonumber(frequency))
                 client:Notify(item:SetFrequency(frequency))
 
                 if en then
@@ -188,7 +189,7 @@ ITEM.functions.Frequency = {
             else
                 client:Notify(string.format("%s is an invalid frequency.", frequency))
             end
-        end, item:GetData("frequency", string.format("%.2f", tonumber(default))))
+        end, item:GetData("frequency", string.format("%.1f", tonumber(default))))
 
         return false
     end

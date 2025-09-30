@@ -63,13 +63,13 @@ end
 
 function ix.radio.stations.FindByFrequency(frequency)
     if isnumber(frequency) then
-        frequency = string.format("%.2f", frequency)
+        frequency = string.format("%.1f", frequency)
     end
     
     if !tonumber(frequency) then return nil end
 
 	for k, v in pairs(ix.radio.stations.stored) do
-		if string.format("%.2f", v.frequency) == frequency then
+		if string.format("%.1f", v.frequency) == frequency then
 			return ix.radio.stations.stored[k]
 		end
 	end

@@ -115,7 +115,7 @@ do
             self:SetSolid(SOLID_VPHYSICS)
             self:PhysicsInit(SOLID_VPHYSICS)
 
-            self:SetFrequency(string.format("%.2f", 0))
+            self:SetFrequency(string.format("%.1f", 0))
             self:SetFrequencyUnit("MHz")
 
             local _, unit = self:ConvertUnit(self.FrequencyBand["min"])
@@ -152,7 +152,7 @@ do
 
                 client:RequestString("Frequency (MHz)", "What would you like to set the frequency to?", function(frequency)
                     if tonumber(frequency) then
-                        frequency = string.format("%.2f", tonumber(frequency))
+                        frequency = string.format("%.1f", tonumber(frequency))
                         client:Notify(ent:UpdateFrequency(frequency))
                     else
                         client:Notify(string.format("%s is an invalid frequency.", frequency))
@@ -328,11 +328,11 @@ do
         if isstring(freq) then
             freq = tonumber(freq)
         end
-        freq = tonumber(string.format("%.2f", freq))
+        freq = tonumber(string.format("%.1f", freq))
 
         -- no need to convert if we're already in the MHz range
         if freq >= 1 and freq < 1000 then
-            return string.format("%.2f", freq), "MHz"
+            return string.format("%.1f", freq), "MHz"
         end
 
         freq = freq * 1000000000 -- normalize to GHz; we ALWAYS divide once, so this makes room for the first division
@@ -350,11 +350,11 @@ do
             i = i + 1
         end
 
-        return string.format("%.2f", freq), (units[i] or "undefined")
+        return string.format("%.1f", freq), (units[i] or "undefined")
     end
 
     function ENT:GetValidFrequencyBand()
-        return string.format("%.2f", self.FrequencyBand["min"]), string.format("%.2f", self.FrequencyBand["max"]), self:GetMinUnit(), self:GetMaxUnit() 
+        return string.format("%.1f", self.FrequencyBand["min"]), string.format("%.1f", self.FrequencyBand["max"]), self:GetMinUnit(), self:GetMaxUnit() 
     end
 
     function ENT:UpdateFrequency(freq)

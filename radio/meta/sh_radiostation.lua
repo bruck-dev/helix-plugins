@@ -23,7 +23,7 @@ end
 
 -- returns the frequency, formatted for comparison
 function STATION:GetFrequency()
-    return string.format("%.2f", self.frequency)
+    return string.format("%.1f", self.frequency)
 end
 
 -- checks if the track list is valid before playing on radios

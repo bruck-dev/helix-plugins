@@ -4,9 +4,9 @@ local CHAR = ix.meta.character
 -- returns whether or not the character has an enabled radio, optionally check if the enabled radio is the on the passed frequency
 function CHAR:HasRadioEnabled(frequency)
     if isnumber(frequency) then
-        frequency = string.format("%.2f", frequency)
+        frequency = string.format("%.1f", frequency)
     elseif tonumber(frequency) then
-        frequency = string.format("%.2f", tonumber(frequency))
+        frequency = string.format("%.1f", tonumber(frequency))
     end
 
     for k, _ in self:GetInventory():Iter() do
@@ -44,9 +44,9 @@ end
 function CHAR:GetActiveRadio(frequency)
     if !frequency then return nil end
     if isnumber(frequency) then
-        frequency = string.format("%.2f", frequency)
+        frequency = string.format("%.1f", frequency)
     elseif tonumber(frequency) then
-        frequency = string.format("%.2f", tonumber(frequency))
+        frequency = string.format("%.1f", tonumber(frequency))
     end
 
     local en, radio = self:HasRadioEnabled(frequency)
@@ -66,9 +66,9 @@ end
 function CHAR:CanHearFrequency(frequency)
     if !frequency then return false end
     if isnumber(frequency) then
-        frequency = string.format("%.2f", frequency)
+        frequency = string.format("%.1f", frequency)
     elseif tonumber(frequency) then
-        frequency = string.format("%.2f", tonumber(frequency))
+        frequency = string.format("%.1f", tonumber(frequency))
     end
 
     -- if server, then check the freq cache. otherwise, just check for an active radio nearby/in inventory
