@@ -50,16 +50,21 @@ end
 
 -- hacky fix to prevent PostPlayerLoadout from being called an extra time incorrectly, prevents att duping from preset application
 function PLUGIN:PostPlayerLoadout(client)
-    local character = client:GetCharacter()
+    local char = client:GetCharacter()
 
-    if character and character:GetInventory() and client.loadoutPredictedArcCW then
-        for k, _ in character:GetInventory():Iter() do
+    if char and char:GetInventory() and client.loadoutPredictedArcCW and char.loadoutPredictedArcCW then
+        for k, _ in char:GetInventory():Iter() do
             if k.isArcCWWeapon and k:GetData("equip", false) then
                 k:Call("OnPostLoadout", client)
             end
         end
         client.loadoutPredictedArcCW = nil
+        char.loadoutPredictedArcCW = nil
     end
-
+end
+function PLUGIN:PlayerLoadedCharacter(client, char, prevChar)
     client.loadoutPredictedArcCW = true
+    char.loadoutPredictedArcCW = true
+
+    client.ArcCW_AttInv = {}
 end
