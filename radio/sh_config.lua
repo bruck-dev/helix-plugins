@@ -8,11 +8,10 @@ ix.config.Add("enableRadio", true, "Whether or not players are able to use radio
     category = PLUGIN.name
 })
 ix.config.Add("radioListenRange", 92, "The maximum radius for which a player can hear radio messages and music from a stationary-type radio.", nil, {
-	data = {min = 10, max = 5000, decimals = 1},
-	category = PLUGIN.name
+    data = {min = 10, max = 5000, decimals = 1},
+    category = PLUGIN.name
 })
 
--- these are from fauxzor's Extended Radio plugin, although slightly modified in their application
 ix.config.Add("garbleRadio", true, "Whether or not radio messages become naturally garbled over long distances. Taken from Extended Radio.", nil, {
     category = PLUGIN.name
 })

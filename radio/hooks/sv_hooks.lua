@@ -52,6 +52,7 @@ function PLUGIN:SaveData()
 
             freq = entity:GetFrequency(),
             enabled = entity:GetEnabled(),
+            radioID = entity:GetRadioID(),
         }
     end
 
@@ -88,9 +89,11 @@ function PLUGIN:LoadData()
         if v.enabled then
             entity:SetEnabled(v.enabled)
         end
+
+        entity:SetRadioID(v.radioID)
     end
 end
 
 function PLUGIN:CanAutoFormatMessage(client, chatType, message)
-	return string.find(chatType, "radio")
+    return string.find(chatType, "radio")
 end

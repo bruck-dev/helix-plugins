@@ -1,0 +1,30 @@
+RADIO.name = "Radio (One Way)"
+RADIO.description = "This radio can only receive messages and stations, it cannot be used to broadcast messages."
+RADIO.model = "models/props/cs_office/radio.mdl"
+
+RADIO.twoWay = false                            -- if true, this radio can act as a broadcaster as well as a receiver
+RADIO.canGarble = false                         -- if true, radio messages broadcasted from this radio can be garbled if the config is enabled based on distance to the receiver
+RADIO.enableStations = true                     -- if true, this radio can tune to radio stations and play music/audio
+
+RADIO.enableSound = "buttons/lever7.wav"        -- this is the sound played when the radio turns on, can be a single string or a list or strings
+RADIO.disableSound = "buttons/lever7.wav"       -- ditto as above, but for when it is turned off
+RADIO.receiveSound = "buttons/blip1.wav"        -- ditto as above, but for when the radio receives a valid radio message
+
+-- standard american FM band
+RADIO.frequencyBand = {
+    ["min"] = 88.0,
+    ["max"] = 108.0,
+}
+
+if CLIENT then
+    function RADIO:Paint(entity)
+        local pos = entity:GetPos() + (entity:GetForward() * 3) + (entity:GetUp() * 3.5) - (entity:GetRight() * 3.5)
+        render.SetMaterial(Material("sprites/light_glow02_add"))
+
+        if entity:GetEnabled() then
+            render.DrawSprite(pos, 12, 12, Color(0, 255, 0, 75))
+        else
+            render.DrawSprite(pos, 12, 12, Color(255, 0, 0, 75))
+        end
+    end
+end

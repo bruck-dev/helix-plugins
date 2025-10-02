@@ -27,17 +27,17 @@ local function convertUnit(freq)
     freq = freq * 1000000000 -- normalize to GHz; we ALWAYS divide once, so this makes room for the first division
     local units = {
         "Hz",
-		"kHz",
-		"MHz",
-		"GHz",
-		"THz",
+        "kHz",
+        "MHz",
+        "GHz",
+        "THz",
     }
 
-	local i = 0
-	while freq >= 1000 do
-		freq = freq / 1000
-		i = i + 1
-	end
+    local i = 0
+    while freq >= 1000 do
+        freq = freq / 1000
+        i = i + 1
+    end
 
     return string.format("%.1f", freq), (units[i] or "undefined")
 end

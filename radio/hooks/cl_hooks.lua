@@ -95,7 +95,7 @@ end)
 
 -- wipes all frequency tracking from stationary radio ents when the player loads a new character
 function PLUGIN:CharacterLoaded(character)
-	for _, radio in ipairs(ents.FindByClass("ix_radio_*")) do
+    for _, radio in ipairs(ents.FindByClass("ix_radio_*")) do
         radio.canCurrentlyHear = nil
     end
 end

@@ -3,9 +3,10 @@ local PLUGIN = PLUGIN
 
 -- run this at the very, very end of all plugin initializations
 function PLUGIN:InitializedConfig()
-	for _, path in ipairs(self.paths or {}) do
-		ix.radio.stations.LoadFromDir(path.."/radiostations")
-	end
+    for _, path in ipairs(self.paths or {}) do
+        ix.radio.stations.LoadFromDir(path.."/radiostations")
+        ix.radio.stationaryRadios.LoadFromDir(path.."/radios")
+    end
 end
 
 function PLUGIN:InitializedChatClasses()

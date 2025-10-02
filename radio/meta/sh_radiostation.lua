@@ -1,7 +1,7 @@
 
 ix.meta = ix.meta or {}
 
-local STATION = ix.meta.radiostation or {}
+local STATION = ix.meta.radioStation or {}
 STATION.__index = STATION
 STATION.name = "undefined"
 STATION.description = "undefined"
@@ -13,9 +13,9 @@ STATION.trackDelay = 0                  -- if not live, this is the delay in sec
                                         -- recommend at least a 1 second delay between tracks if you're playing music or else it can get rather cluttered
 STATION.isStream = false                -- whether or not the string path is a radio stream. will NOT cycle to the next track in the list if true; will only play index 1 or the single string
 
--- unused, but can be used to create UI elements if needed
+-- unused, but can be used to create UI elements
 function STATION:GetName()
-	return self.name
+    return self.name
 end
 function STATION:GetDescription()
     return self.description
@@ -101,4 +101,4 @@ if SERVER then
     end
 end
 
-ix.meta.radiostation = STATION
+ix.meta.radioStation = STATION

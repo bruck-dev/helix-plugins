@@ -8,5 +8,5 @@ STATION.isStream = false                                -- since this station is
 STATION.trackList = {                                   -- these must be sound files stored on both the client and server; do NOT start with the 'sound/' prefix
     "music/hl2_song6.mp3",
     "music/hl2_song7.mp3",
-    ,"music/hl2_song8.mp3",
+    "music/hl2_song8.mp3",
 }
