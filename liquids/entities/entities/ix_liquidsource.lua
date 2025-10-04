@@ -18,9 +18,10 @@ function ENT:SetupDataTables()
     self:NetworkVar("Bool", 1, "ShouldShowTooltip")
 end
 
-function ENT:Initialize()
-    if (SERVER) then
+if SERVER then
+    local PLUGIN = PLUGIN
 
+    function ENT:Initialize()
         -- if duplicated, use the copied model text instead of the default
         self:SetModel(self:GetStoredModel())
 
@@ -65,42 +66,10 @@ function ENT:Initialize()
             end
         end)
     end
-end
 
-function ENT:CanAccess(client)
-    return client:IsAdmin()
-end
-
-function ENT:SetAnim()
-    for k, v in ipairs(self:GetSequenceList()) do
-        if (v:lower():find("idle") and v != "idlenoise") then
-            return self:ResetSequence(k)
-        end
+    function ENT:UpdateTransmitState()
+        return TRANSMIT_PVS
     end
-
-    if (self:GetSequenceCount() > 1) then
-        self:ResetSequence(4)
-    end
-end
-
-function ENT:TakeVolume(vol)
-    local newVol = self:GetCurVolume() - vol
-    if newVol < 0 then
-        newVol = 0
-    end
-    self:SetCurVolume(newVol)
-end
-
-function ENT:AddVolume(vol)
-    local newVol = self:GetCurVolume() + vol
-    if newVol > self:GetMaxVolume() then
-        newVol = self:GetMaxVolume()
-    end
-    self:SetCurVolume(self:GetMaxVolume())
-end
-
-if (SERVER) then
-    local PLUGIN = PLUGIN
 
     function ENT:SpawnFunction(client, trace)
         local angles = (trace.HitPos - client:GetPos()):Angle()
@@ -169,4 +138,36 @@ else
             end
         end
     end
+end
+
+function ENT:CanAccess(client)
+    return client:IsAdmin()
+end
+
+function ENT:SetAnim()
+    for k, v in ipairs(self:GetSequenceList()) do
+        if (v:lower():find("idle") and v != "idlenoise") then
+            return self:ResetSequence(k)
+        end
+    end
+
+    if (self:GetSequenceCount() > 1) then
+        self:ResetSequence(4)
+    end
+end
+
+function ENT:TakeVolume(vol)
+    local newVol = self:GetCurVolume() - vol
+    if newVol < 0 then
+        newVol = 0
+    end
+    self:SetCurVolume(newVol)
+end
+
+function ENT:AddVolume(vol)
+    local newVol = self:GetCurVolume() + vol
+    if newVol > self:GetMaxVolume() then
+        newVol = self:GetMaxVolume()
+    end
+    self:SetCurVolume(self:GetMaxVolume())
 end
