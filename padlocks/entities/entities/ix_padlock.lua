@@ -64,7 +64,7 @@ if (SERVER) then
         self:SetParent(door)
     end
 
-    function ENT:SpawnFunction(client, trace)
+    function ENT:SpawnFunction(client, trace, persistentID)
         local door = trace.Entity
 
         if (!IsValid(door) or !door:IsDoor()) then
@@ -82,7 +82,11 @@ if (SERVER) then
         entity:Activate()
         entity:SetDoor(door, position, angles)
         entity:SetLocked(true)
-        entity:SetPersistentID(entity:GeneratePersistentID())
+
+        if !persistentID then
+            persistentID = entity:GeneratePersistentID()
+        end
+        entity:SetPersistentID(persistentID)
 
         PLUGIN:SaveData()
         return entity
@@ -96,6 +100,10 @@ if (SERVER) then
         self:SetUseType(SIMPLE_USE)
 
         self.nextUseTime = 0
+    end
+
+    function ENT:UpdateTransmitState()
+        return TRANSMIT_PVS
     end
 
     function ENT:OnRemove()
@@ -173,20 +181,30 @@ if (SERVER) then
             return
         end
 
-        if self:CanToggle(client) then
+        if self:CanUse(client) then
             local time = ix.config.Get("doorLockTime", 1)
 
             if self:GetLocked() then
-                client:SetAction("Unlocking...", time, function()
-                    self:SetLocked(!self:GetLocked())
-                end)
+                client:SetAction("Unlocking...", time)
             else
-                client:SetAction("Locking...", time, function()
-                    self:SetLocked(!self:GetLocked())
-                end)
+                client:SetAction("Locking...", time)
             end
 
-            self.nextUseTime = CurTime() + 2
+            local lock = self
+            client:SetNetVar("usingPadlock", true)
+            client:DoStaredAction(lock, function()
+                if IsValid(lock) then
+                    lock:SetLocked(!lock:GetLocked())
+                    client:SetNetVar("usingPadlock", nil)
+
+                    lock.nextUseTime = CurTime() + 1
+                end
+            end, time, function()
+                if (IsValid(client)) then
+                    client:SetAction()
+                    client:SetNetVar("usingPadlock", nil)
+                end
+            end)
         else
             self.door:Use(client) -- mimic opening the door instead
             self.nextUseTime = CurTime() + 1
@@ -194,26 +212,67 @@ if (SERVER) then
     end
 
     function ENT:Use(client)
-        self:Toggle(client)
+        if !client:GetNetVar("usingPadlock", false) then
+            if client:KeyDown(IN_SPEED) and self:CanUse(client) then
+                self:PickUp(client)
+            else
+                self:Toggle(client)
+            end
+        end
     end
 
     -- technically these aren't unique but the odds of it generating the same password twice are basically 0 lol. call it a manufacturer's defect
     function ENT:GeneratePersistentID()
         local charset = "qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890"
     
-        local password = {}
+        local password = ""
         local ch
         for i = 1, 16 do
             ch = math.random(1, #charset)
-            table.insert(password, charset:sub(ch, ch))
+            password = password .. charset:sub(ch, ch)
         end
-        return table.concat(password)
+        return password
+    end
+
+    function ENT:PickUp(client)
+        local time = ix.config.Get("doorLockTime", 1) / 2
+
+        -- extra unlock time for the immersion or something
+        if self:GetLocked() then
+            time = time * 2
+        end
+
+        local lock = self
+        client:SetAction("Retrieving Lock...", time)
+        client:SetNetVar("usingPadlock", true)
+        client:DoStaredAction(lock, function()
+            if IsValid(lock) then
+                if !client:GetCharacter():GetInventory():Add("padlock", 1, {persistentID = lock:GetPersistentID(), padlockName = lock:GetDisplayName()}) then
+                    ix.item.Spawn("padlock", client, nil, nil, {padlock = lock:GetPersistentID(), padlockName = lock:GetDisplayName()})
+                end
+
+                local snd = {"physics/metal/weapon_impact_soft1.wav", "physics/metal/weapon_impact_soft2.wav", "physics/metal/weapon_impact_soft3.wav"}
+                lock:EmitSound(snd[math.random(1, #snd)], 75, 80)
+
+                if lock:GetLocked() then
+                    lock:EmitSound("doors/default_locked.wav")
+                end
+
+                lock:Remove()
+                client:SetNetVar("usingPadlock", nil)
+            end
+        end, time, function()
+            if (IsValid(client)) then
+                client:SetAction()
+                client:SetNetVar("usingPadlock", nil)
+            end
+        end)
     end
 else
     ENT.PopulateEntityInfo = true
 
     function ENT:OnPopulateEntityInfo(tooltip)
-        if self:CanToggle(LocalPlayer()) then
+        if self:CanUse(LocalPlayer()) then
             local text = tooltip:AddRow("name")
             text:SetImportant()
             text:SetText(self:GetDisplayName())
@@ -226,9 +285,9 @@ else
     end
 end
 
-function ENT:CanToggle(client)
+function ENT:CanUse(client)
     for _, v in ipairs(client:GetCharacter():GetInventory():GetItemsByUniqueID("padlock_key")) do
-        local pid = v:GetData("padlock", nil)
+        local pid = v:GetData("persistentID", nil)
         if pid and pid == self:GetPersistentID() then
             return true
         end

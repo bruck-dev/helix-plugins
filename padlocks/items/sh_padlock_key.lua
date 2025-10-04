@@ -4,7 +4,7 @@ ITEM.description = "A key, fitted to a padlock."
 ITEM.model = "models/props_c17/TrapPropeller_Lever.mdl"
 ITEM.width = 1
 ITEM.height = 1
-ITEM.category = "Utility"
+ITEM.category = "Security"
 
 function ITEM:GetName()
     if !self:GetData("padlockName", nil) then
@@ -30,14 +30,14 @@ ITEM.functions.combine = {
         local name = cloned:GetData("padlockName", nil)
 
         clonedTo:SetData("padlockName", name)
-        clonedTo:SetData("padlock", cloned:GetData("padlock", nil))
+        clonedTo:SetData("persistentID", cloned:GetData("persistentID", nil))
 
         cloned.player:Notify("Created a copy of key '" .. name .. "'.")
 
         return false
     end,
     OnCanRun = function(item, data)
-        return item:GetData("padlockName", nil) != nil and item:GetData("padlock", nil) != nil
+        return item:GetData("padlockName", nil) != nil and item:GetData("persistentID", nil) != nil
     end
 }
 
