@@ -3,7 +3,7 @@ local PLUGIN = PLUGIN
 
 ENT.Type = "anim"
 ENT.PrintName = "Stationary Radio"
-ENT.Description = "Basic framework for stationary radios, yippee.."
+ENT.Description = "Basic framework for stationary radios, yippee."
 ENT.Category = "Helix - Radio"
 ENT.Spawnable = false
 ENT.bNoPersist = true
@@ -14,8 +14,6 @@ function ENT:SetupDataTables()
     self:NetworkVar("String", 0, "RadioID")
     self:NetworkVar("String", 1, "Frequency")
     self:NetworkVar("String", 2, "FrequencyUnit")
-    self:NetworkVar("String", 3, "MinUnit")
-    self:NetworkVar("String", 4, "MaxUnit")
     self:NetworkVar("Bool", 0, "Enabled")
 
     self:NetworkVarNotify("Enabled", self.OnVarChanged)
@@ -96,10 +94,6 @@ if SERVER then
         self:SetFrequency(string.format("%.1f", 0))
         self:SetFrequencyUnit("MHz")
 
-        local _, unit = self:ConvertUnit(self.FrequencyBand["min"])
-        self:SetMinUnit(unit)
-        local _, unit = self:ConvertUnit(self.FrequencyBand["max"])
-        self:SetMaxUnit(unit)
         self:SetEnabled(false)
 
         self.listeners = {}
@@ -111,6 +105,10 @@ if SERVER then
         end
 
         PLUGIN:SaveData()
+    end
+
+    function ENT:UpdateTransmitState()
+        return TRANSMIT_PVS
     end
 
     function ENT:OnOptionSelected(client, option, data)
@@ -332,7 +330,10 @@ function ENT:ConvertUnit(freq)
 end
 
 function ENT:GetValidFrequencyBand()
-    return string.format("%.1f", self.FrequencyBand["min"]), string.format("%.1f", self.FrequencyBand["max"]), self:GetMinUnit(), self:GetMaxUnit() 
+    local _, minUnit = self:ConvertUnit(self.FrequencyBand["min"])
+    local _, maxUnit = self:ConvertUnit(self.FrequencyBand["max"])
+
+    return string.format("%.1f", self.FrequencyBand["min"]), string.format("%.1f", self.FrequencyBand["max"]), minUnit, maxUnit
 end
 
 function ENT:UpdateFrequency(freq)

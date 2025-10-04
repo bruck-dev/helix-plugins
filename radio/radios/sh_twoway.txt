@@ -17,9 +17,10 @@ RADIO.frequencyBand = {
 }
 
 if CLIENT then
+    local mat = Material("sprites/light_glow02_add")
     function RADIO:Paint(entity)
         local pos = entity:GetPos() + (entity:GetForward() * 3) + (entity:GetUp() * 3.5) - (entity:GetRight() * 3.5)
-        render.SetMaterial(Material("sprites/light_glow02_add"))
+        render.SetMaterial(mat)
 
         if entity:GetEnabled() then
             render.DrawSprite(pos, 12, 12, Color(0, 255, 0, 75))

@@ -75,6 +75,7 @@ function ix.radio.stationaryRadios.LoadFromDir(directory)
                 if (!scripted_ents.Get("ix_radio_"..niceName)) then
                     local RADIO_ENT = scripted_ents.Get("ix_radio")
                     RADIO_ENT.PrintName = RADIO.name
+                    RADIO_ENT.Description = RADIO.description
                     RADIO_ENT.uniqueID = niceName
                     RADIO_ENT.Spawnable = true
                     RADIO_ENT.AdminOnly = true
@@ -105,6 +106,7 @@ function ix.radio.stationaryRadios.LoadFromDir(directory)
                 if (!scripted_ents.Get("ix_radio_"..niceName)) then
                     local RADIO_ENT = scripted_ents.Get("ix_radio")
                     RADIO_ENT.PrintName = RADIO.name
+                    RADIO_ENT.Description = RADIO.description
                     RADIO_ENT.uniqueID = niceName
                     RADIO_ENT.Spawnable = true
                     RADIO_ENT.AdminOnly = true
