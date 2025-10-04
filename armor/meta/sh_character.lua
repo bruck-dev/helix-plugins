@@ -4,9 +4,9 @@ local CHAR = ix.meta.character
 function CHAR:GetHitArmor(hitgroup)
     if !hitgroup then return nil end
     
-    for _, v in ipairs(self:GetInventory():GetItemsByBase("base_outfit_armor", true)) do
-        if v:GetData("equip", false) and v.hitgroups[hitgroup] then
-            return v
+    for k, _ in self:GetInventory():Iter() do
+        if k.isArmor and k:GetData("equip", false) and k.hitgroups[hitgroup] then
+            return k
         end
     end
 

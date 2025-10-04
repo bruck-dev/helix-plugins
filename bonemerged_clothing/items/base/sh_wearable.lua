@@ -8,12 +8,12 @@ ITEM.model = "models/props_junk/cardboard_box004a.mdl"
 ITEM.width = 1
 ITEM.height = 1
 ITEM.outfitCategory = "torso"           -- arbitrary value that determines what other clothing items this one is incompatible with. can be a list of slots or a single string slot
-ITEM.pacData = {}
-
-ITEM.attribBoosts = {}                  -- optional attribute boosts. of the form {["attribute_id"] = value}
 
 ITEM.equipSound = nil                   -- both can either be a single string path or a list of sound paths
 ITEM.unequipSound = nil
+
+ITEM.pacData = {}
+ITEM.attribBoosts = {}                  -- optional attribute boosts. of the form {["attribute_id"] = value}
 
 -- checks if the passed item has a conflicting outfitCategory slot
 function ITEM:CheckForOverlappingSlots(current)

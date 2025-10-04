@@ -4,9 +4,9 @@ local CHAR = ix.meta.character
 function CHAR:GetWornItems()
     local worn = {}
 
-    for _, v in ipairs(self:GetInventory():GetItemsByBase("base_wearable_bonemerge", true)) do
-        if v:GetData("equip", false) then
-            table.insert(worn, v)
+    for k, _ in self:GetInventory():Iter() do
+        if string.find(k.base, "wearable") and k:GetData("equip", false) then
+            table.insert(worn, k)
         end
     end
 

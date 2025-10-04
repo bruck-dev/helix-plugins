@@ -1,0 +1,106 @@
+
+ITEM.base = "base_pacoutfit_armor"
+
+ITEM.name = "Wearable Armor Base"
+ITEM.description = "Modified version of the PAC outfit armor base. Requires my armor plugin to be installed to work."
+ITEM.category = "Armor"
+ITEM.model = "models/props_junk/cardboard_box004a.mdl"
+ITEM.width = 1
+ITEM.height = 1
+ITEM.outfitCategory = "armor"           -- arbitrary value that determines what other clothing items this one is incompatible with
+
+ITEM.isArmor = true                     -- do not change, this is what allows armor items to be detected when the player is hurt. if you want to make a custom item base, make sure you include this
+ITEM.armor = 0                          -- the amount of hl2 armor points given to the player on equip. i actually recommend keeping it at 0 as resistances still apply even without literal armor points
+ITEM.hitgroups = {}                     -- the hitgroups this armor applies to. format like {[HITGROUP_NAME] = true}, following the HITGROUP enum
+                                        -- this allows armor to only apply to certain areas; if you get shot in the chest, your helmet won't do anything, for instance
+ITEM.resistances = {}                   -- the damage types this armor protects against. format like {[DMG_BULLET] = multiplier}, following the DMG enum
+                                        -- a multiplier of 0.8 means damage from that type does 80% of what it normally would do. in theory you can use this to make damage INCREASES too
+ITEM.maxDurability = 100                -- the maximum amount of damage (relative to player HP) the armor piece can take before breaking
+ITEM.noDurabilityDecrease = {           -- these damage types do not decrease armor durability when applied to the player. this should cover most use cases, but can be customized per item
+    [DMG_DROWN] = true,
+    [DMG_FALL] = true,
+    [DMG_POISON] = true,
+    [DMG_NERVEGAS] = true,
+    [DMG_PARALYZE] = true,
+}
+ITEM.unbreakable = false                -- if true, the item will never lose durability and the bar will not be displayed
+
+ITEM.equipSound = nil                   -- both can either be a single string path or a list of sound paths
+ITEM.unequipSound = nil
+
+ITEM.pacData = {}                       -- custom pacData to use for the armor
+
+-- checks if the passed item has a conflicting outfitCategory slot
+function ITEM:CheckForOverlappingSlots(current)
+    if !current.outfitCategory then return false end
+
+    local slots = {}
+    if isstring(self.outfitCategory) then
+        slots[self.outfitCategory] = true
+    elseif istable(self.outfitCategory) then
+        for _, slot in ipairs(self.outfitCategory) do
+            slots[slot] = true
+        end
+    end
+
+    if isstring(current.outfitCategory) then
+        return slots[current.outfitCategory] != nil
+    elseif istable(current.outfitCategory) then
+        for _, slot in ipairs(current.outfitCategory) do
+            if slots[slot] then
+                return true
+            end
+        end
+    end
+
+    return false
+end
+
+function ITEM:EmptyOutfitSlots()
+    for k, _ in self.player:GetCharacter():GetInventory():Iter() do
+        if k:GetData("equip", false) and k.outfitCategory and (k.id != self.id) then
+            if self:CheckForOverlappingSlots(k) then
+                if k.RemovePart then
+                    k:RemovePart(self.player)
+                elseif k.RemoveOutfit then
+                    k:RemoveOutfit(self.player)
+                end
+                break
+            end
+        end
+    end
+end
+
+function ITEM:pacAdjust(pacData, client)
+    -- for manual overrides of pac data on a per-model basis
+    if self.pacDataModels and self.pacDataModels[client:GetModel()] then
+        return self.pacDataModels[client:GetModel()]
+    end
+    
+    if self.pacDataFemale and client:IsFemale() then
+        return self.pacDataFemale
+    else
+        return self.pacData
+    end
+end
+
+ITEM.functions.Equip = {
+    name = "Wear",
+    tip = "equipTip",
+    icon = "icon16/tick.png",
+    OnRun = function(item)
+        local client = item.player
+        local char = client:GetCharacter()
+
+        item:EmptyOutfitSlots()
+        item:AddPart(client)
+
+        return false
+    end,
+    OnCanRun = function(item)
+        local client = item.player
+
+        return !IsValid(item.entity) and IsValid(client) and item:GetData("equip") != true and
+            hook.Run("CanPlayerEquipItem", client, item) != false
+    end
+}
