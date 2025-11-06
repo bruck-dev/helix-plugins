@@ -61,7 +61,7 @@ ix.config.Add("alwaysRaised(ARC9)", false, "Whether or not ARC9 weapons can be r
     -- automatically raises any held ARC9 weapons if set to true
     if SERVER then
         if newValue then
-            for _, v in ipairs(player.GetAll()) do
+            for _, v in player.Iterator() do
                 local wep = v:GetActiveWeapon()
                 
                 if weapons.IsBasedOn(wep:GetClass(), "arc9_base") and !v:IsWepRaised() then
