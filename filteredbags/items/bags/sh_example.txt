@@ -1,0 +1,13 @@
+ITEM.name = "Example Filtered Bag"
+ITEM.description = "A simple demonstration of item filtering."
+ITEM.invWidth = 6
+ITEM.invHeight = 4
+
+-- this inventory can hold either the 'paper' item, or anything in the tool category
+ITEM.itemWhitelist = {
+    ["paper"] = true,
+}
+
+ITEM.categoryWhitelist = {
+    ["Tools"] = true,
+}
