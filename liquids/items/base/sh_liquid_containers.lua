@@ -50,7 +50,9 @@ end
 
 -- Called when a new instance of this item has been made.
 function ITEM:OnInstanced(invID, x, y)
-    if self.liquid then
+    if self:GetLiquid() and self:GetVolume() then
+        do end
+    elseif self.liquid then
         local liquid
         if ix.liquids.Get(self.liquid) then
             liquid = self.liquid
@@ -85,12 +87,14 @@ end
 -- i use this as a hook to set custom models using a random table, figured i'd throw it into the base
 function ITEM:ConfigureModel()
     -- example implementation
-    -- local models = {
-    --     "models/props_junk/garbage_glassbottle003a.mdl",
-    --     "models/props_junk/garbage_glassbottle001a.mdl",
-    -- }
+    -- if !self:GetData("model", nil) then
+    --     local models = {
+    --         "models/props_junk/garbage_glassbottle003a.mdl",
+    --         "models/props_junk/garbage_glassbottle001a.mdl",
+    --     }
 
-    -- self:SetData("model", models[math.random(1, #models)])
+    --     self:SetData("model", models[math.random(1, #models)])
+    -- end
     return
 end
 
