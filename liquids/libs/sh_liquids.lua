@@ -1,5 +1,5 @@
 
-local PLUGIN = PLUGIN;
+local PLUGIN = PLUGIN
 
 ix.liquids = {}
 ix.liquids.stored = {}
@@ -52,11 +52,11 @@ function ix.liquids.FindByName(liquid)
 end
 
 function ix.liquids.Get(uniqueID)
-    return ix.liquids.stored[uniqueID] or nil;
+    return ix.liquids.stored[uniqueID] or nil
 end
 
 function ix.liquids.NameToUniqueID(name)
-    return string.gsub(name, " ", "_"):lower();
+    return string.gsub(name, " ", "_"):lower()
 end
 
 hook.Add("DoPluginIncludes", "ixLiquids", function(path, pluginTable)

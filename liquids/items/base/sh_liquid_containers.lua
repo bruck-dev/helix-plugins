@@ -9,6 +9,7 @@ ITEM.liquid = nil                               -- default to being empty
 ITEM.capacity = 500                             -- max capacity of the container, in mL
 ITEM.startingVolume = nil                       -- starting volume of the specified liquid. can be an int, or a table of the two forms {["min"] = x, ["max"] = y} or {x, y, z}. ignored if empty, defaults to ITEM.capacity if nil
 ITEM.emptyContainer = nil                       -- item uniqueID that the container should become upon being empty. generally, only use this for bottles of things you want to start filled - say, beer you want to become a beer bottle.
+ITEM.canDrink = true                            -- whether or not this container can be used as a drinking vessel
 
 if (CLIENT) then
     function ITEM:PaintOver(item, w, h)
@@ -193,6 +194,10 @@ ITEM.functions.ADrink = { -- consumes everything if below the max drinking volum
         return false
     end,
     OnCanRun = function(item)
+        if !item.canDrink then
+            return false
+        end
+
         if item:GetVolume() <= 0 then
             return false
         end
@@ -227,6 +232,10 @@ ITEM.functions.BSip = { -- quarter of drinking volume, basically
         return false
     end,
     OnCanRun = function(item)
+        if !item.canDrink then
+            return false
+        end
+
         if item:GetVolume() <= 0 then
             return false
         end
