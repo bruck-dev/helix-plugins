@@ -24,6 +24,8 @@ function PLUGIN:OnLoaded()
         GetConVar("arccw_enable_dropping"):SetBool(ix.config.Get("enableBulletDrop(ArcCW)", true))
 
         GetConVar("arccw_enable_customization"):SetBool(true)
+
+        GetConVar("arccw_mult_defaultammo"):SetInt(0)
     else
         GetConVar("arccw_autosave"):SetBool(false)
     end
