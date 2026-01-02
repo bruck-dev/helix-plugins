@@ -161,7 +161,7 @@ do
 
     -- reinitializes attachments after restriction
     function PLUGIN:OnPlayerRestricted(client)
-        client.TFA_Weapons = {}
+        client.TFA_Weapons = client.TFA_Weapons or {}
         
         for k, _ in client:GetCharacter():GetInventory():Iter() do
             if k.isTFAWeapon and k:GetData("equip", false) then

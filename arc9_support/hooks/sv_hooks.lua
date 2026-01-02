@@ -69,7 +69,7 @@ end
 
 -- reinitializes attachments after restriction
 function PLUGIN:OnPlayerRestricted(client)
-    client.ARC9_Weapons = {}
+    client.ARC9_Weapons = client.ARC9_Weapons or {}
     
     for k, _ in client:GetCharacter():GetInventory():Iter() do
         if k.isARC9Weapon and k:GetData("equip", false) then

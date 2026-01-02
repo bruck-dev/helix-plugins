@@ -268,7 +268,6 @@ function PLUGIN:InitializedPlugins()
 end
 
 function PLUGIN:InitializedConfig()
-    -- generation kinda sucks because of arc9's largely arbitrary nature, dont really recommend it
     if ix.config.Get("generateWeaponItems(ArcCW)", false) then
         ix.arccw.GenerateWeapons()
     end
