@@ -7,15 +7,9 @@ function PLUGIN:Think()
         local client = LocalPlayer()
         if IsValid(client) and client:GetCharacter() then
             local weapon = client:GetActiveWeapon()
-
             if weapon and IsValid(weapon) and (weapon.Base and string.find(weapon.Base, "tfa_")) then
-                if weapon:GetCustomizing() then
-                    if !hook.Run("NearWeaponBench", client) then
-                        net.Start("ixTFAStopCustomize")
-                            net.WriteUInt(client:GetCharacter():GetID(), 32)
-                            net.WriteUInt(weapon:EntIndex(), 32)
-                        net.SendToServer()
-                    end
+                if hook.Run("IsCustomizing", client, weapon) and !hook.Run("NearWeaponBench", client) then
+                    hook.Run("StopCustomizing", client, weapon)
                 end
             end
         end

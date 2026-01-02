@@ -268,7 +268,6 @@ function PLUGIN:InitializedPlugins()
 end
 
 function PLUGIN:InitializedConfig()
-
     -- generation kinda sucks because of arc9's largely arbitrary nature, dont really recommend it
     if ix.config.Get("generateWeaponItems(ArcCW)", false) then
         ix.arccw.GenerateWeapons()
@@ -287,167 +286,194 @@ function PLUGIN:InitializedConfig()
     end
 end
 
-function PLUGIN:NearWeaponBench(client)
-    for _, bench in ipairs(ents.FindByClass("ix_arccw_weapon_bench")) do
-        if (client:GetPos():DistToSqr(bench:GetPos()) < 100 * 100) then
-            return true
+-- ATTACHMENT INVENTORY HOOKS
+do
+    function PLUGIN:ArcCW_PlayerCanAttach(client, weapon, att, slot, bDetach)
+        if ix.config.Get("useWeaponBenches(ArcCW)", true) then
+            if !hook.Run("NearWeaponBench", client) then
+                client:Notify("You are not near a weapon workbench.")
+                return false
+            end
+        end
+
+        local itemID = ix.arccw.GetItemForAttachment(att)
+
+        if itemID then
+            local item = ix.item.Get(itemID)
+            if item and !item:HasTool(client) then
+                client:Notify("You don't have the necessary tool to apply this attachment.")
+                return false
+            end
         end
     end
-end
 
-function PLUGIN:IsCustomizing(client, weapon)
-    if weapons.IsBasedOn(weapon:GetClass(), "arccw_base") then
-        return weapon:GetState() == ArcCW.STATE_CUSTOMIZE
+    -- in addition to normal inv stuff, iterate through and check if the player has attachment items for the needed type
+    function ArcCW:PlayerGetAtts(client, att)
+        if !IsValid(client) then return 0 end
+        if ix.config.Get("freeAttachments(ArcCW)", false) then return 999 end
+        if ix.arccw.IsFreeAttachment(att) then return 999 end
+        if att == "" then return 999 end
+
+        local atttbl = ArcCW.AttachmentTable[att]
+        if !atttbl then return 0 end
+
+        if !IsValid(client) then return 0 end
+
+        if !client:IsAdmin() and atttbl.AdminOnly then
+            return 0
+        end
+
+        if atttbl.InvAtt then att = atttbl.InvAtt end
+
+        local amount = (client.ArcCW_AttInv and client.ArcCW_AttInv[att]) or 0
+            for _, v in ipairs(client:GetCharacter():GetInventory():GetItemsByBase("base_arccw_attachments", false)) do
+            if v:GetAttachment() == att then
+                amount = amount + 1
+            end
+        end
+
+        return amount
     end
-end
 
-function PLUGIN:StartCustomizing(client, weapon)
-    if weapons.IsBasedOn(weapon:GetClass(), "arccw_base") and weapon:GetState() != ArcCW.STATE_CUSTOMIZE then
-        net.Start("arccw_togglecustomize")
-            net.WriteBool(true)
-        net.Send(client)
-        weapon:ToggleCustomizeHUD(true)
+    -- give the player the needed attachment item, or increment the AttInv if no item exists
+    function ArcCW:PlayerGiveAtt(client, att, amt, noItem)
+        amt = amt or 1
+
+        if !IsValid(client) then return end
+
+        if !client.ArcCW_AttInv then
+            client.ArcCW_AttInv = {}
+        end
+
+        local atttbl = ArcCW.AttachmentTable[att]
+
+        if !atttbl then print("Invalid att " .. att) return end
+        if ix.arccw.IsFreeAttachment(att) then return end
+        if ix.config.Get("freeAttachments(ArcCW)", false) then return end
+        if atttbl.AdminOnly and !(client:IsPlayer() and client:IsAdmin()) then return false end
+        if atttbl.InvAtt then att = atttbl.InvAtt end
+
+        local itemID = ix.arccw.GetItemForAttachment(att)
+
+        if noItem or !itemID then
+            if ArcCW.ConVars["attinv_lockmode"]:GetBool() then
+                if client.ArcCW_AttInv[att] == 1 then return end
+                client.ArcCW_AttInv[att] = 1
+            else
+                client.ArcCW_AttInv[att] = (client.ArcCW_AttInv[att] or 0) + amt
+            end
+        else
+            if SERVER then
+                if (!client:GetCharacter():GetInventory():Add(itemID)) then
+                    ix.item.Spawn(itemID, client)
+                end
+            end
+        end
+    end
+
+    -- remove the attachment item from the player, or from the AttInv if no item exists
+    function ArcCW:PlayerTakeAtt(client, att, amt, noItem)
+        amt = amt or 1
+
+        if ArcCW.ConVars["attinv_lockmode"]:GetBool() then return end
+
+        if !IsValid(client) then return end
+
+        if !client.ArcCW_AttInv then
+            client.ArcCW_AttInv = {}
+        end
+
+        local atttbl = ArcCW.AttachmentTable[att]
+        if !atttbl or ix.arccw.IsFreeAttachment(att) then return end
+        if ix.config.Get("freeAttachments(ArcCW)", false) then return end
+
+        if atttbl.InvAtt then att = atttbl.InvAtt end
+
+        local itemID = ix.arccw.GetItemForAttachment(att)
+        local attItems = client:GetCharacter():GetInventory():GetItemsByUniqueID(itemID)
+
+        client.ArcCW_AttInv[att] = client.ArcCW_AttInv[att] or 0
+
+        local total = client.ArcCW_AttInv[att]
+        if itemID then
+            total = total + #attItems
+        end
+        if total < amt then
+            return false
+        end
+
+        if noItem or !itemID or #attItems < 1  then
+            client.ArcCW_AttInv[att] = client.ArcCW_AttInv[att] - amt
+            if client.ArcCW_AttInv[att] <= 0 then
+                client.ArcCW_AttInv[att] = nil
+            end
+        else
+            local removed = 0
+            while removed < amt do
+                if client.ArcCW_AttInv[att] > 0 then
+                    client.ArcCW_AttInv[att] = client.ArcCW_AttInv[att] - 1
+                    removed = removed + 1
+                else
+                local head = table.remove(attItems)
+                if SERVER then
+                    head:Remove()
+                end
+                removed = removed + 1
+                end  
+            end
+        end
 
         return true
     end
 end
 
-function PLUGIN:ArcCW_PlayerCanAttach(client, weapon, att, slot, bDetach)
-    if ix.config.Get("useWeaponBenches(ArcCW)", true) then
-        if !hook.Run("NearWeaponBench", client) then
-            client:Notify("You are not near a weapon workbench.")
-            return false
-        end
-    end
-
-    local itemID = ix.arccw.GetItemForAttachment(att)
-
-    if itemID then
-        local item = ix.item.Get(itemID)
-        if item and !item:HasTool(client) then
-            client:Notify("You don't have the necessary tool to apply this attachment.")
-            return false
-        end
-    end
-end
-
--- in addition to normal inv stuff, iterate through and check if the player has attachment items for the needed type
-function ArcCW:PlayerGetAtts(client, att)
-    if !IsValid(client) then return 0 end
-    if ix.config.Get("freeAttachments(ArcCW)", false) then return 999 end
-    if ix.arccw.IsFreeAttachment(att) then return 999 end
-    if att == "" then return 999 end
-
-    local atttbl = ArcCW.AttachmentTable[att]
-    if !atttbl then return 0 end
-
-    if !IsValid(client) then return 0 end
-
-    if !client:IsAdmin() and atttbl.AdminOnly then
-        return 0
-    end
-
-    if atttbl.InvAtt then att = atttbl.InvAtt end
-
-    local amount = (client.ArcCW_AttInv and client.ArcCW_AttInv[att]) or 0
-        for _, v in ipairs(client:GetCharacter():GetInventory():GetItemsByBase("base_arccw_attachments", false)) do
-        if v:GetAttachment() == att then
-            amount = amount + 1
-        end
-    end
-
-    return amount
-end
-
--- give the player the needed attachment item, or increment the AttInv if no item exists
-function ArcCW:PlayerGiveAtt(client, att, amt, noItem)
-    amt = amt or 1
-
-    if !IsValid(client) then return end
-
-    if !client.ArcCW_AttInv then
-        client.ArcCW_AttInv = {}
-    end
-
-    local atttbl = ArcCW.AttachmentTable[att]
-
-    if !atttbl then print("Invalid att " .. att) return end
-    if ix.arccw.IsFreeAttachment(att) then return end
-    if ix.config.Get("freeAttachments(ArcCW)", false) then return end
-    if atttbl.AdminOnly and !(client:IsPlayer() and client:IsAdmin()) then return false end
-    if atttbl.InvAtt then att = atttbl.InvAtt end
-
-    local itemID = ix.arccw.GetItemForAttachment(att)
-
-    if noItem or !itemID then
-        if ArcCW.ConVars["attinv_lockmode"]:GetBool() then
-            if client.ArcCW_AttInv[att] == 1 then return end
-            client.ArcCW_AttInv[att] = 1
-        else
-            client.ArcCW_AttInv[att] = (client.ArcCW_AttInv[att] or 0) + amt
-        end
-    else
-        if SERVER then
-            if (!client:GetCharacter():GetInventory():Add(itemID)) then
-                ix.item.Spawn(itemID, client)
+-- CUSTOMIZATION CHECK HOOKS
+do
+    function PLUGIN:NearWeaponBench(client)
+        for _, bench in ipairs(ents.FindByClass("ix_arccw_weapon_bench")) do
+            if (client:GetPos():DistToSqr(bench:GetPos()) < 100 * 100) then
+                return true
             end
         end
     end
-end
 
--- remove the attachment item from the player, or from the AttInv if no item exists
-function ArcCW:PlayerTakeAtt(client, att, amt, noItem)
-    amt = amt or 1
-
-    if ArcCW.ConVars["attinv_lockmode"]:GetBool() then return end
-
-    if !IsValid(client) then return end
-
-    if !client.ArcCW_AttInv then
-        client.ArcCW_AttInv = {}
-    end
-
-    local atttbl = ArcCW.AttachmentTable[att]
-    if !atttbl or ix.arccw.IsFreeAttachment(att) then return end
-    if ix.config.Get("freeAttachments(ArcCW)", false) then return end
-
-    if atttbl.InvAtt then att = atttbl.InvAtt end
-
-    local itemID = ix.arccw.GetItemForAttachment(att)
-    local attItems = client:GetCharacter():GetInventory():GetItemsByUniqueID(itemID)
-
-    client.ArcCW_AttInv[att] = client.ArcCW_AttInv[att] or 0
-
-    local total = client.ArcCW_AttInv[att]
-    if itemID then
-        total = total + #attItems
-    end
-    if total < amt then
-        return false
-    end
-
-    if noItem or !itemID or #attItems < 1  then
-        client.ArcCW_AttInv[att] = client.ArcCW_AttInv[att] - amt
-        if client.ArcCW_AttInv[att] <= 0 then
-            client.ArcCW_AttInv[att] = nil
+    function PLUGIN:IsCustomizing(client, weapon)
+        if weapons.IsBasedOn(weapon:GetClass(), "arccw_base") then
+            return weapon:GetState() == ArcCW.STATE_CUSTOMIZE
         end
-    else
-        local removed = 0
-        while removed < amt do
-            if client.ArcCW_AttInv[att] > 0 then
-                client.ArcCW_AttInv[att] = client.ArcCW_AttInv[att] - 1
-                removed = removed + 1
+    end
+
+    function PLUGIN:StartCustomizing(client, weapon)
+        if weapons.IsBasedOn(weapon:GetClass(), "arccw_base") and weapon:GetState() != ArcCW.STATE_CUSTOMIZE then
+            if SERVER then
+                net.Start("arccw_togglecustomize")
+                    net.WriteBool(true)
+                net.Send(client)
             else
-              local head = table.remove(attItems)
-              if SERVER then
-                head:Remove()
-              end
-              removed = removed + 1
-            end  
+                net.Start("arccw_togglecustomize")
+                    net.WriteBool(true)
+                net.SendToServer()
+            end
+            weapon:ToggleCustomizeHUD(true)
+            return true
         end
     end
 
-    return true
+    function PLUGIN:StopCustomizing(client, weapon)
+        if weapons.IsBasedOn(weapon:GetClass(), "arccw_base") and weapon:GetState() == ArcCW.STATE_CUSTOMIZE then
+            if SERVER then
+                net.Start("arccw_togglecustomize")
+                    net.WriteBool(false)
+                net.Send(client)
+            else
+                net.Start("arccw_togglecustomize")
+                    net.WriteBool(false)
+                net.SendToServer()
+            end
+            weapon:ToggleCustomizeHUD(false)
+            return true
+        end
+    end
 end
 
 hook.Add("EntityRemoved", "ArcCWRemoveGrenade", function(entity)

@@ -153,4 +153,33 @@ do
 
         client.loadoutPredictedTFA = true
     end
+
+    function PLUGIN:PlayerLoadedCharacter(client, char, prevChar)
+        client.loadoutPredictedTFA = true
+        client.TFA_Weapons = nil
+    end
+
+    -- reinitializes attachments after restriction
+    function PLUGIN:OnPlayerRestricted(client)
+        client.TFA_Weapons = {}
+        
+        for k, _ in client:GetCharacter():GetInventory():Iter() do
+            if k.isTFAWeapon and k:GetData("equip", false) then
+                client.TFA_Weapons[k.class] = k.id
+            end
+        end
+    end
+
+    function PLUGIN:OnPlayerUnRestricted(client)
+        for class, itemID in pairs(client.TFA_Weapons or {}) do
+            local weapon = client:GetWeapon(class)
+            local item = ix.item.instances[itemID]
+
+            weapon.ixItem = item
+            item:SetWeapon(weapon)
+            ix.tfa.InitWeapon(client, weapon, item)
+        end
+
+        client.TFA_Weapons = nil
+    end
 end

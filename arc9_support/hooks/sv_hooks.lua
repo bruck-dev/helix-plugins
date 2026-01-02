@@ -64,4 +64,29 @@ end
 function PLUGIN:PlayerLoadedCharacter(client, char, prevChar)
     client.loadoutPredictedARC9 = true
     client.ARC9_AttInv = {}
+    client.ARC9_Weapons = nil
+end
+
+-- reinitializes attachments after restriction
+function PLUGIN:OnPlayerRestricted(client)
+    client.ARC9_Weapons = {}
+    
+    for k, _ in client:GetCharacter():GetInventory():Iter() do
+        if k.isARC9Weapon and k:GetData("equip", false) then
+            client.ARC9_Weapons[k.class] = k.id
+        end
+    end
+end
+
+function PLUGIN:OnPlayerUnRestricted(client)
+    for class, itemID in pairs(client.ARC9_Weapons or {}) do
+        local weapon = client:GetWeapon(class)
+        local item = ix.item.instances[itemID]
+
+        weapon.ixItem = item
+        item:SetWeapon(weapon)
+        ix.arc9.InitWeapon(client, weapon, item)
+    end
+
+    client.ARC9_Weapons = nil
 end

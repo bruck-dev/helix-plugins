@@ -102,7 +102,29 @@ do
 
     function PLUGIN:StartCustomizing(client, weapon)
         if weapon and IsValid(weapon) and (weapon.Base and string.find(weapon.Base, "tfa_")) then
-            weapon:SetCustomizing(true)
+            if SERVER then
+                weapon:SetCustomizing(true)
+            else
+                net.Start("ixTFASetCustomize")
+                    net.WriteUInt(client:GetCharacter():GetID(), 32)
+                    net.WriteUInt(weapon:EntIndex(), 32)
+                    net.WriteBool(true)
+                net.SendToServer()
+            end
+        end
+    end
+
+    function PLUGIN:StopCustomizing(client, weapon)
+        if weapon and IsValid(weapon) and (weapon.Base and string.find(weapon.Base, "tfa_")) then
+            if SERVER then
+                weapon:SetCustomizing(false)
+            else
+                net.Start("ixTFASetCustomize")
+                    net.WriteUInt(client:GetCharacter():GetID(), 32)
+                    net.WriteUInt(weapon:EntIndex(), 32)
+                    net.WriteBool(false)
+                net.SendToServer()
+            end
         end
     end
 end

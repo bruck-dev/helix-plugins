@@ -131,13 +131,9 @@ function PLUGIN:Think()
         local client = LocalPlayer()
         if IsValid(client) and client:GetCharacter() then
             local weapon = client:GetActiveWeapon()
-
             if weapon and IsValid(weapon) and weapons.IsBasedOn(weapon:GetClass(), "arccw_base") then
-                if weapon:GetState() == ArcCW.STATE_CUSTOMIZE then
-                    if !hook.Run("NearWeaponBench", client) then
-                        SendNet("arccw_togglecustomize", false)
-                        weapon:ToggleCustomizeHUD(false)
-                    end
+                if hook.Run("IsCustomizing", client, weapon) and !hook.Run("NearWeaponBench", client) then
+                    hook.Run("StopCustomizing", client, weapon)
                 end
             end
         end

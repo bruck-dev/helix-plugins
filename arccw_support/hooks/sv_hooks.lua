@@ -61,7 +61,33 @@ function PLUGIN:PostPlayerLoadout(client)
         client.loadoutPredictedArcCW = nil
     end
 end
+
 function PLUGIN:PlayerLoadedCharacter(client, char, prevChar)
     client.loadoutPredictedArcCW = true
     client.ArcCW_AttInv = {}
+    client.ArcCW_Weapons = nil
+end
+
+-- reinitializes attachments after restriction
+function PLUGIN:OnPlayerRestricted(client)
+    client.ArcCW_Weapons = {}
+    
+    for k, _ in client:GetCharacter():GetInventory():Iter() do
+        if k.isArcCWWeapon and k:GetData("equip", false) then
+            client.ArcCW_Weapons[k.class] = k.id
+        end
+    end
+end
+
+function PLUGIN:OnPlayerUnRestricted(client)
+    for class, itemID in pairs(client.ArcCW_Weapons or {}) do
+        local weapon = client:GetWeapon(class)
+        local item = ix.item.instances[itemID]
+
+        weapon.ixItem = item
+        item:SetWeapon(weapon)
+        ix.arccw.InitWeapon(client, weapon, item)
+    end
+
+    client.ArcCW_Weapons = nil
 end
