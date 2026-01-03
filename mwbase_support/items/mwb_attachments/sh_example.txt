@@ -1,0 +1,8 @@
+ITEM.name = "MWB Attachment Example"
+ITEM.description = "This is an example MWB attachment item."
+ITEM.model = "models/props_junk/cardboard_box004a.mdl"
+ITEM.width = 1
+ITEM.height = 1
+
+ITEM.att = "att_vm_compensator01_pstl"  -- id of the attachment this item is linked to
+ITEM.tool = "screwdriver"               -- item unique id of the tool needed to use the attachment on a weapon
