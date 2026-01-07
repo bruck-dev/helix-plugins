@@ -87,6 +87,12 @@ if SERVER then
         return entity
     end
 
+    function ENT:OnRemove()
+        if !ix.shuttingDown then
+            PLUGIN:SaveData()
+        end
+    end
+
     function ENT:Use(activator)
     end
 else

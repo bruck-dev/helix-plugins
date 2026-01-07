@@ -39,6 +39,14 @@ if (SERVER) then
             physObj:EnableMotion(false)
             physObj:Sleep()
         end
+
+        PLUGIN:SaveData()
+    end
+
+    function ENT:OnRemove()
+        if !ix.shuttingDown then
+            PLUGIN:SaveData()
+        end
     end
 
     function ENT:OnVarChanged(name, oldID, newID)

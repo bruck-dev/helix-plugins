@@ -52,6 +52,8 @@ if SERVER then
         if timer.Exists("ixLootSound."..self:EntIndex()) then
             timer.Remove("ixLootSound."..self:EntIndex())
         end
+
+        PLUGIN:SaveData()
     end
 
     function ENT:GetLootActionSound()

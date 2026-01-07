@@ -28,6 +28,12 @@ if (SERVER) then
         PLUGIN:SaveData()
     end
 
+    function ENT:OnRemove()
+        if !ix.shuttingDown then
+            PLUGIN:SaveData()
+        end
+    end
+
     function ENT:Use(activator)
         if IsValid(activator) and (activator:GetPos():DistToSqr(self:GetPos()) < 100 * 100) and activator:GetCharacter() then
             local weapon = activator:GetActiveWeapon()

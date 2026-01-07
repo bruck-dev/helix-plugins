@@ -107,6 +107,12 @@ if SERVER then
         PLUGIN:SaveData()
     end
 
+    function ENT:OnRemove()
+        if !ix.shuttingDown then
+            PLUGIN:SaveData()
+        end
+    end
+
     function ENT:UpdateTransmitState()
         return TRANSMIT_PVS
     end
