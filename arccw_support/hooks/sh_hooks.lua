@@ -474,15 +474,3 @@ do
         end
     end
 end
-
-hook.Add("EntityRemoved", "ArcCWRemoveGrenade", function(entity)
-    if (ix.arccw.grenades[entity:GetClass()]) then
-        local client = entity:GetOwner()
-        if (IsValid(client) and client:IsPlayer() and client:GetCharacter()) then
-            local ammoName = game.GetAmmoName(entity:GetPrimaryAmmoType())
-            if entity.Singleton or (isstring(ammoName) and client:GetAmmoCount(ammoName) < 1 and entity:Clip1() < 1 and entity.ixItem and entity.ixItem.Unequip) then
-                entity.ixItem:Unequip(client, false, true)
-            end
-        end
-    end
-end)

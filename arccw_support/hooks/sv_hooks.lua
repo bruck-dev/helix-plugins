@@ -91,3 +91,15 @@ function PLUGIN:OnPlayerUnRestricted(client)
 
     client.ArcCW_Weapons = nil
 end
+
+function PLUGIN:EntityRemoved(entity)
+    if (ix.arccw.grenades[entity:GetClass()] and entity.ixItem) then
+        local client = entity.ixItem:GetOwner()
+        if (IsValid(client) and client:IsPlayer() and client:GetCharacter()) then
+            local ammoName = game.GetAmmoName(entity:GetPrimaryAmmoType())
+            if entity.Singleton or (isstring(ammoName) and client:GetAmmoCount(ammoName) < 1 and entity:Clip1() < 1 and entity.ixItem.Unequip) then
+                entity.ixItem:Unequip(client, false, true)
+            end
+        end
+    end
+end
