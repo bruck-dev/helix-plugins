@@ -43,14 +43,14 @@ if (CLIENT) then
     function ITEM:PaintOver(item, w, h)
         if (item:GetData("equip", false)) then
             surface.SetDrawColor(110, 255, 110, 100)
-            if self.unbreakable then
+            if item.unbreakable then
                 surface.DrawRect(w - 14, h - 14, 8, 8)  -- the position of the green square is not adjusted for the bar if it wont exist
             else
                 surface.DrawRect(w - 14, h - 20, 8, 8)
             end
         end
         
-        if !self.unbreakable then
+        if !item.unbreakable then
             local amount = item:GetDurability()
 
             if (amount) then

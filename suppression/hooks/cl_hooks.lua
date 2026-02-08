@@ -26,6 +26,10 @@ net.Receive("ixSuppressionBullet", function(len)
         return
     end
 
+    if hook.Run("CanPlayerBeSuppressed", entity, client) == false then
+        return
+    end
+
     -- dont suppress while in a vehicle if the config is disabled
     if !ix.config.Get("enableSuppressionInVehicles", true) and client:InVehicle() then
         return

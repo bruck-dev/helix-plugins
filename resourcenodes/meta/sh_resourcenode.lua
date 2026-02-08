@@ -92,12 +92,7 @@ function RESNODE:HasProfession(client)
     if !self.profession then
         return true
     else
-        local char = client:GetCharacter()
-        if char.HasProfession and char:HasProfession(self.profession) then
-            return true
-        else
-            return false
-        end
+        return hook.Run("HasProfession", client, self.profession) != false
     end
 end
 

@@ -1,3 +1,4 @@
+
 local PLUGIN = PLUGIN
 
 PLUGIN.name = "Character Physics Sounds"
@@ -36,30 +37,63 @@ function PLUGIN:PlayerFootstep(client, pos, foot, sound, volume, rf)
     end
 end
 
-function PLUGIN:GetPlayerDeathSound(client)
-    if client and client:GetCharacter() then
-        local faction = ix.faction.Get(client:Team())
-        local class
-        if client:GetCharacter():GetClass() then
-            class = ix.class.list[client:GetCharacter():GetClass()]
-        end
-
-        if class and class.deathSound then
-            local sound = class.deathSound
-
-            if istable(sound) then
-                return sound[math.random(1, #sound)]
-            else
-                return sound
+if SERVER then
+    function PLUGIN:GetPlayerDeathSound(client)
+        if client and client:GetCharacter() then
+            local faction = ix.faction.Get(client:Team())
+            local class
+            if client:GetCharacter():GetClass() then
+                class = ix.class.list[client:GetCharacter():GetClass()]
             end
 
-        elseif faction and faction.deathSound then
-            local sound = faction.deathSound
+            if class and class.deathSound then
+                local sound = class.deathSound
 
-            if istable(sound) then
-                return sound[math.random(1, #sound)]
-            else
-                return sound
+                if istable(sound) then
+                    return sound[math.random(1, #sound)]
+                else
+                    return sound
+                end
+            end
+
+            if faction and faction.deathSound then
+                local sound = faction.deathSound
+
+                if istable(sound) then
+                    return sound[math.random(1, #sound)]
+                else
+                    return sound
+                end
+            end
+        end
+    end
+
+    function PLUGIN:GetPlayerPainSound(client)
+        if client and client:GetCharacter() then
+            local faction = ix.faction.Get(client:Team())
+            local class
+            if client:GetCharacter():GetClass() then
+                class = ix.class.list[client:GetCharacter():GetClass()]
+            end
+
+            if class and class.painSound then
+                local sound = class.painSound
+
+                if istable(sound) then
+                    return sound[math.random(1, #sound)]
+                else
+                    return sound
+                end
+            end
+
+            if faction and faction.painSound then
+                local sound = faction.painSound
+
+                if istable(sound) then
+                    return sound[math.random(1, #sound)]
+                else
+                    return sound
+                end
             end
         end
     end

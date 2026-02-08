@@ -1,6 +1,7 @@
 
-function PLUGIN:PopulateResNodeTooltip(tooltip, resNode, canHarvest)
+local PLUGIN = PLUGIN
 
+function PLUGIN:PopulateResNodeTooltip(tooltip, resNode, canHarvest)
     local name = tooltip:AddRow("name")
     local nameText = resNode.name
     
