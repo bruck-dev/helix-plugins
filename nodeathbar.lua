@@ -1,10 +1,11 @@
 
 PLUGIN.name = "No Death Progress Bar"
-PLUGIN.description = "Disables the death progress bar from appearing."
+PLUGIN.description = "Disables the death progress bar for respawning players."
 PLUGIN.author = "bruck"
 
 if (SERVER) then
-    function PLUGIN:DoPlayerDeath(client, attacker, damageinfo)
+    -- this is technically bad practice but otherwise im forced to return a value and that might break other plugins
+    function GAMEMODE:DoPlayerDeath(client, attacker, damageinfo)
         client:AddDeaths(1)
 
         if (hook.Run("ShouldSpawnClientRagdoll", client) != false) then
@@ -24,7 +25,5 @@ if (SERVER) then
 
         --client:SetAction("@respawning", ix.config.Get("spawnTime", 5))
         client:SetDSP(31)
-
-        return true
     end
 end

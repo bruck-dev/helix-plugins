@@ -125,6 +125,21 @@ function ITEM:pacAdjust(pacData, client)
     return pacData
 end
 
+function ITEM:CanTransfer(oldInv, newInv)
+    if newInv and self:GetData("equip", false) then
+        local owner = self:GetOwner()
+
+        if (IsValid(owner)) then
+            owner:Notify("You cannot move a smokable that is currently equipped!")
+        end
+
+        return false
+    end
+
+    return true
+end
+
+
 function ITEM:OnRemoved()
     self:RemoveSmokable()
 end
@@ -172,7 +187,7 @@ ITEM.functions.AEquip = {
         return false
     end,
     OnCanRun = function(item)
-        return IsValid(item.player) and !item:GetData("equip", false)
+        return IsValid(item.player) and !item:GetData("equip", false) and hook.Run("CanPlayerEquipItem", item.player, item) != false
     end
 }
 

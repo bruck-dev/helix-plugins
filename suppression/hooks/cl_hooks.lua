@@ -21,12 +21,19 @@ net.Receive("ixSuppressionBullet", function(len)
     local dir = readVector()
     local maxDist = net.ReadFloat()
 
-    -- dont suppress yourself
-    if entity == client or (entity.GetOwner and entity:GetOwner() and entity:GetOwner() == client) then
-        return
+    if IsValid(entity) then
+        -- dont suppress yourself
+        if entity == client or (entity.GetOwner and entity:GetOwner() and entity:GetOwner() == client) then
+            return
+        end
+
+        if hook.Run("PlayerCanBeSuppressed", entity, client) == false then
+            return
+        end
     end
 
-    if hook.Run("CanPlayerBeSuppressed", entity, client) == false then
+    -- dont suppress while in a vehicle if the config is disabled
+    if !ix.config.Get("enableSuppressionInVehicles", true) and client:InVehicle() then
         return
     end
 

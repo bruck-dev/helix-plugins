@@ -72,7 +72,7 @@ do
     end
 
     function PLUGIN:PlayerDroppedWeapon(client, weapon)
-        if client:IsPlayer() then
+        if client:IsPlayer() and client:GetCharacter() then
             local item
             local inv = client:GetCharacter():GetInventory()
 
