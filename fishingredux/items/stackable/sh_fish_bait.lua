@@ -7,5 +7,5 @@ ITEM.height = 1
 ITEM.width = 1
 ITEM.category = "Fishing"
 ITEM.price = 5
-ITEM.maxStack = 25;
-ITEM.defaultStack = 1;
+ITEM.maxStacks = 25
+ITEM.defaultStacks = 1

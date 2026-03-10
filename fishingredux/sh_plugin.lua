@@ -36,8 +36,8 @@ function PLUGIN:InitializedPlugins()
         local id = v.FId or string.lower(string.Replace(string.Replace(v.FName,"'", "")," ","_"))
         id = "fish_" .. id
         local ITEM = ix.item.Register(id, "base_stackable", false, nil, true)
-        ITEM.maxStack = 10
-        ITEM.defaultStack = 1
+        ITEM.maxStacks = 10
+        ITEM.defaultStacks = 1
         ITEM.name = v.FName
         ITEM.description = v.FDesc
         ITEM.model = v.FModel
