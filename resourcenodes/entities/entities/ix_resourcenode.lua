@@ -170,7 +170,7 @@ function ENT:Harvest(rNode, activator, inv)
                     harvestedAmount = rNode:ModifyHarvestAmount(activator, harvestedAmount) -- swap the amount around based on any custom conditions per node type
 
                     if harvestedAmount > 0 then -- 0 is considered a failed harvest
-                        if item.stackable or string.find(item.base, "stackable") then
+                        if item.stackable or (item.base and string.find(item.base, "stackable")) then
                             if harvestedAmount < item.maxStacks then
                                 if (!inv:Add(harvestedItem, 1, {stacks = harvestedAmount})) then
                                     ix.item.Spawn(harvestedItem, activator, nil, nil, {stacks = harvestedAmount})
