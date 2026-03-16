@@ -1,0 +1,8 @@
+
+ITEM.name = "Soda Can"
+ITEM.model = "models/props_junk/PopCan01a.mdl"
+ITEM.width = 1
+ITEM.height = 1
+ITEM.description = "This is an example RNG skin item. On spawn, it will randomly pick between skins 0 --> 2."
+
+ITEM.rngSkins = true

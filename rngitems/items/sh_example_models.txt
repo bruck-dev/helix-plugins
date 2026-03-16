@@ -2,8 +2,8 @@
 ITEM.name = "Soda Can"
 ITEM.model = "models/griim/foodpack/sodacan_cocacola.mdl"
 ITEM.width = 1
-ITEM.height	= 1
-ITEM.description = "This is an example RNG model item. GUI menus will still use ITEM.model, but when an item is instanced, it is randomly assigned one of the rngModel {} paths."
+ITEM.height = 1
+ITEM.description = "This is an example RNG model item. GUI menus will still use ITEM.model, but when an item is spawned, it is randomly assigned one of the rngModel {} paths."
 
 ITEM.rngModels = {
     "models/griim/foodpack/sodacan_cocacola.mdl",

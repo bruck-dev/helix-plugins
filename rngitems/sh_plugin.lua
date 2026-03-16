@@ -2,7 +2,7 @@
 local PLUGIN = PLUGIN
 
 PLUGIN.name = "RNG Item Models"
-PLUGIN.description = "Adds a simple way to randomize item models. Put as high in your load order as possible."
+PLUGIN.description = "Adds a simple way to randomize item models and skins. Put as high in your load order as possible."
 PLUGIN.author = "bruck"
 PLUGIN.license = [[
 Copyright 2025 bruck
