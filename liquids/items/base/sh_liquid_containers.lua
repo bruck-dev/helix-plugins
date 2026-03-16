@@ -81,22 +81,6 @@ function ITEM:OnInstanced(invID, x, y)
     else
         self:SetVolume(0)
     end
-
-    self:ConfigureModel()
-end
-
--- i use this as a hook to set custom models using a random table, figured i'd throw it into the base
-function ITEM:ConfigureModel()
-    -- example implementation
-    -- if !self:GetData("model", nil) then
-    --     local models = {
-    --         "models/props_junk/garbage_glassbottle003a.mdl",
-    --         "models/props_junk/garbage_glassbottle001a.mdl",
-    --     }
-
-    --     self:SetData("model", models[math.random(1, #models)])
-    -- end
-    return
 end
 
 function ITEM:GetModel()
