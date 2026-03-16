@@ -9,7 +9,7 @@ end
 
 function PLUGIN:OnItemSpawned(entity)
     local itemTable = entity:GetItemTable()
-    if itemTable.rngModels then
+    if itemTable and itemTable.rngModels then
         local item = entity.ixItemID and ix.item.instances[entity.ixItemID]
         if item and item:GetData("model", nil) == nil then
             item:SetData("model", item.rngModels[math.random(1, #item.rngModels)])
