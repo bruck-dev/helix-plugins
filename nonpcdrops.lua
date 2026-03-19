@@ -9,21 +9,14 @@ ix.config.Add("removeNpcDrops", true, "Whether or not NPCs should have their wea
 })
 
 if SERVER then
-    -- overwrite OR use the ShouldRemoveNPCDrop() hook if you want to do more than just use the boolean config setting. this will probably take priority, so keep the bool off if you want to customize it
-    function PLUGIN:ShouldRemoveNPCDrop(npc, drop)
-        if ix.config.Get("removeNpcDrops", true) then
-            return true
-        end
-    end
-
     function PLUGIN:PlayerDroppedWeapon(entity, weapon)
-        if (entity:IsNPC() or entity:IsNextBot()) and hook.Run("ShouldRemoveNPCDrop", entity, weapon) then
+        if (entity:IsNPC() or entity:IsNextBot()) and (ix.config.Get("removeNpcDrops", true) or hook.Run("ShouldRemoveNPCDrop", entity, weapon)) then
             weapon:Remove()
         end
     end
 
     function PLUGIN:OnNPCDropItem(npc, item)
-        if hook.Run("ShouldRemoveNPCDrop", npc, item) then
+        if ix.config.Get("removeNpcDrops", true) or hook.Run("ShouldRemoveNPCDrop", npc, item) then
             item:Remove()
         end
     end
