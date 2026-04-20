@@ -20,6 +20,12 @@ function PLUGIN:OnItemSpawned(entity)
             if item.rngModels and item:GetData("model", nil) == nil then
                 item:SetData("model", item.rngModels[math.random(1, #item.rngModels)])
                 entity:SetModel(item:GetModel())
+                entity:PhysicsInit(SOLID_VPHYSICS)
+                local physObj = entity:GetPhysicsObject()
+                if IsValid(physObj) then
+                    physObj:EnableMotion(true)
+                    physObj:Wake()
+                end
             end
 
             if item.rngSkins and item:GetData("skin", nil) == nil then
