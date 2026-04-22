@@ -1,9 +1,9 @@
 
 --- Checks whether or not the given entity can be inspected, relative to the whitelist table.
 -- @realm shared
--- @entity ent The entity being checked.
+-- @entity/string classOrEnt The entity class (or entity the class should be taken from) being checked.
 -- @treturn bool Whether or not the entity can be inspected.
-function ix.inspect.IsInspectable(ent)
+function ix.inspect.IsInspectable(classOrEnt)
 end
 
 --- Adds or removes the given entity class from the inspection whitelist table.

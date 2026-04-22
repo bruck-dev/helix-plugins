@@ -23,9 +23,17 @@ ix.inspect.whitelist = ix.inspect.whitelist or {
     item_rpg_round = true,
 }
 
-function ix.inspect.IsInspectable(ent)
-    if !IsValid(ent) then return false end
-    return (ix.inspect.whitelist[ent:GetClass()] == true) or ent:IsWeapon()
+function ix.inspect.IsInspectable(classOrEnt)
+    if isentity(classOrEnt) then
+        if !IsValid(classOrEnt) then
+            return false
+        end
+        return (ix.inspect.whitelist[classOrEnt:GetClass()] == true) or classOrEnt:IsWeapon()
+    elseif isstring(classOrEnt) then
+        return ix.inspect.whitelist[classOrEnt:lower()] == true
+    else
+        return false
+    end
 end
 
 function ix.inspect.SetWhitelisted(classOrEnt, state)

@@ -60,3 +60,9 @@ function PLUGIN:OnItemTransferred(item, oldInv, newInv)
         ix.inspect.EndInspect()
     end
 end
+
+function PLUGIN:ShowEntityMenu(ent)
+    if ix.inspect.IsInspectable(ent) then
+        return false
+    end
+end
