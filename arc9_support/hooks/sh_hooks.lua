@@ -453,16 +453,18 @@ do
         else
             local removed = 0
             while removed < amt do
-                if client.ARC9_AttInv[att] > 0 then
+                if #attItems > 0 then
+                    local head = table.remove(attItems)
+                    if SERVER then
+                        head:Remove()
+                    end
+                    removed = removed + 1
+                elseif client.ARC9_AttInv[att] and client.ARC9_AttInv[att] > 0 then
                     client.ARC9_AttInv[att] = client.ARC9_AttInv[att] - 1
                     removed = removed + 1
                 else
-                local head = table.remove(attItems)
-                if SERVER then
-                    head:Remove()
+                    break
                 end
-                removed = removed + 1
-                end  
             end
         end
 

@@ -6,7 +6,7 @@ ix.liquids.stored = {}
 ix.liquids.sources = {}
 
 function ix.liquids.LoadFromDir(directory)
-    files, folders = file.Find(directory.."/*", "LUA")
+    local files, folders = file.Find(directory.."/*", "LUA")
 
     -- load from root
     for _, v in ipairs(files) do

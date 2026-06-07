@@ -12,7 +12,7 @@ if SERVER then
 end
 
 function ix.radio.stations.LoadFromDir(directory)
-    files, folders = file.Find(directory.."/*", "LUA")
+    local files, folders = file.Find(directory.."/*", "LUA")
 
     -- load from root
     for _, v in ipairs(files) do
@@ -60,7 +60,7 @@ function ix.radio.stations.LoadFromDir(directory)
 end
 
 function ix.radio.stationaryRadios.LoadFromDir(directory)
-    files, folders = file.Find(directory.."/*", "LUA")
+    local files, folders = file.Find(directory.."/*", "LUA")
 
     -- load from root
     for _, v in ipairs(files) do
