@@ -21,6 +21,5 @@ net.Receive("ixRadioFrequencySync", function(length, client)
         else
             client.frequencies[freq] = nil
         end
-        PrintTable(client.frequencies)
     end
 end)
