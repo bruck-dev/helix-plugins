@@ -1,7 +1,7 @@
 PLUGIN.name = "Immersive Radio"
 PLUGIN.description = "Adds support for a multitude of radio features, including mobile/handheld items, stationary radios, and music stations."
 PLUGIN.author = "bruck"
-PLUGIN.specialThanks = "nebulous.cloud, fauxzor, Adolphus"
+PLUGIN.specialThanks = "nebulous.cloud, fauxzor"
 PLUGIN.license = [[
 Copyright 2025 bruck
 This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License.
@@ -12,3 +12,6 @@ ix.util.Include("sh_commands.lua")
 ix.util.Include("sh_config.lua")
 ix.util.IncludeDir(PLUGIN.folder .. "/hooks", true)
 ix.util.IncludeDir(PLUGIN.folder .. "/meta", true)
+ix.util.IncludeDir(PLUGIN.folder .. "/net", true)
+
+-- I recommend checking out this list for radio stream links: https://github.com/deroverda/recommended-radio-streams

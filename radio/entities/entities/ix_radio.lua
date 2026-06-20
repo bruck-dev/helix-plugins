@@ -13,7 +13,6 @@ ENT.PhysicsSounds = true
 function ENT:SetupDataTables()
     self:NetworkVar("String", 0, "RadioID")
     self:NetworkVar("String", 1, "Frequency")
-    self:NetworkVar("String", 2, "FrequencyUnit")
     self:NetworkVar("Bool", 0, "Enabled")
 
     self:NetworkVarNotify("Enabled", self.OnVarChanged)
@@ -50,12 +49,7 @@ function ENT:OnVarChanged(var, old, new)
                     self:StopPlaying()
                 end
 
-                local newStation = ix.radio.stations.Get(new)
-                if newStation and !newStation.isStream then
-                    self.station = newStation
-                    self.startTime = ix.radio.stations.instances[newStation.uniqueID].startTime
-                    self.path = ix.radio.stations.instances[newStation.uniqueID].track
-                end
+                self.station = ix.radio.stations.Get(new)
             end
 
             local snd = self:GetReceiveSound()
@@ -72,12 +66,12 @@ function ENT:OnVarChanged(var, old, new)
     else
         if var == "Enabled" then
             if !new then
-                if self.canCurrentlyHear and self:GetFrequency() then
+                if self.canHear and self:GetFrequency() then
                     self:UpdateCanHearFrequency(false)
                 end
             end
         elseif var == "Frequency" then
-            if self.canCurrentlyHear and self:GetEnabled() and old then
+            if self.canHear and self:GetEnabled() and old then
                 self:UpdateCanHearFrequency(false, old)
             end
         end
@@ -92,7 +86,6 @@ if SERVER then
         self:PhysicsInit(SOLID_VPHYSICS)
 
         self:SetFrequency(string.format("%.1f", 0))
-        self:SetFrequencyUnit("MHz")
 
         self:SetEnabled(false)
 
@@ -107,12 +100,6 @@ if SERVER then
         PLUGIN:SaveData()
     end
 
-    function ENT:OnRemove()
-        if !ix.shuttingDown then
-            PLUGIN:SaveData()
-        end
-    end
-
     function ENT:UpdateTransmitState()
         return TRANSMIT_PVS
     end
@@ -122,11 +109,18 @@ if SERVER then
     
         if option == "Enable" then
             self:SetEnabled(true)
+            return
         elseif option == "Disable" then
             self:SetEnabled(false)
+            return
         end
     
         if option == "Set Frequency" then
+            if self.isHost then
+                client:Notify("This radio is the host for a radio station and cannot have its frequency changed.")
+                return
+            end
+
             local defaultFreq = tonumber(self:GetFrequency())
             if !defaultFreq or defaultFreq <= 0 then
                 defaultFreq = "100.0"
@@ -145,41 +139,28 @@ if SERVER then
 
     function ENT:Think()
         if self.EnableStations and self:GetEnabled() then
+            self.listeners = self.listeners or {}
             local station = self.station or ix.radio.stations.Get(self:GetFrequency())
-            if station and station:CanPlay() then
+            local path = station and station:GetPlayingTrack()
+            if path then
                 self.station = station
 
-                if !self.startTime then
-                    self.startTime = CurTime()
-                end
-
                 local listeners = {}
-                local radius = ix.config.Get("radioListenRange", 92) * 4
+                local radius = ix.config.Get("radioStationListenRange", 384)
 
                 for _, v in ipairs(ents.FindInSphere(self:GetPos(), radius)) do
-                    if v:IsPlayer() and v:Alive() then
+                    if v:IsPlayer() then
                         listeners[v] = true
-
-                        if !(self.listeners and self.listeners[v]) then
-                            local path = self.path
-                            if !path then
-                                if istable(station.trackList) then
-                                    path = station.trackList[1]
-                                else
-                                    path = station.trackList
-                                end
-
-                                self.path = path
-                            end
-
+                        if !self.listeners[v] then
                             net.Start("ixRadioStationJoin")
-                                net.WriteEntity(self)
+                                net.WriteUInt(self:EntIndex(), 16)
                                 net.WriteString(path)
                                 net.WriteBool(!file.Exists("sound/" .. path, "GAME")) -- check if the path is a file or a remote url
-                                if station.isStream then
+                                net.WriteVector(self:GetPos())
+                                if station.audio.isStream then
                                     net.WriteFloat(-1)
                                 else
-                                    net.WriteFloat(CurTime() - self.startTime)
+                                    net.WriteFloat(CurTime() - (station:GetInstance().audio.startTime or CurTime()))
                                 end
                             net.Send(v)
                         end
@@ -189,16 +170,18 @@ if SERVER then
                 for client, _ in pairs(self.listeners or {}) do
                     if !listeners[client] and IsValid(client) then
                         net.Start("ixRadioStationLeave")
-                            net.WriteEntity(self)
+                            net.WriteUInt(self:EntIndex(), 16)
                         net.Send(client)
                     end
                 end
 
                 self.listeners = listeners
+            else
+                self:StopPlaying()
             end
         end
 
-        self:NextThink(CurTime() + 0.25)
+        self:NextThink(CurTime() + 0.10)
 
         return true
     end
@@ -207,19 +190,20 @@ if SERVER then
         for client, _ in pairs(self.listeners or {}) do
             if IsValid(client) then
                 net.Start("ixRadioStationLeave")
-                    net.WriteEntity(self)
+                    net.WriteUInt(self:EntIndex(), 16)
                 net.Send(client)
             end
         end
 
-        self.startTime = nil
-        self.station = nil
-        self.path = nil
         self.listeners = {}
     end
 
     function ENT:OnRemove()
         self:StopPlaying()
+
+        if !ix.shuttingDown then
+            PLUGIN:SaveData()
+        end
     end
 else
     ENT.PopulateEntityInfo = true
@@ -231,10 +215,11 @@ else
         name:SizeToContents()
 
         local description = tooltip:AddRow("description")
-        local min, max, minUnit, maxUnit = self:GetValidFrequencyBand()
+        local min, max, minUnit, maxUnit = self:GetFrequencyBand()
         local text = string.format("%s\n\nFrequency Band: %s %s to %s %s", self.Description, min, minUnit, max, maxUnit)
-        if tonumber(self:GetFrequency()) > 0 and self:GetFrequencyUnit() then
-            text = text .. string.format("\nFrequency Tuning: %s %s", self:GetFrequency(), self:GetFrequencyUnit())
+        local freq, unit = self:GetDisplayFrequency()
+        if tonumber(freq) > 0 then
+            text = text .. string.format("\nTuned Frequency: %s %s", freq, unit)
         end
         description:SetText(text)
         description:SizeToContents()
@@ -250,41 +235,65 @@ else
         if !IsValid(client) or !client:Alive() or !client:GetCharacter() then return end
 
         if self:GetEnabled() then
-            local radius = ix.config.Get("radioListenRange", 92)
+            local radius = ix.config.Get("radioChatListenRange", 96)
             local inRadius = (LocalPlayer():GetPos():DistToSqr(self:GetPos()) < radius * radius)
 
-            if !self.canCurrentlyHear and inRadius then
+            if !self.canHear and inRadius then
                 self:UpdateCanHearFrequency(true)
-            elseif self.canCurrentlyHear and !inRadius then
+            elseif self.canHear and !inRadius then
                 self:UpdateCanHearFrequency(false)
             end
         end
 
-        if !self.clientAudioChannel or !self.clientAudioChannel:IsValid() then return end
-        self.clientAudioChannel:SetPos(self:GetPos())
+        local entIndex = self:EntIndex()
+        if !self.EnableStations or !client.radioStations or !client.radioStations[entIndex] or !client.radioStations[entIndex]:IsValid() then return end
+        client.radioStations[entIndex]:SetPos(self:GetPos())
     end
 
     function ENT:OnRemove()
-        if self:GetEnabled() and self.canCurrentlyHear then
+        if self:GetEnabled() and self.canHear then
             self:UpdateCanHearFrequency(false)
-        end
-
-        if self.clientAudioChannel and self.clientAudioChannel:IsValid() then
-            self.clientAudioChannel:Stop()
         end
     end
 
     function ENT:UpdateCanHearFrequency(canHear, frequency)
         local client = LocalPlayer()
         if !IsValid(client) or !client:Alive() or !client:GetCharacter() then return end
-
-        net.Start("ixRadioCanHearFrequency")
+    
+        client.frequencies = client.frequencies or {}
+        frequency = frequency or self:GetFrequency()
+        local oldRadio = client.frequencies[frequency]
+        self.canHear = canHear
+    
+        if canHear then
+            -- if we can already hear a two-way radio, don't replace it
+            if oldRadio and oldRadio != self and IsValid(oldRadio) and oldRadio.TwoWay then
+                return
+            end
+            client.frequencies[frequency] = self
+        else
+            -- only clear if we are the one currently registered
+            if oldRadio != self then
+                return
+            end
+    
+            client.frequencies[frequency] = nil
+    
+            -- check if there's another radio still in range that should become the new reference point
+            for _, ent in ipairs(ents.FindInSphere(client:GetPos(), ix.config.Get("radioChatListenRange", 96))) do
+                if IsValid(ent) and ent != self and ent.canHear and ent.GetFrequency and ent:GetFrequency() == frequency then
+                    ent:UpdateCanHearFrequency(true, frequency)
+                    return
+                end
+            end
+        end
+    
+        net.Start("ixRadioFrequencySync")
             net.WriteUInt(client:GetCharacter():GetID(), 32)
-            net.WriteString(frequency or self:GetFrequency())
+            net.WriteEntity(self)
+            net.WriteString(frequency)
             net.WriteBool(canHear)
         net.SendToServer()
-
-        self.canCurrentlyHear = canHear
     end
 end
 
@@ -306,45 +315,15 @@ function ENT:GetEntityMenu(client)
     return options
 end
 
-function ENT:ConvertUnit(freq)
-    if isstring(freq) then
-        freq = tonumber(freq)
-    end
-    freq = tonumber(string.format("%.1f", freq))
-
-    -- no need to convert if we're already in the MHz range
-    if freq >= 1 and freq < 1000 then
-        return string.format("%.1f", freq), "MHz"
-    end
-
-    freq = freq * 1000000000 -- normalize to GHz; we ALWAYS divide once, so this makes room for the first division
-    local units = {
-        "Hz",
-        "kHz",
-        "MHz",
-        "GHz",
-        "THz",
-    }
-
-    local i = 0
-    while freq >= 1000 do
-        freq = freq / 1000
-        i = i + 1
-    end
-
-    return string.format("%.1f", freq), (units[i] or "undefined")
-end
-
-function ENT:GetValidFrequencyBand()
-    local _, minUnit = self:ConvertUnit(self.FrequencyBand["min"])
-    local _, maxUnit = self:ConvertUnit(self.FrequencyBand["max"])
-
-    return string.format("%.1f", self.FrequencyBand["min"]), string.format("%.1f", self.FrequencyBand["max"]), minUnit, maxUnit
+function ENT:GetFrequencyBand()
+    local min, minUnit = ix.radio.ConvertUnit(self.FrequencyBand["min"])
+    local max, maxUnit = ix.radio.ConvertUnit(self.FrequencyBand["max"])
+    return min, max, minUnit, maxUnit
 end
 
 function ENT:UpdateFrequency(freq)
-    local min, max, minUnit, maxUnit = self:GetValidFrequencyBand()
-    local freq, unit = self:ConvertUnit(freq)
+    local min, max, minUnit, maxUnit = self:GetFrequencyBand()
+    local freq, unit = ix.radio.ConvertUnit(freq)
 
     local compareFreq = tonumber(freq)
 
@@ -352,9 +331,12 @@ function ENT:UpdateFrequency(freq)
         return string.format("%s %s is outside of the device's operating frequency band of %s %s to %s %s.", freq, unit, min, minUnit, max, maxUnit)
     else
         self:SetFrequency(freq)
-        self:SetFrequencyUnit(unit)
         return string.format("You have set this radio's frequency to %s %s.", freq, unit)
     end
+end
+
+function ENT:GetDisplayFrequency()
+    return ix.radio.ConvertUnit(self:GetFrequency())
 end
 
 function ENT:GetRadioTable()

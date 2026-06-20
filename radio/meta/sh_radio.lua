@@ -8,11 +8,12 @@ RADIO.description = "undefined"
 RADIO.model = "models/props/cs_office/radio.mdl"
 RADIO.uniqueID = "undefined"
 
-RADIO.twoWay = false
-RADIO.canGarble = true
-RADIO.enableStations = true
+RADIO.twoWay = false            -- whether or not the radio can receive AND send messages. if false, can only receive
+RADIO.canGarble = true          -- whether or not the radio's transmitted messages can ever be garbled. useful if you want broadcast-style radios that cannot garble, ever
+RADIO.transmitPower = 1.0       -- if it can garble, transmitPower is a multiplier after normal range math is done. 1.0 implies no modification, whereas 1.2 would be a 20% boost and 0.8 would be a 20% malus
+RADIO.enableStations = true     -- whether or not this radio will play music when tuned to a radio station frequency
 
-RADIO.enableSound = nil
+RADIO.enableSound = nil         -- can be a string or a list of strings
 RADIO.disableSound = nil
 RADIO.receiveSound = nil
 
@@ -23,11 +24,11 @@ RADIO.frequencyBand = {
 }
 
 function RADIO:GetName()
-    return self.name
+	return self.name
 end
 
 function RADIO:GetModel()
-    return self.model
+	return self.model
 end
 
 function RADIO:GetEnableSound()
@@ -61,7 +62,7 @@ function RADIO:GetReceiveSound()
 end
 
 if CLIENT then
-    -- determines extra drawn features on the model, i.e setting a sprite to red or green when the radio is on/off. this replaces ENT:DrawEnabled() from the older versions
+    -- determines extra drawn features on the model, i.e setting a sprite to red or green when the radio is on/off. see the examples
     function RADIO:Paint(entity)
     end
 end

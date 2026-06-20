@@ -1,34 +1,18 @@
 
 local PLUGIN = PLUGIN
 
-util.AddNetworkString("ixRadioStationJoin")
-util.AddNetworkString("ixRadioStationLeave")
-util.AddNetworkString("ixRadioCanHearFrequency")
-
-net.Receive("ixRadioCanHearFrequency", function(length, client)
-    local id = net.ReadUInt(32)
-    local character = client:GetCharacter()
-
-    if (character and character:GetID() == id) then
-        local freq = net.ReadString()
-        local canHear = net.ReadBool()
-
-        if canHear then
-            client.hearableFrequencies[freq] = canHear
-        else
-            client.hearableFrequencies[freq] = nil
-        end
-    end
-end)
-
 -- on load, reset the hearable frequencies and restore any enabled radios on the char
 function PLUGIN:PlayerLoadedCharacter(client, char, prevChar)
-    client.hearableFrequencies = {}
+    client.frequencies = {}
 
-    local en, radio = char:HasRadioEnabled()
-    if radio then
-        client.hearableFrequencies[radio:GetFrequency()] = true
+    for k, _ in char:GetInventory():Iter() do
+        if k.isRadio and k:IsEnabled() then
+            client.frequencies[k:GetFrequency()] = k
+            break
+        end
     end
+
+    ix.radio.FrequencySync(client)
 end
 
 function PLUGIN:SaveData()
@@ -49,10 +33,10 @@ function PLUGIN:SaveData()
             model = entity:GetModel(),
             skin = entity:GetSkin(),
             bodygroups = bodygroups,
-
             freq = entity:GetFrequency(),
             enabled = entity:GetEnabled(),
             radioID = entity:GetRadioID(),
+            isHost = entity.isHost,
         }
     end
 
@@ -84,6 +68,10 @@ function PLUGIN:LoadData()
 
         if v.freq then
             entity:UpdateFrequency(v.freq)
+
+            if v.isHost then
+                ix.radio.stations.SetHostRadio(entity, v.freq)
+            end
         end
 
         if v.enabled then
@@ -95,5 +83,5 @@ function PLUGIN:LoadData()
 end
 
 function PLUGIN:CanAutoFormatMessage(client, chatType, message)
-    return string.find(chatType, "radio")
+	return string.find(chatType, "radio")
 end

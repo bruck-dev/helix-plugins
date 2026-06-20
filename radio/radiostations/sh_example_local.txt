@@ -1,12 +1,23 @@
 
 STATION.name = "Local Example"
-STATION.frequency = 96.2                                -- assigned frequency, obviously
+STATION.frequency = 96.2                -- assigned frequency, obviously
 
-STATION.trackDelay = 1                                  -- since this isn't a live stream, this is the delay in seconds between each track being played from the tracklist. can be a number or a table of {["min"] = x, ["max"] = y} or {x, y, z}
+STATION.audio = {                       -- this is the audio data table
+    delay = 1,                          -- since this isn't a live stream, this is the delay in seconds between each track being played from the tracklist. can be a number or a table of {["min"] = x, ["max"] = y} or {x, y, z}
+    trackList = {                       -- since this station is NOT a stream, local files will be used in order starting at a random index on server load
+        "music/hl2_song6.mp3",          -- these, in theory, can be remote URLs, but i've only tested with local files. if a file path, disregard the 'sound/' prefix
+        "music/hl2_song7.mp3",
+        "music/hl2_song8.mp3",
+    },
+}
 
-STATION.isStream = false                                -- since this station is NOT a stream, local files will be used in order starting at a random index on server load
-STATION.trackList = {                                   -- these must be sound files stored on both the client and server; do NOT start with the 'sound/' prefix
-    "music/hl2_song6.mp3",
-    "music/hl2_song7.mp3",
-    "music/hl2_song8.mp3",
+STATION.broadcasts = {                  -- this is the broadcast data table
+    messageList = {                     -- this is the list of messages that will be sent
+        "Wow, that was a song!",
+        "Wow, that was another!",
+        "And now we loop back around!",
+    },
+    name = "D.J. Bruck",                -- this is the (optional) name that will be used for broadcasts, in place of the station's name
+    synced = true,                      -- because this is true, each message will be sent out after a song finishes! this does not work on remote or streamed files
+    delay = 0,                          -- this is, like the delay in the audio, the time between broadcasts. since this is a synced broadcast list, it won't do anything
 }
