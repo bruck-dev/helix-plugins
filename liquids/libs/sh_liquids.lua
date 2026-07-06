@@ -5,6 +5,48 @@ ix.liquids = {}
 ix.liquids.stored = {}
 ix.liquids.sources = {}
 
+-- returns the volume scaled to the nearest metric unit - 1000mL will become 1L, etc
+function ix.liquids.ConvertUnit(vol)
+    vol = tonumber(vol)
+    if !vol or vol <= 0 then
+        return "0.00", "mL"
+    end
+
+    if vol >= 1 and vol < 1000 then
+        return string.format("%.2f", vol), "mL"
+    end
+
+    local units = {"mL", "L", "kL", "ML"}
+    local index = math.Clamp(math.floor(math.log(vol, 1000)) + 1, 1, #units)
+    local scaled = vol / (1000 ^ (index - 1))
+
+    return string.format("%.2f", scaled), units[index]
+end
+
+-- display a given volume as a specific unit
+function ix.liquids.ConvertToUnit(vol, unit)
+    local units = {
+        ["nL"] = 0.000001,
+        ["µL"] = 0.001,
+        ["mL"] = 1,
+        ["cL"] = 10,
+        ["dL"] = 100,
+        ["L"] = 1000,
+        ["daL"] = 10000,
+        ["hL"] = 100000,
+        ["kL"] = 1000000,
+        ["ML"] = 1000000000,
+    }
+
+    if unit == "uL" then unit = "µL" end
+    local div = units[unit]
+    if !div then
+        return vol, "mL"
+    end
+
+    return vol / div, unit
+end
+
 function ix.liquids.LoadFromDir(directory)
     local files, folders = file.Find(directory.."/*", "LUA")
 
@@ -51,12 +93,18 @@ function ix.liquids.FindByName(liquid)
     return nil
 end
 
-function ix.liquids.Get(uniqueID)
-    return ix.liquids.stored[uniqueID] or nil
+function ix.liquids.Get(key)
+    if !key then return end
+    
+    return ix.liquids.stored[key] or ix.liquids.FindByName(key)
 end
 
 function ix.liquids.NameToUniqueID(name)
     return string.gsub(name, " ", "_"):lower()
+end
+
+function ix.liquids.RegisterSource(model, data)
+    ix.liquids.sources[model:lower()] = data
 end
 
 hook.Add("DoPluginIncludes", "ixLiquids", function(path, pluginTable)
@@ -66,30 +114,3 @@ hook.Add("DoPluginIncludes", "ixLiquids", function(path, pluginTable)
 
     table.insert(PLUGIN.paths, path)
 end)
-
-function ix.liquids.RegisterSource(model, data)
-    ix.liquids.sources[model:lower()] = data
-end
-
--- returns the volume scaled to the nearest metric unit - 1000mL will become 1L, etc
-function ix.liquids.ConvertUnit(vol)
-    local units = {
-        "mL",
-        "L",
-        "kL",
-        "ML"
-    }
-
-    -- no need to rescale mL or the first L
-    if vol < 1000 then
-        return vol .. " mL"
-    end
-
-    local i = 0
-    while vol >= 1 do
-        vol = vol / 1000
-        i = i + 1
-    end
-
-    return string.format("%.2f", vol * 1000) .. " " .. units[i]
-end

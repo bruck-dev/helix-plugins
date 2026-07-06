@@ -15,7 +15,7 @@ do
             if (data) then
                 if (hook.Run("CanPlayerSpawnContainer", client, model, entity) == false) then return end
 
-                local container = ents.Create("ix_liquidsource")
+                local container = ents.Create("ix_liquids_source")
                 container:SetPos(entity:GetPos())
                 container:SetAngles(entity:GetAngles())
                 container:SetModel(model)
@@ -47,7 +47,7 @@ do
     function PLUGIN:SaveData()
         local data = {}
 
-        for _, entity in ipairs(ents.FindByClass("ix_liquidsource")) do
+        for _, entity in ipairs(ents.FindByClass("ix_liquids_source")) do
             local bodygroups = {}
 
             for _, v in ipairs(entity:GetBodyGroups() or {}) do
@@ -73,7 +73,7 @@ do
 
     function PLUGIN:LoadData()
         for _, v in ipairs(self:GetData() or {}) do
-            local entity = ents.Create("ix_liquidsource")
+            local entity = ents.Create("ix_liquids_source")
             entity:SetPos(v.pos)
             entity:SetAngles(v.angles)
             entity:Spawn()

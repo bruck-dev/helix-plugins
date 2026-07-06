@@ -13,7 +13,9 @@ end
 
 function ix.radio.ConvertUnit(freq)
     freq = tonumber(freq)
-    if !freq or freq <= 0 then return "0.0", "MHz" end
+    if !freq or freq <= 0 then
+        return "0.0", "MHz"
+    end
 
     if freq >= 1 and freq < 1000 then
         return string.format("%.1f", freq), "MHz"
@@ -25,6 +27,23 @@ function ix.radio.ConvertUnit(freq)
     local scaled = hz / (1000 ^ (index - 1))
 
     return string.format("%.1f", scaled), units[index]
+end
+
+function ix.radio.ConvertToUnit(freq, unit)
+    local units = {
+        ["Hz" ] = 0.000001,
+        ["kHz"] = 0.001,
+        ["MHz"] = 1,
+        ["GHz"] = 1000,
+        ["THz"] = 1000000,
+    }
+
+    local div = units[unit]
+    if !div then
+        return freq, "MHz"
+    end
+
+    return freq / div, unit
 end
 
 function ix.radio.stations.LoadFromDir(directory)
@@ -80,6 +99,8 @@ function ix.radio.stations.LoadFromDir(directory)
 end
 
 function ix.radio.stations.Get(key)
+    if !key then return end
+    
     return ix.radio.stations.stored[key] or ix.radio.stations.FindByFrequency(key) or ix.radio.stations.FindByName(key)
 end
 

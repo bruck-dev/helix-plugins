@@ -298,7 +298,8 @@ else
 end
 
 function ENT:GetEntityMenu(client)
-    if !IsValid(client) and !(client:GetPos():DistToSqr(self:GetPos()) < 75 * 75) or !client:GetCharacter() then
+    local dist = ix.config.Get("interactRange", 96)
+    if !IsValid(client) or !(client:GetPos():DistToSqr(self:GetPos()) < (dist * dist)) or !client:GetCharacter() then
         return
     end
 

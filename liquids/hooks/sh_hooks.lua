@@ -20,7 +20,7 @@ properties.Add("liquid_source_edit", {
 
     Filter = function(self, entity, client)
         if (!IsValid(entity)) then return false end
-        if (entity:GetClass() != "ix_liquidsource") then return false end
+        if (entity:GetClass() != "ix_liquids_source") then return false end
         if (!gamemode.Call( "CanProperty", client, "liquid_source_edit", entity)) then return false end
 
         return CAMI.PlayerHasAccess(client, "Helix - Manage Liquid Sources", nil)

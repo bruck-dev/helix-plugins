@@ -19,15 +19,13 @@ function PLUGIN:SaveData()
     local data = {}
 
     for _, entity in ipairs(ents.FindByClass("ix_radio_*")) do
-        local class = entity:GetClass()
         local bodygroups = {}
-
         for _, v in ipairs(entity:GetBodyGroups() or {}) do
             bodygroups[v.id] = entity:GetBodygroup(v.id)
         end
 
         data[#data + 1] = {
-            class = class,
+            class = entity:GetClass(),
             pos = entity:GetPos(),
             angles = entity:GetAngles(),
             model = entity:GetModel(),

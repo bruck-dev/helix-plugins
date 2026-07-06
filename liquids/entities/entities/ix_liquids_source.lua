@@ -77,7 +77,7 @@ if SERVER then
         angles.p = 0
         angles.y = angles.y + 180
 
-        local entity = ents.Create("ix_liquidsource")
+        local entity = ents.Create("ix_liquids_source")
         entity:SetPos(trace.HitPos)
         entity:SetAngles(angles)
         entity:Spawn()
@@ -131,12 +131,12 @@ else
                 if self:GetIsInfinite() then
                     data:SetText("Contains " .. liquid:GetName())
                 else
-                    if(vol <= 0) then
-                        data:SetText("Capacity: " .. ix.liquids.ConvertUnit(self:GetMaxVolume()) .. "\nEmpty")
-                    else 
-                        data:SetText("Capacity: " .. ix.liquids.ConvertUnit(self:GetMaxVolume()) .. "\n" ..
-                        "Current Amount: " .. ix.liquids.ConvertUnit(self:GetCurVolume()) .. "\n" ..
-                        "Contains " .. liquid:GetName())
+                    local capVal, capUnit = ix.liquids.ConvertUnit(self:GetMaxVolume())
+                    if vol <= 0 then
+                        data:SetText(string.format("\nCapacity: %s\nEmpty", tostring(capVal) .. " " .. capUnit))
+                    else
+                        local curVal, curUnit = ix.liquids.ConvertUnit(self:GetCurVolume())
+                        data:SetText(string.format("\nCapacity: %s\nCurrent Amount: %s\nContains %s", tostring(capVal) .. " " .. capUnit, tostring(curVal) .. " " .. curUnit, liquid:GetName()))
                     end
                 end
                 data:SetFont("ixGenericFont")

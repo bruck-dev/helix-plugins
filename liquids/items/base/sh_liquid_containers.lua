@@ -37,12 +37,12 @@ function ITEM:PopulateTooltip(tooltip)
     local data = tooltip:AddRow("data")
     local vol = self:GetVolume()
 
-    if(vol <= 0) then
-        data:SetText("\nCapacity: " .. ix.liquids.ConvertUnit(self.capacity) .. "\nEmpty")
+    local capVal, capUnit = ix.liquids.ConvertUnit(self.capacity)
+    if vol <= 0 then
+        data:SetText(string.format("\nCapacity: %s\nEmpty", tostring(capVal) .. " " .. capUnit))
     else 
-        data:SetText("\nCapacity: " .. ix.liquids.ConvertUnit(self.capacity) .. "\n" ..
-        "Current Amount: " .. ix.liquids.ConvertUnit(vol) .. "\n" ..
-        "Contains " .. ix.liquids.Get(self:GetLiquid()):GetName())
+        local curVal, curUnit = ix.liquids.ConvertUnit(vol)
+        data:SetText(string.format("\nCapacity: %s\nCurrent Amount: %s\nContains %s", tostring(capVal) .. " " .. capUnit, tostring(curVal) .. " " .. curUnit, ix.liquids.Get(self:GetLiquid()):GetName()))
     end
 
     data:SetFont("ixGenericFont")
@@ -81,10 +81,6 @@ function ITEM:OnInstanced(invID, x, y)
     else
         self:SetVolume(0)
     end
-end
-
-function ITEM:GetModel()
-    return self:GetData("model", self.model)
 end
 
 function ITEM:GetVolume()
@@ -255,7 +251,7 @@ ITEM.functions.DFillFromSource = {
         local data = {}
             data.start = client:GetShootPos()
             data.endpos = data.start + client:GetAimVector() * 160
-            data.filter = function(ent) return (ent:GetClass() == "ix_liquidsource") end
+            data.filter = function(ent) return (ent:GetClass() == "ix_liquids_source") end
         local trace = util.TraceLine(data)
 
         local source = trace.Entity
@@ -296,7 +292,7 @@ ITEM.functions.DFillFromSource = {
         local data = {}
             data.start = client:GetShootPos()
             data.endpos = data.start + client:GetAimVector() * 160
-            data.filter = function(ent) return (ent:GetClass() == "ix_liquidsource") end
+            data.filter = function(ent) return (ent:GetClass() == "ix_liquids_source") end
         local trace = util.TraceLine(data)
 
         local ent = trace.Entity
@@ -336,7 +332,7 @@ ITEM.functions.DRefillSource = {
         local data = {}
             data.start = client:GetShootPos()
             data.endpos = data.start + client:GetAimVector() * 160
-            data.filter = function(ent) return (ent:GetClass() == "ix_liquidsource") end
+            data.filter = function(ent) return (ent:GetClass() == "ix_liquids_source") end
         local trace = util.TraceLine(data)
 
         local source = trace.Entity
@@ -372,7 +368,7 @@ ITEM.functions.DRefillSource = {
         local data = {}
             data.start = client:GetShootPos()
             data.endpos = data.start + client:GetAimVector() * 160
-            data.filter = function(ent) return (ent:GetClass() == "ix_liquidsource") end
+            data.filter = function(ent) return (ent:GetClass() == "ix_liquids_source") end
         local trace = util.TraceLine(data)
 
         local ent = trace.Entity
@@ -430,15 +426,3 @@ ITEM.functions.combine = {
         return true
     end
 }
-
-ITEM.suppressed = function(item, name)
-    if(name == "drop") then
-        return
-    end
-    
-    if(item:GetVolume() <= 0) then
-        return true, name, "This drink is empty."
-    end
-
-    return false
-end
