@@ -16,8 +16,8 @@ if (CLIENT) then
             local tool = tooltip:AddRowAfter("description", "tool")
 
             local text = "Required Tool: "
-            local tool = ix.item.Get(self.tool)
-            if tool then
+            local item = ix.item.Get(self.tool)
+            if item then
                 text = text .. item:GetName()
             else
                 text = text .. self.tool
