@@ -6,7 +6,6 @@ function PLUGIN:SaveData()
 
     for _, entity in ipairs(ents.FindByClass("ix_arc9_weapon_bench")) do
         local bodygroups = {}
-
         for _, v in ipairs(entity:GetBodyGroups() or {}) do
             bodygroups[v.id] = entity:GetBodygroup(v.id)
         end
@@ -16,6 +15,7 @@ function PLUGIN:SaveData()
             angles = entity:GetAngles(),
             model = entity:GetModel(),
             skin = entity:GetSkin(),
+            color = entity:GetColor(),
             bodygroups = bodygroups,
         }
     end
@@ -32,6 +32,7 @@ function PLUGIN:LoadData()
 
         entity:SetModel(v.model)
         entity:SetSkin(v.skin or 0)
+        entity:SetColor(v.color or Color(255, 255, 255, 255))
 
         for id, bodygroup in pairs(v.bodygroups or {}) do
             entity:SetBodygroup(id, bodygroup)

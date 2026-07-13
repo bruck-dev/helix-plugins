@@ -22,10 +22,7 @@ do
                     return
                 end
 
-                -- transmit power multiplier for the specific radio; defaults to 1, no change
-                local pwr = radio.transmitPower or radio.TransmitPower or 1
-
-                local data = {frequency = freq, garble = canGarble, power = pwr}
+                local data = {frequency = freq, garble = canGarble, power = radio:GetTransmitPower()}
                 if isentity(radio) then
                     data.radio = radio
                 end
@@ -58,10 +55,7 @@ do
                     return
                 end
 
-                -- transmit power multiplier for the specific radio; defaults to 1, no change
-                local pwr = radio.transmitPower or radio.TransmitPower or 1
-
-                local data = {frequency = freq, garble = canGarble, power = pwr}
+                local data = {frequency = freq, garble = canGarble, power = radio:GetTransmitPower()}
                 if isentity(radio) then
                     data.radio = radio
                 end
@@ -94,10 +88,7 @@ do
                     return
                 end
 
-                -- transmit power multiplier for the specific radio; defaults to 1, no change
-                local pwr = radio.transmitPower or radio.TransmitPower or 1
-
-                local data = {frequency = freq, garble = canGarble, power = pwr}
+                local data = {frequency = freq, garble = canGarble, power = radio:GetTransmitPower()}
                 if isentity(radio) then
                     data.radio = radio
                 end
@@ -146,10 +137,7 @@ do
                         return
                     end
 
-                    -- transmit power multiplier for the specific radio; defaults to 1, no change
-                    local pwr = radio.transmitPower or radio.TransmitPower or 1
-
-                    local data = {frequency = freq, garble = canGarble, language = lang, power = pwr}
+                    local data = {frequency = freq, garble = canGarble, language = lang, power = radio:GetTransmitPower()}
                     if isentity(radio) then
                         data.radio = radio
                     end
@@ -194,10 +182,7 @@ do
                         return
                     end
 
-                    -- transmit power multiplier for the specific radio; defaults to 1, no change
-                    local pwr = radio.transmitPower or radio.TransmitPower or 1
-
-                    local data = {frequency = freq, garble = canGarble, language = lang, power = pwr}
+                    local data = {frequency = freq, garble = canGarble, language = lang, power = radio:GetTransmitPower()}
                     if isentity(radio) then
                         data.radio = radio
                     end
@@ -242,10 +227,7 @@ do
                         return
                     end
 
-                    -- transmit power multiplier for the specific radio; defaults to 1, no change
-                    local pwr = radio.transmitPower or radio.TransmitPower or 1
-
-                    local data = {frequency = freq, garble = canGarble, language = lang, power = pwr}
+                    local data = {frequency = freq, garble = canGarble, language = lang, power = radio:GetTransmitPower()}
                     if isentity(radio) then
                         data.radio = radio
                     end

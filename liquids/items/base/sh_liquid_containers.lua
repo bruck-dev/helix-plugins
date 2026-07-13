@@ -90,7 +90,7 @@ end
 function ITEM:SetVolume(vol)
     if vol > self.capacity then
         self:SetData("currentAmount", self.capacity)
-    elseif vol == 0 then
+    elseif vol <= 0 then
         if self.emptyContainer then
             self:SetData("replaceWithContainer", true)
             self:Remove()
@@ -102,9 +102,13 @@ function ITEM:SetVolume(vol)
         self:SetData("currentAmount", vol)
     end
 
-    local client = self.player
-    if (ix.weight and client) then
-        client:GetCharacter():UpdateWeight()
+    if ix.weight then
+        local client = self.player or self.owner or self:GetOwner()
+        local char = client and client:GetCharacter()
+
+        if char and char.UpdateWeight then
+            char:UpdateWeight()
+        end
     end
 end
 
@@ -131,7 +135,7 @@ end
 
 -- returns the weight of the container + weight of the held liquid (if any) in kilograms
 function ITEM:GetWeight()
-    local weight = self.weight or (self.capacity / 1000)
+    local weight = self.weight or 0
     if self:GetLiquid() then
         return weight + (self:GetVolume() * ix.liquids.Get(self:GetLiquid()):GetWeight())
     else
@@ -402,9 +406,9 @@ ITEM.functions.combine = {
     
                     local snd = ix.liquids.Get(liquidSource:GetLiquid()):GetTransferSound()
                     
-                    container:SetVolume(container:GetVolume() + amountToGive)
+                    container:SetVolume(math.Clamp(container:GetVolume() + amountToGive, 0, container.capacity))
                     container:SetLiquid(liquidSource:GetLiquid())
-                    liquidSource:SetVolume(math.Clamp(liquidVolume - amountToGive, 0, 9999))
+                    liquidSource:SetVolume(math.Clamp(liquidVolume - amountToGive, 0, liquidSource.capacity))
                     
                     if snd then
                         if char.PlaySound then

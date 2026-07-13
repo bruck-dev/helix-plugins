@@ -5,11 +5,19 @@ function PLUGIN:SaveData()
     local data = {}
 
     for _, entity in ipairs(ents.FindByClass("ix_padlock")) do
+        local bodygroups = {}
+        for _, v in ipairs(entity:GetBodyGroups() or {}) do
+            bodygroups[v.id] = entity:GetBodygroup(v.id)
+        end
+
         data[#data + 1] = {
             name = entity:GetDisplayName(),
             pos = entity:GetPos(),
             angles = entity:GetAngles(),
             model = entity:GetModel(),
+            skin = entity:GetSkin(),
+            color = entity:GetColor(),
+            bodygroups = bodygroups,
             locked = entity:GetLocked(),
             pid = entity:GetPersistentID(),
             doorInfo = {
@@ -37,6 +45,13 @@ function PLUGIN:LoadData()
 
             entity:SetDisplayName(v.name)
             entity:SetModel(v.model)
+            entity:SetSkin(v.skin or 0)
+            entity:SetColor(v.color or Color(255, 255, 255, 255))
+
+            for id, bodygroup in pairs(v.bodygroups or {}) do
+                entity:SetBodygroup(id, bodygroup)
+            end
+            
             entity:SetPersistentID(v.pid)
 
             entity:SetSolid(SOLID_VPHYSICS)

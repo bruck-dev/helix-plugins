@@ -156,7 +156,6 @@ function ix.radio.stationaryRadios.LoadFromDir(directory)
                     RADIO_ENT.TwoWay = RADIO.twoWay
                     RADIO_ENT.EnableStations = RADIO.enableStations
                     RADIO_ENT.CanGarble = RADIO.canGarble
-                    RADIO_ENT.TransmitPower = RADIO.transmitPower or 1
                     RADIO_ENT.FrequencyBand = RADIO.frequencyBand
 
                     scripted_ents.Register(RADIO_ENT, "ix_radio_"..niceName)
@@ -188,7 +187,6 @@ function ix.radio.stationaryRadios.LoadFromDir(directory)
                     RADIO_ENT.TwoWay = RADIO.twoWay
                     RADIO_ENT.EnableStations = RADIO.enableStations
                     RADIO_ENT.CanGarble = RADIO.canGarble
-                    RADIO_ENT.TransmitPower = RADIO.transmitPower or 1
                     RADIO_ENT.FrequencyBand = RADIO.frequencyBand
 
                     scripted_ents.Register(RADIO_ENT, "ix_radio_"..niceName)

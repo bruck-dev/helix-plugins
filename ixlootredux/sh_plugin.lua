@@ -73,15 +73,22 @@ if SERVER then
     function PLUGIN:SaveData()
         local data = {}
     
-        for _, v in pairs(ents.FindByClass("ix_loot_container")) do
+        for _, entity in pairs(ents.FindByClass("ix_loot_container")) do
+            local bodygroups = {}
+            for _, v in ipairs(entity:GetBodyGroups() or {}) do
+                bodygroups[v.id] = entity:GetBodygroup(v.id)
+            end
+
             data[#data + 1] = {
-                pos = v:GetPos(),
-                ang = v:GetAngles(),
-                contClass = v:GetContainerClass(),
-                model = v:GetModel(),
-                skin = v:GetSkin() or 0,
-                lootedBy = v.lootedBy or nil,
-                timesUsed = v.timesUsed or nil,
+                pos = entity:GetPos(),
+                ang = entity:GetAngles(),
+                contClass = entity:GetContainerClass(),
+                model = entity:GetModel(),
+                skin = entity:GetSkin() or 0,
+                color = entity:GetColor(),
+                bodygroups = bodygroups,
+                lootedBy = entity.lootedBy or nil,
+                timesUsed = entity.timesUsed or nil,
             }
         end
 
@@ -91,23 +98,37 @@ if SERVER then
     function PLUGIN:LoadData()
         for _, v in ipairs(self:GetData() or {}) do
 
-            local lootContainer = ents.Create("ix_loot_container")
-            lootContainer:SetPos(v.pos)
-            lootContainer:SetAngles(v.ang)
-            lootContainer:SetContainerClass(v.contClass)
+            local entity = ents.Create("ix_loot_container")
+            entity:SetPos(v.pos)
+            entity:SetAngles(v.ang)
+            entity:SetContainerClass(v.contClass)
 
             if v.lootedBy then
-                lootContainer.lootedBy = v.lootedBy
+                entity.lootedBy = v.lootedBy
             end
 
             if v.timesUsed then
-                lootContainer.timesUsed = v.timesUsed
+                entity.timesUsed = v.timesUsed
             end
 
-            lootContainer:Spawn()
+            entity:Spawn()
             
-            lootContainer:SetModel(v.model)
-            lootContainer:SetSkin(v.skin)
+            entity:SetModel(v.model)
+            entity:SetSkin(v.skin or 0)
+            entity:SetColor(v.color or Color(255, 255, 255, 255))
+
+            for id, bodygroup in pairs(v.bodygroups or {}) do
+                entity:SetBodygroup(id, bodygroup)
+            end
+
+            entity:SetSolid(SOLID_VPHYSICS)
+            entity:PhysicsInit(SOLID_VPHYSICS)
+    
+            local physObj = entity:GetPhysicsObject()
+            if (IsValid(physObj)) then
+                physObj:EnableMotion(false)
+                physObj:Sleep()
+            end
         end
     end
 end

@@ -23,15 +23,19 @@ RADIO.frequencyBand = {
     ["max"] = 108.0,
 }
 
-function RADIO:GetName()
+function RADIO:GetName(ent)
 	return self.name
 end
 
-function RADIO:GetModel()
+function RADIO:GetDescription(ent)
+    return self.description
+end
+
+function RADIO:GetModel(ent)
 	return self.model
 end
 
-function RADIO:GetEnableSound()
+function RADIO:GetEnableSound(ent)
     if self.enableSound then
         if istable(self.enableSound) then
             return self.enableSound[math.random(1, #self.enableSound)]
@@ -41,7 +45,7 @@ function RADIO:GetEnableSound()
     end
 end
 
-function RADIO:GetDisableSound()
+function RADIO:GetDisableSound(ent)
     if self.disableSound then
         if istable(self.disableSound) then
             return self.disableSound[math.random(1, #self.disableSound)]
@@ -51,7 +55,7 @@ function RADIO:GetDisableSound()
     end
 end
 
-function RADIO:GetReceiveSound()
+function RADIO:GetReceiveSound(ent)
     if self.receiveSound then
         if istable(self.receiveSound) then
             return self.receiveSound[math.random(1, #self.receiveSound)]
@@ -61,9 +65,13 @@ function RADIO:GetReceiveSound()
     end
 end
 
+function RADIO:GetTransmitPower(ent)
+    return self.transmitPower or 1
+end
+
 if CLIENT then
     -- determines extra drawn features on the model, i.e setting a sprite to red or green when the radio is on/off. see the examples
-    function RADIO:Paint(entity)
+    function RADIO:Paint(ent)
     end
 end
 

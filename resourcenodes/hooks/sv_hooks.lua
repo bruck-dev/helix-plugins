@@ -6,7 +6,6 @@ function PLUGIN:SaveData()
 
     for _, entity in ipairs(ents.FindByClass("ix_resourcenode_*")) do
         local bodygroups = {}
-
         for _, v in ipairs(entity:GetBodyGroups() or {}) do
             bodygroups[v.id] = entity:GetBodygroup(v.id)
         end
@@ -16,6 +15,7 @@ function PLUGIN:SaveData()
             angles = entity:GetAngles(),
             model = entity:GetModel(),
             skin = entity:GetSkin(),
+            color = entity:GetColor(),
             bodygroups = bodygroups,
             node = entity:GetNodeID(),
             canHarvest = entity:GetCanHarvest(),
@@ -36,11 +36,11 @@ function PLUGIN:LoadData()
 
         entity:SetModel(v.model)
         entity:SetSkin(v.skin or 0)
+        entity:SetColor(v.color or Color(255, 255, 255, 255))
         entity:SetSolid(SOLID_VPHYSICS)
         entity:PhysicsInit(SOLID_VPHYSICS)
 
         local physObj = entity:GetPhysicsObject()
-
         if (IsValid(physObj)) then
             physObj:EnableMotion(false)
             physObj:Sleep()

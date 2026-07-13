@@ -130,6 +130,10 @@ function ITEM:GetReceiveSound()
     end
 end
 
+function ITEM:GetTransmitPower()
+    return self.transmitPower or 1.0
+end
+
 function ITEM:OnTransferred(curInv, newInv)
     self:SetData("enabled", false)
 end

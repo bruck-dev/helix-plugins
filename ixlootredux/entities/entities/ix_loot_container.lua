@@ -53,7 +53,9 @@ if SERVER then
             timer.Remove("ixLootSound."..self:EntIndex())
         end
 
-        PLUGIN:SaveData()
+        if !ix.shuttingDown then
+            PLUGIN:SaveData()
+        end
     end
 
     function ENT:GetLootActionSound()
@@ -90,6 +92,7 @@ if SERVER then
         newProp:SetAngles(self:GetAngles())
         newProp:SetModel(self:GetModel())
         newProp:SetSkin(self:GetSkin())
+        newProp:SetColor(self:GetColor())
 
         -- just useful to check these in case it's decoratively placed or something
         local isFrozen = !self:GetPhysicsObject():IsMotionEnabled()

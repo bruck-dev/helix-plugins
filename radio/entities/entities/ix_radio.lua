@@ -11,15 +11,12 @@ ENT.bNoPersist = true
 ENT.PhysicsSounds = true
 
 function ENT:SetupDataTables()
-    self:NetworkVar("String", 0, "RadioID")
-    self:NetworkVar("String", 1, "Frequency")
+    self:NetworkVar("String", 0, "Frequency")
     self:NetworkVar("Bool", 0, "Enabled")
 
-    self:NetworkVarNotify("Enabled", self.OnVarChanged)
-    self:NetworkVarNotify("Frequency", self.OnVarChanged)
-
     if SERVER then
-        self:NetworkVarNotify("RadioID", self.OnVarChanged)
+        self:NetworkVarNotify("Frequency", self.OnVarChanged)
+        self:NetworkVarNotify("Enabled", self.OnVarChanged)
     end
 end
 
@@ -33,12 +30,12 @@ function ENT:OnVarChanged(var, old, new)
                     self:StopPlaying()
                 end
 
-                local snd = radioTable:GetDisableSound()
+                local snd = radioTable:GetDisableSound(self)
                 if snd then
                     self:EmitSound(snd)
                 end
             else
-                local snd = radioTable:GetEnableSound()
+                local snd = radioTable:GetEnableSound(self)
                 if snd then
                     self:EmitSound(snd)
                 end
@@ -55,12 +52,6 @@ function ENT:OnVarChanged(var, old, new)
             local snd = self:GetReceiveSound()
             if snd then
                 self:EmitSound(snd)
-            end
-        elseif var == "RadioID" then
-            local radioTable = ix.radio.stationaryRadios.stored[new]
-
-            if radioTable then
-                self:SetModel(radioTable:GetModel())
             end
         end
     else
@@ -80,7 +71,6 @@ end
 
 if SERVER then
     function ENT:Initialize()
-        self:SetRadioID(self.uniqueID)
         self:SetMoveType(MOVETYPE_VPHYSICS)
         self:SetSolid(SOLID_VPHYSICS)
         self:PhysicsInit(SOLID_VPHYSICS)
@@ -209,14 +199,16 @@ else
     ENT.PopulateEntityInfo = true
 
     function ENT:OnPopulateEntityInfo(tooltip)
+        local radioTable = self:GetRadioTable()
+
         local name = tooltip:AddRow("name")
         name:SetImportant()
-        name:SetText(self.PrintName)
+        name:SetText(radioTable:GetName(self))
         name:SizeToContents()
 
         local description = tooltip:AddRow("description")
         local min, max, minUnit, maxUnit = self:GetFrequencyBand()
-        local text = string.format("%s\n\nFrequency Band: %s %s to %s %s", self.Description, min, minUnit, max, maxUnit)
+        local text = string.format("%s\n\nFrequency Band: %s %s to %s %s", radioTable:GetDescription(self), min, minUnit, max, maxUnit)
         local freq, unit = self:GetDisplayFrequency()
         if tonumber(freq) > 0 then
             text = text .. string.format("\nTuned Frequency: %s %s", freq, unit)
@@ -297,6 +289,11 @@ else
     end
 end
 
+function ENT:GetRadioTable()
+    self.radioTable = self.radioTable or ix.radio.stationaryRadios.stored[self.uniqueID]
+    return self.radioTable
+end
+
 function ENT:GetEntityMenu(client)
     local dist = ix.config.Get("interactRange", 96)
     if !IsValid(client) or !(client:GetPos():DistToSqr(self:GetPos()) < (dist * dist)) or !client:GetCharacter() then
@@ -340,10 +337,10 @@ function ENT:GetDisplayFrequency()
     return ix.radio.ConvertUnit(self:GetFrequency())
 end
 
-function ENT:GetRadioTable()
-    return ix.radio.stationaryRadios.stored[self:GetRadioID()]
+function ENT:GetTransmitPower()
+    return self:GetRadioTable():GetTransmitPower(self) or 1.0
 end
 
 function ENT:GetReceiveSound()
-    return self:GetRadioTable():GetReceiveSound()
+    return self:GetRadioTable():GetReceiveSound(self)
 end

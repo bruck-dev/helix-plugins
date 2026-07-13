@@ -30,10 +30,10 @@ function PLUGIN:SaveData()
             angles = entity:GetAngles(),
             model = entity:GetModel(),
             skin = entity:GetSkin(),
+            color = entity:GetColor(),
             bodygroups = bodygroups,
             freq = entity:GetFrequency(),
             enabled = entity:GetEnabled(),
-            radioID = entity:GetRadioID(),
             isHost = entity.isHost,
         }
     end
@@ -50,6 +50,7 @@ function PLUGIN:LoadData()
 
         entity:SetModel(v.model)
         entity:SetSkin(v.skin or 0)
+        entity:SetColor(v.color or Color(255, 255, 255, 255))
 
         for id, bodygroup in pairs(v.bodygroups or {}) do
             entity:SetBodygroup(id, bodygroup)
@@ -75,8 +76,6 @@ function PLUGIN:LoadData()
         if v.enabled then
             entity:SetEnabled(v.enabled)
         end
-
-        entity:SetRadioID(v.radioID)
     end
 end
 
