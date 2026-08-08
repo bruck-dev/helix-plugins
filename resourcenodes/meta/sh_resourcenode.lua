@@ -92,7 +92,7 @@ function RESNODE:HasProfession(client)
     if !self.profession then
         return true
     else
-        return hook.Run("HasProfession", client, self.profession) != false
+        return hook.Run("HasProfession", client, self.profession) == true
     end
 end
 
