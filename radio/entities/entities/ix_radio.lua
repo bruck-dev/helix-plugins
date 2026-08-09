@@ -14,10 +14,8 @@ function ENT:SetupDataTables()
     self:NetworkVar("String", 0, "Frequency")
     self:NetworkVar("Bool", 0, "Enabled")
 
-    if SERVER then
-        self:NetworkVarNotify("Frequency", self.OnVarChanged)
-        self:NetworkVarNotify("Enabled", self.OnVarChanged)
-    end
+    self:NetworkVarNotify("Frequency", self.OnVarChanged)
+    self:NetworkVarNotify("Enabled", self.OnVarChanged)
 end
 
 function ENT:OnVarChanged(var, old, new)
@@ -137,23 +135,26 @@ if SERVER then
 
                 local listeners = {}
                 local radius = ix.config.Get("radioStationListenRange", 384)
+                local pos = self:GetPos()
 
-                for _, v in ipairs(ents.FindInSphere(self:GetPos(), radius)) do
-                    if v:IsPlayer() then
-                        listeners[v] = true
-                        if !self.listeners[v] then
-                            net.Start("ixRadioStationJoin")
-                                net.WriteUInt(self:EntIndex(), 16)
-                                net.WriteString(path)
-                                net.WriteBool(!file.Exists("sound/" .. path, "GAME")) -- check if the path is a file or a remote url
-                                net.WriteVector(self:GetPos())
-                                if station.audio.isStream then
-                                    net.WriteFloat(-1)
-                                else
-                                    net.WriteFloat(CurTime() - (station:GetInstance().audio.startTime or CurTime()))
-                                end
-                            net.Send(v)
-                        end
+                for _, v in player.Iterator() do
+                    if !(v:GetPos():DistToSqr(pos) < radius * radius) then
+                        continue
+                    end
+
+                    listeners[v] = true
+                    if !self.listeners[v] then
+                        net.Start("ixRadioStationJoin")
+                            net.WriteUInt(self:EntIndex(), 16)
+                            net.WriteString(path)
+                            net.WriteBool(!file.Exists("sound/" .. path, "GAME")) -- check if the path is a file or a remote url
+                            net.WriteVector(pos)
+                            if station.audio.isStream then
+                                net.WriteFloat(-1)
+                            else
+                                net.WriteFloat(CurTime() - (station:GetInstance().audio.startTime or CurTime()))
+                            end
+                        net.Send(v)
                     end
                 end
             
@@ -227,12 +228,21 @@ else
         if !IsValid(client) or !client:Alive() or !client:GetCharacter() then return end
 
         if self:GetEnabled() then
+            -- update hearing status relative to the listen radius
             local radius = ix.config.Get("radioChatListenRange", 96)
             local inRadius = (LocalPlayer():GetPos():DistToSqr(self:GetPos()) < radius * radius)
 
             if !self.canHear and inRadius then
                 self:UpdateCanHearFrequency(true)
             elseif self.canHear and !inRadius then
+                self:UpdateCanHearFrequency(false)
+            end
+        else
+            -- if the player is still listening to us when we're off somehow, clear it
+            local freqs = client.frequencies or {}
+            local oldRadio = freqs[self:GetFrequency()]
+
+            if IsValid(oldRadio) and oldRadio == self then
                 self:UpdateCanHearFrequency(false)
             end
         end
@@ -259,21 +269,26 @@ else
     
         if canHear then
             -- if we can already hear a two-way radio, don't replace it
-            if oldRadio and oldRadio != self and IsValid(oldRadio) and oldRadio.TwoWay then
+            if IsValid(oldRadio) and oldRadio != self and oldRadio.TwoWay then
                 return
             end
+
             client.frequencies[frequency] = self
         else
             -- only clear if we are the one currently registered
-            if oldRadio != self then
+            if IsValid(oldRadio) and oldRadio != self then
                 return
             end
     
             client.frequencies[frequency] = nil
     
             -- check if there's another radio still in range that should become the new reference point
-            for _, ent in ipairs(ents.FindInSphere(client:GetPos(), ix.config.Get("radioChatListenRange", 96))) do
-                if IsValid(ent) and ent != self and ent.canHear and ent.GetFrequency and ent:GetFrequency() == frequency then
+            local radius = ix.config.Get("radioChatListenRange", 96)
+            for _, ent in ipairs(ents.FindByClass("ix_radio_*")) do
+                if !IsValid(ent) or ent == self then continue end
+                
+                local inRadius = (client:GetPos():DistToSqr(ent:GetPos()) < radius * radius)
+                if inRadius and ent.canHear and ent:GetFrequency() == frequency then
                     ent:UpdateCanHearFrequency(true, frequency)
                     return
                 end
