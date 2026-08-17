@@ -10,5 +10,13 @@ function CHAR:GetHitArmor(hitgroup)
         end
     end
 
+    if ix.charPanel then
+        for _, v in ipairs(self:GetCharPanel():GetItems()) do
+            if v.isArmor and v.hitgroups[hitgroup] then
+                return v
+            end
+        end
+    end
+
     return nil
 end

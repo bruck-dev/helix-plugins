@@ -86,8 +86,11 @@ function ITEM:GetArmor()
     if self.armor == 0 then -- dont do any math if we dont have to
         return 0
     else
-        local dur = self:GetDurability()
-        return self.armor * (dur / 100)
+        if self.unbreakable then
+            return self.armor
+        else
+            return self.armor * math.ceil(self:GetDurability() / self:GetMaxDurability())
+        end
     end
 end
 
@@ -157,7 +160,7 @@ function ITEM:AddOutfit(client)
     if (isfunction(self.OnGetReplacement)) then
         character:SetData("oldModel" .. self.outfitCategory,
             character:GetData("oldModel" .. self.outfitCategory, self.player:GetModel()))
-        character:SetModel(self:OnGetReplacement())
+        character:SetModel(self:OnGetReplacement(client))
     elseif (self.replacement or self.replacements) then
         character:SetData("oldModel" .. self.outfitCategory,
             character:GetData("oldModel" .. self.outfitCategory, self.player:GetModel()))
@@ -222,13 +225,15 @@ function ITEM:AddOutfit(client)
         if istable(snd) then
             snd = snd[math.random(1, #snd)]
         end
-        client:GetCharacter():PlaySound(snd)
+        client:EmitSound(snd)
     end
 
     self:GetOwner():SetupHands()
     self:OnEquipped()
 
     armorPlayer(client, client, client:Armor() + self:GetArmor())
+
+    self.armorGiven = true
 end
 
 function ITEM:RemoveOutfit(client)
@@ -314,13 +319,15 @@ function ITEM:RemoveOutfit(client)
         if istable(snd) then
             snd = snd[math.random(1, #snd)]
         end
-        client:GetCharacter():PlaySound(snd)
+        client:EmitSound(snd)
     end
 
     self:GetOwner():SetupHands()
     self:OnUnequipped()
 
     armorPlayer(client, client, client:Armor() - self:GetArmor())
+
+    self.armorGiven = nil
 end
 
 -- self.armorGiven check only exists such that OnLoadout won't constantly reapply it, because it runs like 8 times for some reason

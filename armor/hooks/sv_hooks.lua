@@ -24,3 +24,30 @@ function PLUGIN:CanPlayerRepairArmor(client, item)
     if !(item.invID == client:GetCharacter():GetInventory():GetID()) then return false end
     if client:IsRestricted() then return false end
 end
+
+local function resetArmorGiven(client)
+    local char = client:GetCharacter()
+    if !char then return end
+
+    for k, _ in char:GetInventory():Iter() do
+		if k.isArmor and k:GetData("equip") then
+            k.armorGiven = nil
+		end
+	end
+
+    if ix.charPanel then
+        for slot, item in pairs(char:GetCharPanel():GetItems() or {}) do
+            if item.isArmor then
+                item.armorGiven = nil
+            end
+        end
+    end
+end
+
+function PLUGIN:PlayerLoadedCharacter(client, char, prevChar)
+    resetArmorGiven(client)
+end
+
+function PLUGIN:PlayerSpawn(client)
+    resetArmorGiven(client)
+end

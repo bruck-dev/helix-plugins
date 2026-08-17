@@ -80,8 +80,11 @@ function ITEM:GetArmor()
     if self.armor == 0 then -- dont do any math if we dont have to
         return 0
     else
-        local dur = self:GetDurability()
-        return self.armor * (dur / 100)
+        if self.unbreakable then
+            return self.armor
+        else
+            return self.armor * math.ceil(self:GetDurability() / self:GetMaxDurability())
+        end
     end
 end
 
@@ -145,9 +148,19 @@ function ITEM:AddPart(client)
         end
     end
 
+    if self.equipSound then
+        local snd = self.equipSound
+        if istable(snd) then
+            snd = snd[math.random(1, #snd)]
+        end
+        client:EmitSound(snd)
+    end
+
     self:OnEquipped()
 
     armorPlayer(client, client, client:Armor() + self:GetArmor())
+
+    self.armorGiven = true
 end
 
 function ITEM:RemovePart(client)
@@ -162,15 +175,26 @@ function ITEM:RemovePart(client)
         end
     end
 
+    if self.unequipSound then
+        local snd = self.unequipSound
+        if istable(snd) then
+            snd = snd[math.random(1, #snd)]
+        end
+        client:EmitSound(snd)
+    end
+
     self:OnUnequipped()
 
     armorPlayer(client, client, client:Armor() - self:GetArmor())
+
+    self.armorGiven = nil
 end
 
 -- self.armorGiven check only exists such that OnLoadout won't constantly reapply it, because it runs like 8 times for some reason
 function ITEM:OnLoadout()
     if self:GetData("equip", false) and self:GetArmor() > 0 and !self.armorGiven then
-        armorPlayer(self.player, self.player, self.player:Armor() + self:GetArmor())
+        local client = self.player or self:GetOwner()
+        armorPlayer(client, client, client:Armor() + self:GetArmor())
         self.armorGiven = true
     end
 end
