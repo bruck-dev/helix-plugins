@@ -69,12 +69,14 @@ end
 
 if SERVER then
     function ENT:Initialize()
+        local radioTable = self:GetRadioTable()
+
+        self:SetModel(radioTable:GetModel(self))
         self:SetMoveType(MOVETYPE_VPHYSICS)
         self:SetSolid(SOLID_VPHYSICS)
         self:PhysicsInit(SOLID_VPHYSICS)
 
         self:SetFrequency(string.format("%.1f", 0))
-
         self:SetEnabled(false)
 
         self.listeners = {}
