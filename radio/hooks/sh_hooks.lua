@@ -236,14 +236,6 @@ function PLUGIN:InitializedChatClasses()
                     text = garbleMessage(nil, text, data.power)
                 end
 
-                local info = {
-                    chatType = self.uniqueID,
-                    text = text,
-                    anonymous = anonymous,
-                    data = data
-                }
-                PLUGIN:MessageReceived(nil, info)
-
                 if !data.noChat then
                     text = string.format("<:: %s ::>", text)
                     chat.AddText(self:GetColor(nil, text), string.format(self.format, data.name, text))
