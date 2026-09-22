@@ -222,7 +222,11 @@ else
 
     function ENT:Draw()
         self:DrawModel()
-        self:GetRadioTable():Paint(self)
+
+        local radioTable = self:GetRadioTable()
+        if radioTable then
+            radioTable:Paint(self)
+        end
     end
 
     function ENT:Think()
